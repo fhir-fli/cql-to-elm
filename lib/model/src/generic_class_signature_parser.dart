@@ -9,7 +9,7 @@ class GenericClassSignatureParser {
   int endPos = 0;
   int bracketCount = 0;
   int currentBracketPosition = 0;
-  Map<String, DataType> resolvedTypes;
+  Map<String, DataType>? resolvedTypes;
 
   String genericSignature;
   String? baseType;
@@ -19,14 +19,8 @@ class GenericClassSignatureParser {
     required this.genericSignature,
     this.baseType,
     this.boundGenericTypeName,
-    required this.resolvedTypes,
+    this.resolvedTypes,
   });
-
-  GenericClassSignatureParser.fromString(
-      this.genericSignature, this.resolvedTypes) {
-    baseType = '';
-    boundGenericTypeName = '';
-  }
 
   String? getGenericSignature() {
     return genericSignature;
@@ -55,29 +49,42 @@ class GenericClassSignatureParser {
   ClassType parseGenericSignature() {
     String? genericTypeName = genericSignature;
     List<String> params = [];
+
     if (isValidGenericSignature()) {
       genericTypeName =
           genericSignature.substring(0, genericSignature.indexOf('<'));
+
       String parameters = genericSignature.substring(
           genericSignature.indexOf('<') + 1, genericSignature.lastIndexOf('>'));
+
       params = escapeNestedCommas(parameters)?.split(",") ?? [];
     }
+
     String? baseTypeName = baseType;
+
     List<String>? baseTypeParameters;
+
     if (baseType?.contains("<") ?? false) {
-      baseTypeName = baseType?.substring(0, baseType?.indexOf('<'));
-      String? baseTypeParameterString = baseType?.substring(
-          (baseType?.indexOf('<') ?? 0) + 1, baseType?.lastIndexOf('>'));
+      baseTypeName = baseType!.substring(0, baseType?.indexOf('<'));
+
+      String? baseTypeParameterString = baseType!
+          .substring(baseType!.indexOf('<') + 1, baseType!.lastIndexOf('>'));
+
       baseTypeParameters =
           escapeNestedCommas(baseTypeParameterString)?.split(",");
     }
+
     DataType baseDataType = resolveTypeName(baseTypeName);
+
     ClassType genericClassType = ClassType(genericTypeName, baseDataType);
+
     for (String param in params) {
       TypeParameter paramType =
           handleParameterDeclaration(unescapeNestedCommas(param));
+
       genericClassType.addGenericParameter(paramType);
     }
+
     if (baseTypeParameters != null) {
       int index = 0;
       for (String baseTypeParameter in baseTypeParameters) {
@@ -137,7 +144,7 @@ class GenericClassSignatureParser {
 
   DataType handleBoundType(String? boundGenericSignature) {
     var resolvedType =
-        resolvedTypes[escapeNestedAngleBrackets(boundGenericSignature)]
+        resolvedTypes?[escapeNestedAngleBrackets(boundGenericSignature)]
             as ClassType?;
     if (resolvedType != null) {
       return resolvedType;
@@ -179,7 +186,7 @@ class GenericClassSignatureParser {
         }
         index++;
       }
-      resolvedTypes[newType.getName()] = newType;
+      resolvedTypes?[newType.getName()] = newType;
       return newType;
     }
   }
@@ -205,7 +212,9 @@ class GenericClassSignatureParser {
 
   int _openBracketCount(String? signatureString) {
     int matchCount = 0;
-    matchCount = signatureString?.allMatches(OPEN_BRACKET).length ?? 0;
+    matchCount = signatureString == null
+        ? 0
+        : OPEN_BRACKET.allMatches(signatureString).length;
     return matchCount;
   }
 
@@ -215,7 +224,9 @@ class GenericClassSignatureParser {
 
   int _closeBracketCount(String? signatureString) {
     int matchCount = 0;
-    matchCount = signatureString?.allMatches(CLOSE_BRACKET).length ?? 0;
+    matchCount = signatureString == null
+        ? 0
+        : CLOSE_BRACKET.allMatches(signatureString).length;
     return matchCount;
   }
 
@@ -261,14 +272,14 @@ class GenericClassSignatureParser {
   }
 
   String unescapeNestedCommas(String escapedSignature) {
-    return escapedSignature.replaceAll("\\|", ",");
+    return escapedSignature.replaceAll(r"|", ",");
   }
 
   DataType resolveType(String? typeName) {
     if (typeName == null) {
       throw Exception('Unable to resolve $typeName');
     }
-    var type = resolvedTypes[typeName];
+    var type = resolvedTypes?[typeName];
     if (type == null) {
       throw Exception('Unable to resolve $typeName');
     }
