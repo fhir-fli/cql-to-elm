@@ -1,0 +1,3 @@
+class SimpleElmEngine {
+  SimpleElmEngine() {}
+}

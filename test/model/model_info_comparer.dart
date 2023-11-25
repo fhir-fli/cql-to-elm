@@ -5,13 +5,13 @@ import 'package:xml/xml.dart';
 class ModelInfoComparer {
   void compareModelInfo() async {
     // Simulate JAXB.unmarshal(...) with ModelInfo class instantiation
-    final XmlDocument aModelInfoFile = await readXmlFile('a-modelinfo.xml');
-    ModelInfo a = ModelInfo.fromXml(
-        aModelInfoFile); // Replace with actual XML parsing logic
+    final XmlDocument aModelInfoFile =
+        await readXmlFile('resources/a-modelinfo.xml');
+    ModelInfo a = ModelInfo.fromXml(aModelInfoFile);
 
-    final XmlDocument bModelInfoFile = await readXmlFile('b-modelinfo.xml');
-    ModelInfo b = ModelInfo.fromXml(
-        bModelInfoFile); // Replace with actual XML parsing logic
+    final XmlDocument bModelInfoFile =
+        await readXmlFile('resources/b-modelinfo.xml');
+    ModelInfo b = ModelInfo.fromXml(bModelInfoFile);
 
     ModelInfoCompareContext differences = ModelInfoCompareContext();
     _compareModelInfo(differences, a, b);
@@ -29,20 +29,98 @@ class ModelInfoComparer {
     );
   }
 
+  void compareMATModelInfo() async {
+    final XmlDocument aModelInfoFile =
+        await readXmlFile('resources/fhir-modelinfo-4.0.1.xml');
+    ModelInfo a = ModelInfo.fromXml(aModelInfoFile);
+
+    final XmlDocument bModelInfoFile =
+        await readXmlFile('resources/mat-fhir-modelinfo-4.0.1.xml');
+    ModelInfo b = ModelInfo.fromXml(bModelInfoFile);
+
+    ModelInfoCompareContext differences = new ModelInfoCompareContext();
+    _compareModelInfo(differences, a, b);
+    expect(differences.length(), equals(0));
+  }
+
+  void compareNewModelInfo() async {
+    final XmlDocument aModelInfoFile =
+        await readXmlFile('resources/fhir-modelinfo-4.0.1.xml');
+    ModelInfo a = ModelInfo.fromXml(aModelInfoFile);
+
+    final XmlDocument bModelInfoFile =
+        await readXmlFile('resources/new-fhir-modelinfo-4.0.1.xml');
+    ModelInfo b = ModelInfo.fromXml(bModelInfoFile);
+
+    ModelInfoCompareContext differences = new ModelInfoCompareContext();
+    _compareModelInfo(differences, a, b);
+    expect(
+        differences.toString(),
+        equals("ModelInfo.DeviceRequest.primaryCodePath: codeCodeableConcept <> code%n" +
+            "ModelInfo.DetectedIssue.primaryCodePath: category <> code%n" +
+            "ModelInfo.BodyStructure.primaryCodePath: null <> location%n" +
+            "ModelInfo.PractitionerRole.primaryCodePath: null <> code%n" +
+            "ModelInfo.RelatedPerson.primaryCodePath: null <> relationship%n" +
+            "ModelInfo.AdverseEvent.primaryCodePath: type <> event%n" +
+            "ModelInfo.Location.primaryCodePath: null <> type%n"));
+  }
+
+  void compareMetadataModelInfo() async {
+    final XmlDocument aModelInfoFile =
+        await readXmlFile('resources/fhir-modelinfo-4.0.1-1.5.1.xml');
+    ModelInfo a = ModelInfo.fromXml(aModelInfoFile);
+
+    final XmlDocument bModelInfoFile =
+        await readXmlFile('resources/fhir-modelinfo-4.0.1-with-metadata.xml');
+    ModelInfo b = ModelInfo.fromXml(bModelInfoFile);
+
+    ModelInfoCompareContext differences = new ModelInfoCompareContext();
+    _compareModelInfo(differences, a, b);
+
+    /// Comparison of 1.5.1 model info with 1.5.2, the only difference is the addition of metadata:
+    expect(
+        differences.toString(),
+        equals("ModelInfo.markdown.Element value in right only%n" + // redeclaration for metadata
+            "ModelInfo.SimpleQuantity.primaryCodePath: code <> null%n" + // primaryCodePath should not be set on a non-retrievable type
+            "ModelInfo.SimpleQuantity.Element value in left only%n" + // SimpleQuantity is derived from Quantity, no need to re-declare elements
+            "ModelInfo.SimpleQuantity.Element unit in left only%n" + // ditto
+            "ModelInfo.SimpleQuantity.Element system in left only%n" + // ditto
+            "ModelInfo.SimpleQuantity.Element code in left only%n" + // ditto
+            "ModelInfo.MoneyQuantity.primaryCodePath: code <> null%n" + // primaryCodePath should not be set on a non-retrievable type
+            "ModelInfo.MoneyQuantity.Element value in left only%n" + // MoneyQuantity is derived from Quantity, no need to re-declare elements
+            "ModelInfo.MoneyQuantity.Element comparator in left only%n" + // ditto
+            "ModelInfo.MoneyQuantity.Element unit in left only%n" + // ditto
+            "ModelInfo.MoneyQuantity.Element system in left only%n" + // ditto
+            "ModelInfo.MoneyQuantity.Element code in left only%n" + // ditto
+            "ModelInfo.uuid.Element value in right only%n" + // redeclartion for metadata
+            "ModelInfo.ElementDefinition.Type.targetProfile.name: targetProfile <> profile%n" + // backwards compatible, but more accurate ElementDefinition.Type
+            "ModelInfo.ElementDefinition.Type.versioning.name: versioning <> targetProfile%n" + // ditto
+            "ModelInfo.ElementDefinition.Type.versioning.type: FHIR.ReferenceVersionRules <> List<FHIR.canonical>%n" + // ditto
+            "ModelInfo.ElementDefinition.Type.Element aggregation in right only%n" + // ditto
+            "ModelInfo.ElementDefinition.Type.Element versioning in right only%n" + // ditto
+            "ModelInfo.unsignedInt.Element value in right only%n" + // redeclaration for metdata
+            "ModelInfo.id.Element value in right only%n" + // redeclaration for metdata
+            "ModelInfo.url.Element value in right only%n" + // redeclaration for metdata
+            "ModelInfo.canonical.Element value in right only%n" + // redeclaration for metdata
+            "ModelInfo.code.Element value in right only%n" + // redeclaration for metdata
+            "ModelInfo.oid.Element value in right only%n" + // redeclaration for metdata
+            "ModelInfo.positiveInt.Element value in right only%n")); // redeclaration for metdata
+  }
+
   void _compareModelInfo(
       ModelInfoCompareContext context, ModelInfo a, ModelInfo b) {
-    compareAttribute(context, "url", a.url, b.url);
-    compareAttribute(context, "version", a.version, b.version);
-    compareAttribute(context, "targetUrl", a.targetUrl, b.targetUrl);
-    compareAttribute(
+    compareAttributeString(context, "url", a.url, b.url);
+    compareAttributeString(context, "version", a.version, b.version);
+    compareAttributeString(context, "targetUrl", a.targetUrl, b.targetUrl);
+    compareAttributeString(
         context, "targetVersion", a.targetVersion, b.targetVersion);
-    compareAttribute(
+    compareAttributeString(
         context, "defaultContext", a.defaultContext, b.defaultContext);
-    compareAttribute(
+    compareAttributeString(
         context, "patientClassName", a.patientClassName, b.patientClassName);
-    compareAttribute(context, "patientClassIdentifier",
+    compareAttributeString(context, "patientClassIdentifier",
         a.patientClassIdentifier, b.patientClassIdentifier);
-    compareAttribute(context, "patientBirthDatePropertyName",
+    compareAttributeString(context, "patientBirthDatePropertyName",
         a.patientBirthDatePropertyName, b.patientBirthDatePropertyName);
 
     // requiredModelInfo
@@ -122,8 +200,8 @@ class ModelInfoComparer {
     }
   }
 
-  void compareAttribute(ModelInfoCompareContext context, String attributeName,
-      String? a, String? b) {
+  void compareAttributeString(ModelInfoCompareContext context,
+      String attributeName, String? a, String? b) {
     if (a != b) {
       if (a == null && b == null) {
         return;
@@ -132,7 +210,7 @@ class ModelInfoComparer {
     }
   }
 
-  void _compareAttribute(
+  void compareAttributeBool(
       ModelInfoCompareContext context, String attributeName, bool? a, bool? b) {
     if (a != b) {
       if (a == null && b == null) {
@@ -143,145 +221,41 @@ class ModelInfoComparer {
   }
 
   void compareModelSpecifier(
-      ModelInfoCompareContext context, ModelSpecifier a, ModelSpecifier b) {
-    if (a == null) {
-      context.append(
-          'Model specifier ${b.getName()}|${b.getVersion()} in right only');
+      ModelInfoCompareContext context, ModelSpecifier? a, ModelSpecifier? b) {
+    if (a == null && b == null) {
+      return context.append("Model specifier not defined");
+    } else if (a == null) {
+      context.append("Model specifier ${b!.name}|${b.version} in right only");
     } else if (b == null) {
-      context.append(
-          'Model specifier ${a.getName()}|${a.getVersion()} in left only');
+      context.append("Model specifier ${a.name}|${a.version} in left only");
     } else {
-      compareAttribute(context, 'version', a.getVersion(), b.getVersion());
+      compareAttributeString(context, "version", a.version, b.version);
     }
   }
 
-  String descriptorNamedTypeSpecifier(NamedTypeSpecifier namedTypeSpecifier) {
-    if (namedTypeSpecifier.namespace != null) {
-      return '${namedTypeSpecifier.namespace}.${namedTypeSpecifier.name}';
-    }
+  String? descriptor(NamedTypeSpecifier? namedTypeSpecifier) {
+    if (namedTypeSpecifier != null) {
+      if (namedTypeSpecifier.namespace != null) {
+        return '${namedTypeSpecifier.namespace}.${namedTypeSpecifier.name}';
+      }
 
-    if (namedTypeSpecifier.modelName != null) {
-      return '${namedTypeSpecifier.modelName}.${namedTypeSpecifier.name}';
-    }
+      if (namedTypeSpecifier.modelName != null) {
+        return '${namedTypeSpecifier.modelName}.${namedTypeSpecifier.name}';
+      }
 
-    return namedTypeSpecifier.name;
-
-    return null;
-  }
-
-  String descriptorIntervalTypeSpecifier(
-      IntervalTypeSpecifier intervalTypeSpecifier) {
-    if (intervalTypeSpecifier != null) {
-      return 'Interval<${descriptor(intervalTypeSpecifier.pointType, intervalTypeSpecifier.pointTypeSpecifier)}>';
+      return namedTypeSpecifier.name;
     }
 
     return null;
   }
+}
 
-  String descriptorListTypeSpecifier(ListTypeSpecifier listTypeSpecifier) {
-    if (listTypeSpecifier != null) {
-      return 'List<${descriptor(listTypeSpecifier.elementType, listTypeSpecifier.elementTypeSpecifier)}>';
-    }
-
-    return null;
+String descriptor(IntervalTypeSpecifier intervalTypeSpecifier) {
+  if (intervalTypeSpecifier != null) {
+    return 'Interval<${descriptor(intervalTypeSpecifier.pointTypeSpecifier)}>';
   }
 
-  String descriptor(TupleTypeSpecifier tupleTypeSpecifier) {
-    if (tupleTypeSpecifier != null) {
-      // TODO: Expand this...
-      return 'Tuple<...>';
-    }
-
-    return null;
-  }
-
-  String descriptor(ChoiceTypeSpecifier choiceTypeSpecifier) {
-    if (choiceTypeSpecifier != null) {
-      // TODO: Expand this
-      return 'Choice<...>';
-    }
-
-    return null;
-  }
-
-  String descriptor(TypeSpecifier typeSpecifier) {
-    if (typeSpecifier is NamedTypeSpecifier) {
-      return descriptor(typeSpecifier);
-    }
-
-    if (typeSpecifier is IntervalTypeSpecifier) {
-      return descriptor(typeSpecifier);
-    }
-
-    if (typeSpecifier is ListTypeSpecifier) {
-      return descriptor(typeSpecifier);
-    }
-
-    if (typeSpecifier is TupleTypeSpecifier) {
-      return descriptor(typeSpecifier);
-    }
-
-    if (typeSpecifier is ChoiceTypeSpecifier) {
-      return descriptor(typeSpecifier);
-    }
-
-    return null;
-  }
-
-  String descriptor(String elementType, TypeSpecifier elementTypeSpecifier) {
-    return elementType;
-
-    return descriptor(elementTypeSpecifier);
-  }
-
-  String descriptor(ListTypeInfo listTypeInfo) {
-    return 'List<${descriptor(listTypeInfo.elementType, listTypeInfo.elementTypeSpecifier)}>';
-
-    return null;
-  }
-
-  String descriptor(IntervalTypeInfo intervalTypeInfo) {
-    return 'Interval<${descriptor(intervalTypeInfo.pointType, intervalTypeInfo.pointTypeSpecifier)}>';
-
-    return null;
-  }
-
-  String descriptor(TupleTypeInfo tupleTypeInfo) {
-    // TODO: Expand this
-    return 'Tuple<...>';
-
-    return null;
-  }
-
-  String descriptor(ChoiceTypeInfo choiceTypeInfo) {
-    // TODO: Expand this
-    return 'Choice<...>';
-
-    return null;
-  }
-
-  String descriptor(TypeInfo typeInfo) {
-    if (typeInfo is ClassInfo) {
-      return (typeInfo).name;
-    }
-    if (typeInfo is SimpleTypeInfo) {
-      return (typeInfo).name;
-    }
-    if (typeInfo is ListTypeInfo) {
-      return descriptor(typeInfo);
-    }
-    if (typeInfo is IntervalTypeInfo) {
-      return descriptor(typeInfo);
-    }
-    if (typeInfo is TupleTypeInfo) {
-      return descriptor(typeInfo);
-    }
-    if (typeInfo is ChoiceTypeInfo) {
-      return descriptor(typeInfo);
-    }
-
-    return null;
-  }
+  return null;
 }
 
 class ModelInfoCompareContext {
