@@ -28,7 +28,7 @@ class VersionedIdentifier {
 }
 
 @JsonSerializable()
-class UsingDef extends Element {
+class UsingDef {
   UsingDef({required this.localIdentifier, required this.uri, this.version});
 
   String localIdentifier;
@@ -50,7 +50,7 @@ class UsingDef extends Element {
 }
 
 @JsonSerializable()
-class IncludeDef extends Element {
+class IncludeDef {
   String localIdentifier;
   String mediaType;
   String path;
@@ -79,7 +79,7 @@ class IncludeDef extends Element {
 }
 
 @JsonSerializable()
-class Library extends Element {
+class Library {
   VersionedIdentifier? identifier;
   VersionedIdentifier? schemaIdentifier;
   List<UsingDef>? usings;

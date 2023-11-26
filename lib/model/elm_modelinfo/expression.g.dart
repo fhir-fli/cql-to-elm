@@ -7,18 +7,18 @@ part of 'expression.dart';
 // **************************************************************************
 
 TypeSpecifier _$TypeSpecifierFromJson(Map<String, dynamic> json) =>
-    TypeSpecifier()
-      ..localId = json['localId'] as String?
-      ..locator = json['locator'] as String?
-      ..resultTypeName = json['resultTypeName'] as String?
-      ..annotation = (json['annotation'] as List<dynamic>?)
-          ?.map((e) =>
-              e == null ? null : Element.fromJson(e as Map<String, dynamic>))
-          .toList()
-      ..resultTypeSpecifier = json['resultTypeSpecifier'] == null
+    TypeSpecifier(
+      localId: json['localId'] as String?,
+      locator: json['locator'] as String?,
+      resultTypeName: json['resultTypeName'] as String?,
+      annotation: (json['annotation'] as List<dynamic>?)
+          ?.map((e) => Element.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      resultTypeSpecifier: json['resultTypeSpecifier'] == null
           ? null
           : TypeSpecifier.fromJson(
-              json['resultTypeSpecifier'] as Map<String, dynamic>);
+              json['resultTypeSpecifier'] as Map<String, dynamic>),
+    );
 
 Map<String, dynamic> _$TypeSpecifierToJson(TypeSpecifier instance) {
   final val = <String, dynamic>{};
@@ -33,7 +33,7 @@ Map<String, dynamic> _$TypeSpecifierToJson(TypeSpecifier instance) {
   writeNotNull('locator', instance.locator);
   writeNotNull('resultTypeName', instance.resultTypeName);
   writeNotNull(
-      'annotation', instance.annotation?.map((e) => e?.toJson()).toList());
+      'annotation', instance.annotation?.map((e) => e.toJson()).toList());
   writeNotNull('resultTypeSpecifier', instance.resultTypeSpecifier?.toJson());
   return val;
 }
@@ -78,8 +78,7 @@ TupleTypeSpecifier _$TupleTypeSpecifierFromJson(Map<String, dynamic> json) =>
       ..locator = json['locator'] as String?
       ..resultTypeName = json['resultTypeName'] as String?
       ..annotation = (json['annotation'] as List<dynamic>?)
-          ?.map((e) =>
-              e == null ? null : Element.fromJson(e as Map<String, dynamic>))
+          ?.map((e) => Element.fromJson(e as Map<String, dynamic>))
           .toList()
       ..resultTypeSpecifier = json['resultTypeSpecifier'] == null
           ? null
@@ -99,7 +98,7 @@ Map<String, dynamic> _$TupleTypeSpecifierToJson(TupleTypeSpecifier instance) {
   writeNotNull('locator', instance.locator);
   writeNotNull('resultTypeName', instance.resultTypeName);
   writeNotNull(
-      'annotation', instance.annotation?.map((e) => e?.toJson()).toList());
+      'annotation', instance.annotation?.map((e) => e.toJson()).toList());
   writeNotNull('resultTypeSpecifier', instance.resultTypeSpecifier?.toJson());
   writeNotNull('element', instance.element?.map((e) => e.toJson()).toList());
   return val;
@@ -118,8 +117,7 @@ ChoiceTypeSpecifier _$ChoiceTypeSpecifierFromJson(Map<String, dynamic> json) =>
       ..locator = json['locator'] as String?
       ..resultTypeName = json['resultTypeName'] as String?
       ..annotation = (json['annotation'] as List<dynamic>?)
-          ?.map((e) =>
-              e == null ? null : Element.fromJson(e as Map<String, dynamic>))
+          ?.map((e) => Element.fromJson(e as Map<String, dynamic>))
           .toList()
       ..resultTypeSpecifier = json['resultTypeSpecifier'] == null
           ? null
@@ -139,7 +137,7 @@ Map<String, dynamic> _$ChoiceTypeSpecifierToJson(ChoiceTypeSpecifier instance) {
   writeNotNull('locator', instance.locator);
   writeNotNull('resultTypeName', instance.resultTypeName);
   writeNotNull(
-      'annotation', instance.annotation?.map((e) => e?.toJson()).toList());
+      'annotation', instance.annotation?.map((e) => e.toJson()).toList());
   writeNotNull('resultTypeSpecifier', instance.resultTypeSpecifier?.toJson());
   writeNotNull('type', instance.type?.map((e) => e.toJson()).toList());
   writeNotNull('choice', instance.choice?.map((e) => e.toJson()).toList());
@@ -288,10 +286,9 @@ ExpressionDef _$ExpressionDefFromJson(Map<String, dynamic> json) =>
           ? null
           : Expression.fromJson(json['expression'] as Map<String, dynamic>),
       context: json['context'] as String?,
-      accessLevel: $enumDecodeNullable(
-              _$AccessModifierEnumMap, json['accessLevel'],
-              unknownValue: AccessModifier.Public) ??
-          AccessModifier.Public,
+      accessLevel:
+          $enumDecodeNullable(_$AccessModifierEnumMap, json['accessLevel']) ??
+              AccessModifier.Public,
     );
 
 Map<String, dynamic> _$ExpressionDefToJson(ExpressionDef instance) {
@@ -345,5 +342,244 @@ Map<String, dynamic> _$ParameterDefToJson(ParameterDef instance) {
   writeNotNull('defaultExpr', instance.defaultExpr?.toJson());
   writeNotNull(
       'parameterTypeSpecifier', instance.parameterTypeSpecifier?.toJson());
+  return val;
+}
+
+Interval _$IntervalFromJson(Map<String, dynamic> json) => Interval(
+      low: json['low'],
+      lowClosedExpression: json['lowClosedExpression'] == null
+          ? null
+          : Expression.fromJson(
+              json['lowClosedExpression'] as Map<String, dynamic>),
+      high: json['high'],
+      highClosedExpression: json['highClosedExpression'] == null
+          ? null
+          : Expression.fromJson(
+              json['highClosedExpression'] as Map<String, dynamic>),
+      lowClosed: json['lowClosed'] as bool? ?? true,
+      highClosed: json['highClosed'] as bool? ?? true,
+    );
+
+Map<String, dynamic> _$IntervalToJson(Interval instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('low', instance.low);
+  writeNotNull('lowClosedExpression', instance.lowClosedExpression?.toJson());
+  writeNotNull('high', instance.high);
+  writeNotNull('highClosedExpression', instance.highClosedExpression?.toJson());
+  val['lowClosed'] = instance.lowClosed;
+  val['highClosed'] = instance.highClosed;
+  return val;
+}
+
+IntegerInterval _$IntegerIntervalFromJson(Map<String, dynamic> json) =>
+    IntegerInterval(
+      low: json['low'] == null ? null : FhirInteger.fromJson(json['low']),
+      high: json['high'] == null ? null : FhirInteger.fromJson(json['high']),
+    )
+      ..lowClosedExpression = json['lowClosedExpression'] == null
+          ? null
+          : Expression.fromJson(
+              json['lowClosedExpression'] as Map<String, dynamic>)
+      ..highClosedExpression = json['highClosedExpression'] == null
+          ? null
+          : Expression.fromJson(
+              json['highClosedExpression'] as Map<String, dynamic>)
+      ..lowClosed = json['lowClosed'] as bool
+      ..highClosed = json['highClosed'] as bool;
+
+Map<String, dynamic> _$IntegerIntervalToJson(IntegerInterval instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('low', instance.low);
+  writeNotNull('lowClosedExpression', instance.lowClosedExpression?.toJson());
+  writeNotNull('high', instance.high);
+  writeNotNull('highClosedExpression', instance.highClosedExpression?.toJson());
+  val['lowClosed'] = instance.lowClosed;
+  val['highClosed'] = instance.highClosed;
+  return val;
+}
+
+DecimalInterval _$DecimalIntervalFromJson(Map<String, dynamic> json) =>
+    DecimalInterval(
+      low: json['low'] == null ? null : FhirDecimal.fromJson(json['low']),
+      high: json['high'] == null ? null : FhirDecimal.fromJson(json['high']),
+    )
+      ..lowClosedExpression = json['lowClosedExpression'] == null
+          ? null
+          : Expression.fromJson(
+              json['lowClosedExpression'] as Map<String, dynamic>)
+      ..highClosedExpression = json['highClosedExpression'] == null
+          ? null
+          : Expression.fromJson(
+              json['highClosedExpression'] as Map<String, dynamic>)
+      ..lowClosed = json['lowClosed'] as bool
+      ..highClosed = json['highClosed'] as bool;
+
+Map<String, dynamic> _$DecimalIntervalToJson(DecimalInterval instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('low', instance.low);
+  writeNotNull('lowClosedExpression', instance.lowClosedExpression?.toJson());
+  writeNotNull('high', instance.high);
+  writeNotNull('highClosedExpression', instance.highClosedExpression?.toJson());
+  val['lowClosed'] = instance.lowClosed;
+  val['highClosed'] = instance.highClosed;
+  return val;
+}
+
+QuantityInterval _$QuantityIntervalFromJson(Map<String, dynamic> json) =>
+    QuantityInterval(
+      low: json['low'] == null
+          ? null
+          : Quantity.fromJson(json['low'] as Map<String, dynamic>),
+      high: json['high'] == null
+          ? null
+          : Quantity.fromJson(json['high'] as Map<String, dynamic>),
+    )
+      ..lowClosedExpression = json['lowClosedExpression'] == null
+          ? null
+          : Expression.fromJson(
+              json['lowClosedExpression'] as Map<String, dynamic>)
+      ..highClosedExpression = json['highClosedExpression'] == null
+          ? null
+          : Expression.fromJson(
+              json['highClosedExpression'] as Map<String, dynamic>)
+      ..lowClosed = json['lowClosed'] as bool
+      ..highClosed = json['highClosed'] as bool;
+
+Map<String, dynamic> _$QuantityIntervalToJson(QuantityInterval instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('low', instance.low);
+  writeNotNull('lowClosedExpression', instance.lowClosedExpression?.toJson());
+  writeNotNull('high', instance.high);
+  writeNotNull('highClosedExpression', instance.highClosedExpression?.toJson());
+  val['lowClosed'] = instance.lowClosed;
+  val['highClosed'] = instance.highClosed;
+  return val;
+}
+
+DateInterval _$DateIntervalFromJson(Map<String, dynamic> json) => DateInterval(
+      low: json['low'] == null ? null : FhirDate.fromJson(json['low']),
+      high: json['high'] == null ? null : FhirDate.fromJson(json['high']),
+    )
+      ..lowClosedExpression = json['lowClosedExpression'] == null
+          ? null
+          : Expression.fromJson(
+              json['lowClosedExpression'] as Map<String, dynamic>)
+      ..highClosedExpression = json['highClosedExpression'] == null
+          ? null
+          : Expression.fromJson(
+              json['highClosedExpression'] as Map<String, dynamic>)
+      ..lowClosed = json['lowClosed'] as bool
+      ..highClosed = json['highClosed'] as bool;
+
+Map<String, dynamic> _$DateIntervalToJson(DateInterval instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('low', instance.low);
+  writeNotNull('lowClosedExpression', instance.lowClosedExpression?.toJson());
+  writeNotNull('high', instance.high);
+  writeNotNull('highClosedExpression', instance.highClosedExpression?.toJson());
+  val['lowClosed'] = instance.lowClosed;
+  val['highClosed'] = instance.highClosed;
+  return val;
+}
+
+DateTimeInterval _$DateTimeIntervalFromJson(Map<String, dynamic> json) =>
+    DateTimeInterval(
+      low: json['low'] == null ? null : FhirDateTime.fromJson(json['low']),
+      high: json['high'] == null ? null : FhirDateTime.fromJson(json['high']),
+    )
+      ..lowClosedExpression = json['lowClosedExpression'] == null
+          ? null
+          : Expression.fromJson(
+              json['lowClosedExpression'] as Map<String, dynamic>)
+      ..highClosedExpression = json['highClosedExpression'] == null
+          ? null
+          : Expression.fromJson(
+              json['highClosedExpression'] as Map<String, dynamic>)
+      ..lowClosed = json['lowClosed'] as bool
+      ..highClosed = json['highClosed'] as bool;
+
+Map<String, dynamic> _$DateTimeIntervalToJson(DateTimeInterval instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('low', instance.low);
+  writeNotNull('lowClosedExpression', instance.lowClosedExpression?.toJson());
+  writeNotNull('high', instance.high);
+  writeNotNull('highClosedExpression', instance.highClosedExpression?.toJson());
+  val['lowClosed'] = instance.lowClosed;
+  val['highClosed'] = instance.highClosed;
+  return val;
+}
+
+TimeInterval _$TimeIntervalFromJson(Map<String, dynamic> json) => TimeInterval(
+      low: json['low'] == null ? null : FhirTime.fromJson(json['low']),
+      high: json['high'] == null ? null : FhirTime.fromJson(json['high']),
+    )
+      ..lowClosedExpression = json['lowClosedExpression'] == null
+          ? null
+          : Expression.fromJson(
+              json['lowClosedExpression'] as Map<String, dynamic>)
+      ..highClosedExpression = json['highClosedExpression'] == null
+          ? null
+          : Expression.fromJson(
+              json['highClosedExpression'] as Map<String, dynamic>)
+      ..lowClosed = json['lowClosed'] as bool
+      ..highClosed = json['highClosed'] as bool;
+
+Map<String, dynamic> _$TimeIntervalToJson(TimeInterval instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('low', instance.low);
+  writeNotNull('lowClosedExpression', instance.lowClosedExpression?.toJson());
+  writeNotNull('high', instance.high);
+  writeNotNull('highClosedExpression', instance.highClosedExpression?.toJson());
+  val['lowClosed'] = instance.lowClosed;
+  val['highClosed'] = instance.highClosed;
   return val;
 }

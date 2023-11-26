@@ -39,7 +39,7 @@ class Retrieve {
 }
 
 @JsonSerializable()
-class CodeSystemDef extends Element {
+class CodeSystemDef {
   String name;
   String id;
   String? version;
@@ -59,7 +59,7 @@ class CodeSystemDef extends Element {
 }
 
 @JsonSerializable()
-class ValueSetDef extends Element {
+class ValueSetDef {
   List<CodeSystemRef>? codeSystem;
   String? name;
   String id;
@@ -81,7 +81,7 @@ class ValueSetDef extends Element {
 }
 
 @JsonSerializable()
-class CodeDef extends Element {
+class CodeDef {
   CodeSystemRef? codeSystem;
   String name;
   String id;
@@ -103,7 +103,7 @@ class CodeDef extends Element {
 }
 
 @JsonSerializable()
-class ConceptDef extends Element {
+class ConceptDef {
   String name;
   String? display;
   AccessModifier accessLevel;

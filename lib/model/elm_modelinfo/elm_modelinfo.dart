@@ -6,5 +6,5 @@ export 'model_info_reader_factory.dart';
 export 'model_info_reader_provider.dart';
 export 'model_info_reader.dart';
 export 'model_info.dart';
+export 'q_name.dart';
 export 'type_info.dart';
-export 'types.dart';

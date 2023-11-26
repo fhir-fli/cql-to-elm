@@ -9,7 +9,9 @@ environment:
 
 dependencies:
   collection: ^1.18.0
-  fhir: ^0.11.4
+  # fhir: ^0.11.4
+  fhir:
+    path: ../fhir/fhir
   intl: ^0.18.0
   json_annotation: ^4.8.1
   xml: ^6.4.2
