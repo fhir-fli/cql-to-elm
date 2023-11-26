@@ -1,7 +1,7 @@
 export 'clinical_expression.dart';
 export 'cql_annotations.dart';
 export 'expression.dart';
-export 'library.dart';
+export '../../cql_lm/schema/elm/library.dart';
 export 'model_info_reader_factory.dart';
 export 'model_info_reader_provider.dart';
 export 'model_info_reader.dart';

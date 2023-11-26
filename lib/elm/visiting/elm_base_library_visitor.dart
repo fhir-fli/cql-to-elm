@@ -1,3 +1,5 @@
+import 'package:fhir/r4.dart';
+
 import '../../model/model.dart';
 import 'visiting.dart';
 

@@ -74,6 +74,23 @@ Map<String, dynamic> _$IncludeDefToJson(IncludeDef instance) {
   return val;
 }
 
+ContextDef _$ContextDefFromJson(Map<String, dynamic> json) => ContextDef(
+      name: json['name'] as String?,
+    );
+
+Map<String, dynamic> _$ContextDefToJson(ContextDef instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('name', instance.name);
+  return val;
+}
+
 Library _$LibraryFromJson(Map<String, dynamic> json) => Library(
       identifier: json['identifier'] == null
           ? null

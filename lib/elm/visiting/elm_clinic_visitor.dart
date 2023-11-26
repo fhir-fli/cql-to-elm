@@ -1,3 +1,5 @@
+import 'package:fhir/r4.dart';
+
 import '../../model/model.dart';
 import 'visiting.dart';
 
@@ -16,8 +18,8 @@ abstract class ElmClinicalVisitor<T, C> implements ElmVisitor<T, C> {
   T visitValueSetRef(ValueSetRef elm, C context);
   T visitCodeRef(CodeRef elm, C context);
   T visitConceptRef(ConceptRef elm, C context);
-  T visitCode(Code elm, C context);
-  T visitConcept(Concept elm, C context);
+  T visitCode(Coding elm, C context);
+  T visitConcept(CodeableConcept elm, C context);
   T visitInCodeSystem(InCodeSystem elm, C context);
   T visitAnyInCodeSystem(AnyInCodeSystem elm, C context);
   T visitInValueSet(InValueSet elm, C context);

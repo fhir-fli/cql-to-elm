@@ -1,13 +1,99 @@
 import 'package:json_annotation/json_annotation.dart';
 
-import 'elm_modelinfo.dart';
+import 'elm.dart';
 
 part 'clinical_expression.g.dart';
 
 @JsonSerializable()
+class CodeFilterElement extends ElmElement {
+  String? property;
+  String? valueSetProperty;
+  String? search;
+  String comparator;
+  Expression value;
+
+  CodeFilterElement({
+    this.property,
+    this.valueSetProperty,
+    this.search,
+    required this.comparator,
+    required this.value,
+  });
+
+  factory CodeFilterElement.fromJson(Map<String, dynamic> json) =>
+      _$CodeFilterElementFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CodeFilterElementToJson(this);
+}
+
+@JsonSerializable()
+class DateFilterElement extends ElmElement {
+  String? property;
+  String? lowProperty;
+  String? highProperty;
+  String? search;
+  Expression value;
+
+  DateFilterElement({
+    this.property,
+    this.lowProperty,
+    this.highProperty,
+    this.search,
+    required this.value,
+  });
+
+  factory DateFilterElement.fromJson(Map<String, dynamic> json) =>
+      _$DateFilterElementFromJson(json);
+
+  Map<String, dynamic> toJson() => _$DateFilterElementToJson(this);
+}
+
+@JsonSerializable()
+class OtherFilterElement extends ElmElement {
+  String? property;
+  String? search;
+  String comparator;
+  Expression value;
+
+  OtherFilterElement({
+    this.property,
+    this.search,
+    required this.comparator,
+    required this.value,
+  });
+
+  factory OtherFilterElement.fromJson(Map<String, dynamic> json) =>
+      _$OtherFilterElementFromJson(json);
+
+  Map<String, dynamic> toJson() => _$OtherFilterElementToJson(this);
+}
+
+@JsonSerializable()
+class IncludeElement extends ElmElement {
+  String? includeFrom;
+  String redDataType;
+  String? redProperty;
+  String? redSearch;
+  bool? isReverse;
+
+  IncludeElement({
+    this.includeFrom,
+    required this.redDataType,
+    this.redProperty,
+    this.redSearch,
+    this.isReverse,
+  });
+
+  factory IncludeElement.fromJson(Map<String, dynamic> json) =>
+      _$IncludeElementFromJson(json);
+
+  Map<String, dynamic> toJson() => _$IncludeElementToJson(this);
+}
+
+@JsonSerializable()
 class Retrieve {
   String dataType;
-  String? templateId;
+  String? tempId;
   String? idProperty;
   String? codeProperty;
   String? valueSetProperty;
@@ -20,7 +106,7 @@ class Retrieve {
 
   Retrieve({
     required this.dataType,
-    this.templateId,
+    this.tempId,
     this.idProperty,
     this.codeProperty,
     this.valueSetProperty,
@@ -39,17 +125,20 @@ class Retrieve {
 }
 
 @JsonSerializable()
-class CodeSystemDef {
+class Search extends Property {}
+
+@JsonSerializable()
+class CodeSystemDef extends ElmElement {
   String name;
   String id;
   String? version;
-  String accessLevel;
+  AccessModifier accessLevel;
 
   CodeSystemDef({
     required this.name,
     required this.id,
     this.version,
-    this.accessLevel = 'Public',
+    this.accessLevel = AccessModifier.Public,
   });
 
   factory CodeSystemDef.fromJson(Map<String, dynamic> json) =>
@@ -123,17 +212,13 @@ class ConceptDef {
 }
 
 @JsonSerializable()
-class CodeSystemRef {
+class CodeSystemRef extends Expression {
   String name;
-  String id;
-  String? version;
-  String accessLevel;
+  String? libraryName;
 
   CodeSystemRef({
     required this.name,
-    required this.id,
-    this.version,
-    this.accessLevel = 'Public',
+    this.libraryName,
   });
 
   factory CodeSystemRef.fromJson(Map<String, dynamic> json) =>
@@ -144,10 +229,15 @@ class CodeSystemRef {
 
 @JsonSerializable()
 class ValueSetRef extends Expression {
-  String? name;
+  String name;
   String? libraryName;
+  bool? preserve;
 
-  ValueSetRef({this.name, this.libraryName});
+  ValueSetRef({
+    required this.name,
+    this.libraryName,
+    this.preserve,
+  });
 
   factory ValueSetRef.fromJson(Map<String, dynamic> json) =>
       _$ValueSetRefFromJson(json);
@@ -182,11 +272,50 @@ class ConceptRef extends Expression {
 }
 
 @JsonSerializable()
+class ElmCode extends Expression {
+  String code;
+  String? display;
+  CodeSystemRef system;
+
+  ElmCode({
+    required this.code,
+    this.display,
+    required this.system,
+  });
+
+  factory ElmCode.fromJson(Map<String, dynamic> json) =>
+      _$ElmCodeFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ElmCodeToJson(this);
+}
+
+@JsonSerializable()
+class Concept extends Expression {
+  List<ElmCode> code;
+  String? display;
+
+  Concept({
+    required this.code,
+    this.display,
+  });
+
+  factory Concept.fromJson(Map<String, dynamic> json) =>
+      _$ConceptFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ConceptToJson(this);
+}
+
+@JsonSerializable()
 class InCodeSystem extends OperatorExpression {
   Expression code;
-  CodeSystemRef codesystem;
+  CodeSystemRef? codesystem;
+  Expression? codesystemExpression;
 
-  InCodeSystem({required this.code, required this.codesystem});
+  InCodeSystem({
+    required this.code,
+    this.codesystem,
+    this.codesystemExpression,
+  });
 
   factory InCodeSystem.fromJson(Map<String, dynamic> json) =>
       _$InCodeSystemFromJson(json);
@@ -196,10 +325,15 @@ class InCodeSystem extends OperatorExpression {
 
 @JsonSerializable()
 class AnyInCodeSystem extends OperatorExpression {
-  Expression codes;
-  CodeSystemRef codesystem;
+  Expression code;
+  CodeSystemRef? codesystem;
+  Expression? codesystemExpression;
 
-  AnyInCodeSystem({required this.codes, required this.codesystem});
+  AnyInCodeSystem({
+    required this.code,
+    this.codesystem,
+    this.codesystemExpression,
+  });
 
   factory AnyInCodeSystem.fromJson(Map<String, dynamic> json) =>
       _$AnyInCodeSystemFromJson(json);
@@ -210,9 +344,14 @@ class AnyInCodeSystem extends OperatorExpression {
 @JsonSerializable()
 class InValueSet extends OperatorExpression {
   Expression code;
-  ValueSetRef valueset;
+  ValueSetRef? valueset;
+  Expression? valuesetExpression;
 
-  InValueSet({required this.code, required this.valueset});
+  InValueSet({
+    required this.code,
+    this.valueset,
+    this.valuesetExpression,
+  });
 
   factory InValueSet.fromJson(Map<String, dynamic> json) =>
       _$InValueSetFromJson(json);
@@ -223,14 +362,29 @@ class InValueSet extends OperatorExpression {
 @JsonSerializable()
 class AnyInValueSet extends OperatorExpression {
   Expression codes;
-  ValueSetRef valueset;
+  ValueSetRef? valueset;
+  Expression? valuesetExpression;
 
-  AnyInValueSet({required this.codes, required this.valueset});
+  AnyInValueSet({
+    required this.codes,
+    this.valueset,
+    this.valuesetExpression,
+  });
 
   factory AnyInValueSet.fromJson(Map<String, dynamic> json) =>
       _$AnyInValueSetFromJson(json);
 
   Map<String, dynamic> toJson() => _$AnyInValueSetToJson(this);
+}
+
+@JsonSerializable()
+class ExpandValueSet extends UnaryExpression {
+  ExpandValueSet({required super.operand});
+
+  factory ExpandValueSet.fromJson(Map<String, dynamic> json) =>
+      _$ExpandValueSetFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ExpandValueSetToJson(this);
 }
 
 @JsonSerializable()
@@ -254,25 +408,25 @@ class SubsumedBy extends BinaryExpression {
 }
 
 @JsonSerializable()
-class CalculateAge extends UnaryExpression {
+class CalcuAge extends UnaryExpression {
   DateTimePrecision precision;
 
-  CalculateAge({required this.precision, required super.operand});
+  CalcuAge({required this.precision, required super.operand});
 
-  factory CalculateAge.fromJson(Map<String, dynamic> json) =>
-      _$CalculateAgeFromJson(json);
+  factory CalcuAge.fromJson(Map<String, dynamic> json) =>
+      _$CalcuAgeFromJson(json);
 
-  Map<String, dynamic> toJson() => _$CalculateAgeToJson(this);
+  Map<String, dynamic> toJson() => _$CalcuAgeToJson(this);
 }
 
 @JsonSerializable()
-class CalculateAgeAt extends BinaryExpression {
+class CalcuAgeAt extends BinaryExpression {
   DateTimePrecision precision;
 
-  CalculateAgeAt({required this.precision, required super.operand});
+  CalcuAgeAt({required this.precision, required super.operand});
 
-  factory CalculateAgeAt.fromJson(Map<String, dynamic> json) =>
-      _$CalculateAgeAtFromJson(json);
+  factory CalcuAgeAt.fromJson(Map<String, dynamic> json) =>
+      _$CalcuAgeAtFromJson(json);
 
-  Map<String, dynamic> toJson() => _$CalculateAgeAtToJson(this);
+  Map<String, dynamic> toJson() => _$CalcuAgeAtToJson(this);
 }

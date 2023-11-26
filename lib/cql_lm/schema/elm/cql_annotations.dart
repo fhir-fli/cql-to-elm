@@ -3,6 +3,9 @@ import 'package:json_annotation/json_annotation.dart';
 part 'cql_annotations.g.dart';
 
 @JsonSerializable()
+abstract class CqlToElmBase {}
+
+@JsonSerializable()
 class Annotation {
   Annotation({this.s, this.locator});
   Narrative? s;

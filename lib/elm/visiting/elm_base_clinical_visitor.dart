@@ -39,7 +39,7 @@ class ElmBaseClinicalVisitor<T, C> extends ElmBaseVisitor<T, C>
       return visitCodeRef(elm, context);
     else if (elm is ConceptRef)
       return visitConceptRef(elm, context);
-    else if (elm is Code)
+    else if (elm is ElmCode)
       return visitCode(elm, context);
     else if (elm is Concept)
       return visitConcept(elm, context);

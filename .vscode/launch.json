@@ -1,0 +1,10 @@
+{
+    "configurations": [
+        {
+            "name": "Dart (lib/cql_lm/schema/shema.dart)",
+            "type": "dart",
+            "request": "launch",
+            "program": "lib/cql_lm/schema/shema.dart"
+        }
+    ]
+}

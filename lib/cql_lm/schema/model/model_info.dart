@@ -1,11 +1,68 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:xml/xml.dart';
 
-import '../../cql_lm/schema/elm/elm.dart';
-import '../../cql_lm/schema/schema.dart';
-import 'elm_modelinfo.dart';
+import '../schema.dart';
 
 part 'model_info.g.dart';
+
+@JsonSerializable()
+class ContextInfo {
+  NamedTypeSpecifier? contextType;
+  String? name;
+  String? keyElement;
+  String? birthDateElement;
+
+  ContextInfo(
+      {this.contextType, this.name, this.keyElement, this.birthDateElement});
+
+  factory ContextInfo.fromJson(Map<String, dynamic> json) =>
+      _$ContextInfoFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ContextInfoToJson(this);
+}
+
+@JsonSerializable()
+class RelationshipInfo {
+  String context;
+  String? relatedKeyElement;
+
+  RelationshipInfo({
+    required this.context,
+    this.relatedKeyElement,
+  });
+
+  factory RelationshipInfo.fromJson(Map<String, dynamic> json) =>
+      _$RelationshipInfoFromJson(json);
+
+  Map<String, dynamic> toJson() => _$RelationshipInfoToJson(this);
+}
+
+@JsonSerializable()
+class SearchInfo {
+  TypeSpecifier? typeSpecifier;
+  String? name;
+  String? path;
+  String? type;
+  String? label;
+  String? description;
+  String? definition;
+  String? comment;
+
+  SearchInfo(
+      {this.typeSpecifier,
+      this.name,
+      this.path,
+      this.type,
+      this.label,
+      this.description,
+      this.definition,
+      this.comment});
+
+  factory SearchInfo.fromJson(Map<String, dynamic> json) =>
+      _$SearchInfoFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SearchInfoToJson(this);
+}
 
 @JsonSerializable()
 class ModelInfo {
@@ -117,36 +174,30 @@ class ModelInfo {
   }
 }
 
-@JsonSerializable()
-class ContextInfo {
-  NamedTypeSpecifier? contextType;
-  String? name;
-  String? keyElement;
-  String? birthDateElement;
-
-  ContextInfo(
-      {this.contextType, this.name, this.keyElement, this.birthDateElement});
-
-  factory ContextInfo.fromJson(Map<String, dynamic> json) =>
-      _$ContextInfoFromJson(json);
-
-  Map<String, dynamic> toJson() => _$ContextInfoToJson(this);
+enum BindingStrength {
+  @JsonValue('Required')
+  required,
+  @JsonValue('Extensible')
+  extensible,
+  @JsonValue('Preferred')
+  preferred,
+  @JsonValue('Example')
+  example,
 }
 
 @JsonSerializable()
-class RelationshipInfo {
-  String context;
-  String? relatedKeyElement;
+class BindingInfo {
+  String? name;
+  String? description;
+  BindingStrength? strength;
+  String? valueSet;
 
-  RelationshipInfo({
-    required this.context,
-    this.relatedKeyElement,
-  });
+  BindingInfo({this.name, this.description, this.strength, this.valueSet});
 
-  factory RelationshipInfo.fromJson(Map<String, dynamic> json) =>
-      _$RelationshipInfoFromJson(json);
+  factory BindingInfo.fromJson(Map<String, dynamic> json) =>
+      _$BindingInfoFromJson(json);
 
-  Map<String, dynamic> toJson() => _$RelationshipInfoToJson(this);
+  Map<String, dynamic> toJson() => _$BindingInfoToJson(this);
 }
 
 @JsonSerializable()
@@ -200,6 +251,40 @@ class ClassInfoElement {
       _$ClassInfoElementFromJson(json);
 
   Map<String, dynamic> toJson() => _$ClassInfoElementToJson(this);
+}
+
+@JsonSerializable()
+class ExpressionInfo {
+  String? language;
+  String? expression;
+
+  ExpressionInfo({this.language, this.expression});
+
+  factory ExpressionInfo.fromJson(Map<String, dynamic> json) =>
+      _$ExpressionInfoFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ExpressionInfoToJson(this);
+}
+
+@JsonSerializable()
+class ConstraintInfo {
+  List<ExpressionInfo>? expression;
+  String? name;
+  String? severity;
+  String? description;
+  String? message;
+
+  ConstraintInfo(
+      {this.expression,
+      this.name,
+      this.severity,
+      this.description,
+      this.message});
+
+  factory ConstraintInfo.fromJson(Map<String, dynamic> json) =>
+      _$ConstraintInfoFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ConstraintInfoToJson(this);
 }
 
 @JsonSerializable()
@@ -395,6 +480,9 @@ class ModelSpecifier {
 }
 
 @JsonSerializable()
+abstract class TypeSpecifier extends ElmElement {}
+
+@JsonSerializable()
 class NamedTypeSpecifier extends TypeSpecifier {
   String? modelName;
   String? namespace;
@@ -425,6 +513,22 @@ class IntervalTypeSpecifier extends TypeSpecifier {
       _$IntervalTypeSpecifierFromJson(json);
 
   Map<String, dynamic> toJson() => _$IntervalTypeSpecifierToJson(this);
+}
+
+@JsonSerializable()
+class ChoiceTypeSpecifier extends TypeSpecifier {
+  @JsonKey(name: 'type')
+  List<TypeSpecifier>? type;
+
+  @JsonKey(name: 'choice')
+  List<TypeSpecifier>? choice;
+
+  ChoiceTypeSpecifier({this.type, this.choice});
+
+  factory ChoiceTypeSpecifier.fromJson(Map<String, dynamic> json) =>
+      _$ChoiceTypeSpecifierFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ChoiceTypeSpecifierToJson(this);
 }
 
 @JsonSerializable()
@@ -488,4 +592,17 @@ class TupleTypeSpecifierElement {
       _$TupleTypeSpecifierElementFromJson(json);
 
   Map<String, dynamic> toJson() => _$TupleTypeSpecifierElementToJson(this);
+}
+
+@JsonSerializable()
+class TupleTypeSpecifier extends TypeSpecifier {
+  @JsonKey(name: 'element')
+  List<TupleElementDefinition>? element;
+
+  TupleTypeSpecifier({this.element});
+
+  factory TupleTypeSpecifier.fromJson(Map<String, dynamic> json) =>
+      _$TupleTypeSpecifierFromJson(json);
+
+  Map<String, dynamic> toJson() => _$TupleTypeSpecifierToJson(this);
 }

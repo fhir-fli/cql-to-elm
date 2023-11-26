@@ -6,6 +6,12 @@ part of 'cql_annotations.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+CqlToElmBase _$CqlToElmBaseFromJson(Map<String, dynamic> json) =>
+    CqlToElmBase();
+
+Map<String, dynamic> _$CqlToElmBaseToJson(CqlToElmBase instance) =>
+    <String, dynamic>{};
+
 Annotation _$AnnotationFromJson(Map<String, dynamic> json) => Annotation(
       s: json['s'] == null
           ? null

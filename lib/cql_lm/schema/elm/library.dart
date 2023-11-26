@@ -1,7 +1,8 @@
+import 'package:fhir/r4.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:xml/xml.dart';
 
-import 'elm_modelinfo.dart';
+import '../schema.dart';
 
 part 'library.g.dart';
 
@@ -76,6 +77,37 @@ class IncludeDef {
       _$IncludeDefFromJson(json);
 
   Map<String, dynamic> toJson() => _$IncludeDefToJson(this);
+}
+
+@JsonSerializable()
+class ContextDef implements Element {
+  final String? name;
+
+  const ContextDef({this.name});
+
+  factory ContextDef.fromXmlElement(XmlElement element) {
+    return ContextDef(name: element.getAttribute('name'));
+  }
+
+  factory ContextDef.fromJson(Map<String, dynamic> json) =>
+      _$ContextDefFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ContextDefToJson(this);
+
+  @override
+  $ElementCopyWith<Element> get copyWith => copyWith;
+
+  @override
+  List<FhirExtension>? get extension_ => extension_;
+
+  @override
+  String? get fhirId => fhirId;
+
+  @override
+  String toJsonString() => toJson().toString();
+
+  @override
+  String toYaml() => toYaml();
 }
 
 @JsonSerializable()
