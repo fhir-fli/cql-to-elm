@@ -3,10 +3,17 @@ import 'package:json_annotation/json_annotation.dart';
 part 'cql_annotations.g.dart';
 
 @JsonSerializable()
-abstract class CqlToElmBase {}
+class CqlToElmBase {
+  CqlToElmBase();
+
+  factory CqlToElmBase.fromJson(Map<String, dynamic> json) =>
+      _$CqlToElmBaseFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CqlToElmBaseToJson(this);
+}
 
 @JsonSerializable()
-class Annotation {
+class Annotation extends CqlToElmBase {
   Annotation({this.s, this.locator});
   Narrative? s;
   Locator? locator;
@@ -18,7 +25,7 @@ class Annotation {
 }
 
 @JsonSerializable()
-class Tag {
+class Tag extends CqlToElmBase {
   String? name;
   String? value;
 
@@ -30,7 +37,7 @@ class Tag {
 }
 
 @JsonSerializable()
-class Locator {
+class Locator extends CqlToElmBase {
   Locator({this.startLine, this.startChar, this.endLine, this.endChar});
 
   int? startLine;
@@ -45,7 +52,7 @@ class Locator {
 }
 
 @JsonSerializable()
-class Narrative {
+class Narrative extends CqlToElmBase {
   Narrative({this.s, this.r});
 
   List<Narrative>? s;
@@ -90,7 +97,7 @@ class CqlToElmError extends Locator {
 }
 
 @JsonSerializable()
-class CqlToElmInfo {
+class CqlToElmInfo extends CqlToElmBase {
   CqlToElmInfo({
     this.translatorVersion,
     this.translatorOptions,

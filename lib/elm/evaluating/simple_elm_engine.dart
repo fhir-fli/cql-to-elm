@@ -963,7 +963,7 @@ class SimpleElmEngine {
     // Today
     if (left is Today) {
       if (right is Today) {
-        return true; // Today expression has no parameters to compare
+        return true; // Today Expression has no parameters to compare
       }
 
       return false;
@@ -972,7 +972,7 @@ class SimpleElmEngine {
     // Now
     if (left is Now) {
       if (right is Now) {
-        return true; // Now expression has no parameters to compare
+        return true; // Now Expression has no parameters to compare
       }
 
       return false;
@@ -1025,8 +1025,8 @@ class SimpleElmEngine {
         return naryExpressionsEqual(leftArg, rightArg);
       }
 
-      // Handle other expression types...
-      // TimeOfDay, Today, Now, and other specific expression types
+      // Handle other Expression types...
+      // TimeOfDay, Today, Now, and other specific Expression types
 
       return true;
     }

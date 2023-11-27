@@ -31,11 +31,11 @@ class ElmElement {
 }
 
 @JsonSerializable()
-class TypeSpecifier {
+class TypeSpecifier extends ElmElement {
   String? localId;
   String? locator;
   String? resultTypeName;
-  List<Element>? annotation;
+  List<CqlToElmBase>? annotation;
   TypeSpecifier? resultTypeSpecifier;
 
   TypeSpecifier({
@@ -1205,10 +1205,11 @@ class ToTime extends UnaryExpression {
 
 @JsonSerializable()
 class CanConvertQuantity extends BinaryExpression {
-  CanConvertQuantity(
-      {required dynamic arg1, required dynamic arg2, this.targetUnit})
+  CanConvertQuantity({required this.arg1, required this.arg2, this.targetUnit})
       : super(operand: [Expression(arg1), Expression(arg2)]);
 
+  final dynamic arg1;
+  final dynamic arg2;
   final String? targetUnit;
 
   bool canThisConvertQuantity() => canConvertQuantity(value, targetUnit);
@@ -1236,10 +1237,11 @@ class CanConvertQuantity extends BinaryExpression {
 
 @JsonSerializable()
 class ConvertQuantity extends BinaryExpression {
-  ConvertQuantity(
-      {required dynamic arg1, required dynamic arg2, this.targetUnit})
+  ConvertQuantity({required this.arg1, required this.arg2, this.targetUnit})
       : super(operand: [Expression(arg1), Expression(arg2)]);
 
+  final dynamic arg1;
+  final dynamic arg2;
   final String? targetUnit;
 
   Quantity? convertThisQuantity() => convertQuantity(value, targetUnit);
@@ -1266,18 +1268,20 @@ class ConvertQuantity extends BinaryExpression {
     }
   }
 
-  factory ConvertQuantity.fromJson(Map<String, dynamic> json) =>
-      _$ConvertQuantityFromJson(json);
+  // factory ConvertQuantity.fromJson(Map<String, dynamic> json) =>
+  //     _$ConvertQuantityFromJson(json);
 
-  Map<String, dynamic> toJson() => _$ConvertQuantityToJson(this);
+  // Map<String, dynamic> toJson() => _$ConvertQuantityToJson(this);
 }
 
 // TODO(Dokotela): sleepy, start here
 @JsonSerializable()
 class Equal extends BinaryExpression {
-  Equal({required dynamic arg1, required dynamic arg2, this.targetUnit})
+  Equal({required this.arg1, required this.arg2, this.targetUnit})
       : super(operand: [Expression(arg1), Expression(arg2)]);
 
+  final dynamic arg1;
+  final dynamic arg2;
   final String? targetUnit;
 
   bool equalThis() => equals(value, targetUnit);
@@ -1538,11 +1542,11 @@ class Add extends BinaryExpression {
 
 @JsonSerializable()
 class Subtract extends BinaryExpression {
-  BinaryExpression
-      binaryExpression; // Assuming BinaryExpression is a defined class
+  Subtract({required this.arg1, required this.arg2})
+      : super(operand: [Expression(arg1), Expression(arg2)]);
 
-  Subtract(this.binaryExpression);
-
+  final dynamic arg1;
+  final dynamic arg2;
   factory Subtract.fromJson(Map<String, dynamic> json) =>
       _$SubtractFromJson(json);
 
@@ -1557,11 +1561,11 @@ class Subtract extends BinaryExpression {
 /// The Multiply operator is defined for the Integer, Long, Decimal, and Quantity types.
 @JsonSerializable()
 class Multiply extends BinaryExpression {
-  BinaryExpression
-      binaryExpression; // Assuming BinaryExpression is a defined class
+  Multiply({required this.arg1, required this.arg2})
+      : super(operand: [Expression(arg1), Expression(arg2)]);
 
-  Multiply(this.binaryExpression);
-
+  final dynamic arg1;
+  final dynamic arg2;
   factory Multiply.fromJson(Map<String, dynamic> json) =>
       _$MultiplyFromJson(json);
 
@@ -1579,11 +1583,11 @@ class Multiply extends BinaryExpression {
 /// The Divide operator is defined for the Decimal and Quantity types.
 @JsonSerializable()
 class Divide extends BinaryExpression {
-  BinaryExpression
-      binaryExpression; // Assuming BinaryExpression is a defined class
+  Divide({required this.arg1, required this.arg2})
+      : super(operand: [Expression(arg1), Expression(arg2)]);
 
-  Divide(this.binaryExpression);
-
+  final dynamic arg1;
+  final dynamic arg2;
   factory Divide.fromJson(Map<String, dynamic> json) => _$DivideFromJson(json);
 
   Map<String, dynamic> toJson() => _$DivideToJson(this);
@@ -1599,10 +1603,11 @@ class Divide extends BinaryExpression {
 /// will have the appropriate unit.
 @JsonSerializable()
 class TruncatedDivide extends BinaryExpression {
-  BinaryExpression
-      binaryExpression; // Assuming BinaryExpression is a defined class
+  TruncatedDivide({required this.arg1, required this.arg2})
+      : super(operand: [Expression(arg1), Expression(arg2)]);
 
-  TruncatedDivide(this.binaryExpression);
+  final dynamic arg1;
+  final dynamic arg2;
 
   factory TruncatedDivide.fromJson(Map<String, dynamic> json) =>
       _$TruncatedDivideFromJson(json);
@@ -1620,10 +1625,11 @@ class TruncatedDivide extends BinaryExpression {
 /// the appropriate unit.
 @JsonSerializable()
 class Modulo extends BinaryExpression {
-  BinaryExpression
-      binaryExpression; // Assuming BinaryExpression is a defined class
+  Modulo({required this.arg1, required this.arg2})
+      : super(operand: [Expression(arg1), Expression(arg2)]);
 
-  Modulo(this.binaryExpression);
+  final dynamic arg1;
+  final dynamic arg2;
 
   factory Modulo.fromJson(Map<String, dynamic> json) => _$ModuloFromJson(json);
 
@@ -1758,10 +1764,11 @@ class Exp extends UnaryExpression {
 /// If the result of the operation cannot be represented, the result is null.
 @JsonSerializable()
 class Log extends BinaryExpression {
-  Log({required this.firstArgument, required this.secondArgument});
+  Log({required this.arg1, required this.arg2})
+      : super(operand: [Expression(arg1), Expression(arg2)]);
 
-  final Expression firstArgument;
-  final Expression secondArgument;
+  final dynamic arg1;
+  final dynamic arg2;
 
   factory Log.fromJson(Map<String, dynamic> json) => _$LogFromJson(json);
 
@@ -1773,10 +1780,11 @@ class Log extends BinaryExpression {
 /// If the result of the operation cannot be represented, the result is null.
 @JsonSerializable()
 class Power extends BinaryExpression {
-  Power({required this.firstArgument, required this.secondArgument});
+  Power({required this.arg1, required this.arg2})
+      : super(operand: [Expression(arg1), Expression(arg2)]);
 
-  final Expression firstArgument;
-  final Expression secondArgument;
+  final dynamic arg1;
+  final dynamic arg2;
 
   factory Power.fromJson(Map<String, dynamic> json) => _$PowerFromJson(json);
 
@@ -1869,9 +1877,11 @@ class Precision extends UnaryExpression {
 /// If the value value is null, the result is null.
 @JsonSerializable()
 class LowBoundary extends BinaryExpression {
-  LowBoundary({required this.value, this.precision});
+  LowBoundary({required this.arg1, required this.arg2, this.precision})
+      : super(operand: [Expression(arg1), Expression(arg2)]);
 
-  final Expression value;
+  final dynamic arg1;
+  final dynamic arg2;
   final int? precision;
 
   factory LowBoundary.fromJson(Map<String, dynamic> json) =>
@@ -1886,9 +1896,11 @@ class LowBoundary extends BinaryExpression {
 /// If the value value is null, the result is null.
 @JsonSerializable()
 class HighBoundary extends BinaryExpression {
-  HighBoundary({required this.value, this.precision});
+  HighBoundary({required this.arg1, required this.arg2, this.precision})
+      : super(operand: [Expression(arg1), Expression(arg2)]);
 
-  final Expression value;
+  final dynamic arg1;
+  final dynamic arg2;
   final int? precision;
 
   factory HighBoundary.fromJson(Map<String, dynamic> json) =>
@@ -2016,6 +2028,17 @@ class Indexer extends BinaryExpression {
   /// the result is null.
   ///
   /// If either argument is null, the result is null.
+  ///
+  Indexer({required this.arg1, required this.arg2})
+      : super(operand: [Expression(arg1), Expression(arg2)]);
+
+  final dynamic arg1;
+  final dynamic arg2;
+
+  factory Indexer.fromJson(Map<String, dynamic> json) =>
+      _$IndexerFromJson(json);
+
+  Map<String, dynamic> toJson() => _$IndexerToJson(this);
 }
 
 /// The PositionOf operator returns the 0-based index of the beginning given
@@ -2065,10 +2088,11 @@ class Substring extends OperatorExpression {
 
 @JsonSerializable()
 class StartsWith extends BinaryExpression {
-  StartsWith({required this.prefix, required this.string});
+  StartsWith({required this.arg1, required this.arg2})
+      : super(operand: [Expression(arg1), Expression(arg2)]);
 
-  final Expression prefix;
-  final Expression string;
+  final dynamic arg1;
+  final dynamic arg2;
 
   factory StartsWith.fromJson(Map<String, dynamic> json) =>
       _$StartsWithFromJson(json);
@@ -2078,10 +2102,11 @@ class StartsWith extends BinaryExpression {
 
 @JsonSerializable()
 class EndsWith extends BinaryExpression {
-  EndsWith({required this.suffix, required this.string});
+  EndsWith({required this.arg1, required this.arg2})
+      : super(operand: [Expression(arg1), Expression(arg2)]);
 
-  final Expression suffix;
-  final Expression string;
+  final dynamic arg1;
+  final dynamic arg2;
 
   factory EndsWith.fromJson(Map<String, dynamic> json) =>
       _$EndsWithFromJson(json);
@@ -2091,10 +2116,11 @@ class EndsWith extends BinaryExpression {
 
 @JsonSerializable()
 class Matches extends BinaryExpression {
-  Matches({required this.pattern, required this.string});
+  Matches({required this.arg1, required this.arg2})
+      : super(operand: [Expression(arg1), Expression(arg2)]);
 
-  final Expression pattern;
-  final Expression string;
+  final dynamic arg1;
+  final dynamic arg2;
 
   factory Matches.fromJson(Map<String, dynamic> json) =>
       _$MatchesFromJson(json);
@@ -2132,10 +2158,11 @@ enum DateTimePrecision {
 
 @JsonSerializable()
 class DurationBetween extends BinaryExpression {
-  DurationBetween({required this.first, required this.second, this.precision});
+  DurationBetween({required this.arg1, required this.arg2, this.precision})
+      : super(operand: [Expression(arg1), Expression(arg2)]);
 
-  final Expression first;
-  final Expression second;
+  final dynamic arg1;
+  final dynamic arg2;
   final DateTimePrecision? precision;
 
   factory DurationBetween.fromJson(Map<String, dynamic> json) =>
@@ -2146,11 +2173,11 @@ class DurationBetween extends BinaryExpression {
 
 @JsonSerializable()
 class DifferenceBetween extends BinaryExpression {
-  DifferenceBetween(
-      {required this.first, required this.second, this.precision});
+  DifferenceBetween({required this.arg1, required this.arg2, this.precision})
+      : super(operand: [Expression(arg1), Expression(arg2)]);
 
-  final Expression first;
-  final Expression second;
+  final dynamic arg1;
+  final dynamic arg2;
   final DateTimePrecision? precision;
 
   factory DifferenceBetween.fromJson(Map<String, dynamic> json) =>
@@ -2251,29 +2278,36 @@ class DateTimeOperator extends OperatorExpression {
 
 @JsonSerializable()
 class SameAs extends BinaryExpression {
-  SameAs(Expression left, Expression right, {DateTimePrecision? precision})
-      : super([left, right]) {
+  SameAs({required this.arg1, required this.arg2, DateTimePrecision? precision})
+      : super(operand: [Expression(arg1), Expression(arg2)]) {
     this.precision = precision;
   }
+  final dynamic arg1;
+  final dynamic arg2;
   DateTimePrecision? precision;
 }
 
 @JsonSerializable()
 class SameOrBefore extends BinaryExpression {
-  SameOrBefore(Expression left, Expression right,
-      {DateTimePrecision? precision})
-      : super([left, right]) {
+  SameOrBefore(
+      {required this.arg1, required this.arg2, DateTimePrecision? precision})
+      : super(operand: [Expression(arg1), Expression(arg2)]) {
     this.precision = precision;
   }
+  final dynamic arg1;
+  final dynamic arg2;
   DateTimePrecision? precision;
 }
 
 @JsonSerializable()
 class SameOrAfter extends BinaryExpression {
-  SameOrAfter(Expression left, Expression right, {DateTimePrecision? precision})
-      : super([left, right]) {
+  SameOrAfter(
+      {required this.arg1, required this.arg2, DateTimePrecision? precision})
+      : super(operand: [Expression(arg1), Expression(arg2)]) {
     this.precision = precision;
   }
+  final dynamic arg1;
+  final dynamic arg2;
   DateTimePrecision? precision;
 }
 
@@ -2285,11 +2319,6 @@ class PointFrom extends UnaryExpression {
 @JsonSerializable()
 class Width extends UnaryExpression {
   Width({required super.operand});
-}
-
-@JsonSerializable()
-class Size extends UnaryExpression {
-  Size({required super.operand});
 }
 
 @JsonSerializable()

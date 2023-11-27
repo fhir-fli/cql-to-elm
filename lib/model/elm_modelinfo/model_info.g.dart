@@ -6,87 +6,6 @@ part of 'model_info.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-ContextInfo _$ContextInfoFromJson(Map<String, dynamic> json) => ContextInfo(
-      contextType: json['contextType'] == null
-          ? null
-          : NamedTypeSpecifier.fromJson(
-              json['contextType'] as Map<String, dynamic>),
-      name: json['name'] as String?,
-      keyElement: json['keyElement'] as String?,
-      birthDateElement: json['birthDateElement'] as String?,
-    );
-
-Map<String, dynamic> _$ContextInfoToJson(ContextInfo instance) {
-  final val = <String, dynamic>{};
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull('contextType', instance.contextType?.toJson());
-  writeNotNull('name', instance.name);
-  writeNotNull('keyElement', instance.keyElement);
-  writeNotNull('birthDateElement', instance.birthDateElement);
-  return val;
-}
-
-RelationshipInfo _$RelationshipInfoFromJson(Map<String, dynamic> json) =>
-    RelationshipInfo(
-      context: json['context'] as String,
-      relatedKeyElement: json['relatedKeyElement'] as String?,
-    );
-
-Map<String, dynamic> _$RelationshipInfoToJson(RelationshipInfo instance) {
-  final val = <String, dynamic>{
-    'context': instance.context,
-  };
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull('relatedKeyElement', instance.relatedKeyElement);
-  return val;
-}
-
-SearchInfo _$SearchInfoFromJson(Map<String, dynamic> json) => SearchInfo(
-      typeSpecifier: json['typeSpecifier'] == null
-          ? null
-          : TypeSpecifier.fromJson(
-              json['typeSpecifier'] as Map<String, dynamic>),
-      name: json['name'] as String?,
-      path: json['path'] as String?,
-      type: json['type'] as String?,
-      label: json['label'] as String?,
-      description: json['description'] as String?,
-      definition: json['definition'] as String?,
-      comment: json['comment'] as String?,
-    );
-
-Map<String, dynamic> _$SearchInfoToJson(SearchInfo instance) {
-  final val = <String, dynamic>{};
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull('typeSpecifier', instance.typeSpecifier?.toJson());
-  writeNotNull('name', instance.name);
-  writeNotNull('path', instance.path);
-  writeNotNull('type', instance.type);
-  writeNotNull('label', instance.label);
-  writeNotNull('description', instance.description);
-  writeNotNull('definition', instance.definition);
-  writeNotNull('comment', instance.comment);
-  return val;
-}
-
 ModelInfo _$ModelInfoFromJson(Map<String, dynamic> json) => ModelInfo(
       requiredModelInfo: (json['requiredModelInfo'] as List<dynamic>?)
           ?.map((e) => ModelSpecifier.fromJson(e as Map<String, dynamic>))
@@ -155,14 +74,17 @@ Map<String, dynamic> _$ModelInfoToJson(ModelInfo instance) {
   return val;
 }
 
-BindingInfo _$BindingInfoFromJson(Map<String, dynamic> json) => BindingInfo(
+ContextInfo _$ContextInfoFromJson(Map<String, dynamic> json) => ContextInfo(
+      contextType: json['contextType'] == null
+          ? null
+          : NamedTypeSpecifier.fromJson(
+              json['contextType'] as Map<String, dynamic>),
       name: json['name'] as String?,
-      description: json['description'] as String?,
-      strength: $enumDecodeNullable(_$BindingStrengthEnumMap, json['strength']),
-      valueSet: json['valueSet'] as String?,
+      keyElement: json['keyElement'] as String?,
+      birthDateElement: json['birthDateElement'] as String?,
     );
 
-Map<String, dynamic> _$BindingInfoToJson(BindingInfo instance) {
+Map<String, dynamic> _$ContextInfoToJson(ContextInfo instance) {
   final val = <String, dynamic>{};
 
   void writeNotNull(String key, dynamic value) {
@@ -171,19 +93,33 @@ Map<String, dynamic> _$BindingInfoToJson(BindingInfo instance) {
     }
   }
 
+  writeNotNull('contextType', instance.contextType?.toJson());
   writeNotNull('name', instance.name);
-  writeNotNull('description', instance.description);
-  writeNotNull('strength', _$BindingStrengthEnumMap[instance.strength]);
-  writeNotNull('valueSet', instance.valueSet);
+  writeNotNull('keyElement', instance.keyElement);
+  writeNotNull('birthDateElement', instance.birthDateElement);
   return val;
 }
 
-const _$BindingStrengthEnumMap = {
-  BindingStrength.required: 'Required',
-  BindingStrength.extensible: 'Extensible',
-  BindingStrength.preferred: 'Preferred',
-  BindingStrength.example: 'Example',
-};
+RelationshipInfo _$RelationshipInfoFromJson(Map<String, dynamic> json) =>
+    RelationshipInfo(
+      context: json['context'] as String,
+      relatedKeyElement: json['relatedKeyElement'] as String?,
+    );
+
+Map<String, dynamic> _$RelationshipInfoToJson(RelationshipInfo instance) {
+  final val = <String, dynamic>{
+    'context': instance.context,
+  };
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('relatedKeyElement', instance.relatedKeyElement);
+  return val;
+}
 
 ClassInfoElement _$ClassInfoElementFromJson(Map<String, dynamic> json) =>
     ClassInfoElement(
@@ -251,55 +187,6 @@ Map<String, dynamic> _$ClassInfoElementToJson(ClassInfoElement instance) {
   writeNotNull('max', instance.max);
   val['mustSupport'] = instance.mustSupport;
   val['mustSupportSpecified'] = instance.mustSupportSpecified;
-  return val;
-}
-
-ExpressionInfo _$ExpressionInfoFromJson(Map<String, dynamic> json) =>
-    ExpressionInfo(
-      language: json['language'] as String?,
-      expression: json['expression'] as String?,
-    );
-
-Map<String, dynamic> _$ExpressionInfoToJson(ExpressionInfo instance) {
-  final val = <String, dynamic>{};
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull('language', instance.language);
-  writeNotNull('expression', instance.expression);
-  return val;
-}
-
-ConstraintInfo _$ConstraintInfoFromJson(Map<String, dynamic> json) =>
-    ConstraintInfo(
-      expression: (json['expression'] as List<dynamic>?)
-          ?.map((e) => ExpressionInfo.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      name: json['name'] as String?,
-      severity: json['severity'] as String?,
-      description: json['description'] as String?,
-      message: json['message'] as String?,
-    );
-
-Map<String, dynamic> _$ConstraintInfoToJson(ConstraintInfo instance) {
-  final val = <String, dynamic>{};
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull(
-      'expression', instance.expression?.map((e) => e.toJson()).toList());
-  writeNotNull('name', instance.name);
-  writeNotNull('severity', instance.severity);
-  writeNotNull('description', instance.description);
-  writeNotNull('message', instance.message);
   return val;
 }
 
@@ -726,13 +613,13 @@ NamedTypeSpecifier _$NamedTypeSpecifierFromJson(Map<String, dynamic> json) =>
     NamedTypeSpecifier(
       modelName: json['modelName'] as String?,
       namespace: json['namespace'] as String?,
-      name: json['name'] as String,
+      name: json['name'] as String?,
     )
       ..localId = json['localId'] as String?
       ..locator = json['locator'] as String?
       ..resultTypeName = json['resultTypeName'] as String?
       ..annotation = (json['annotation'] as List<dynamic>?)
-          ?.map((e) => CqlToElmBase.fromJson(e as Map<String, dynamic>))
+          ?.map((e) => Element.fromJson(e as Map<String, dynamic>))
           .toList()
       ..resultTypeSpecifier = json['resultTypeSpecifier'] == null
           ? null
@@ -756,7 +643,7 @@ Map<String, dynamic> _$NamedTypeSpecifierToJson(NamedTypeSpecifier instance) {
   writeNotNull('resultTypeSpecifier', instance.resultTypeSpecifier?.toJson());
   writeNotNull('modelName', instance.modelName);
   writeNotNull('namespace', instance.namespace);
-  val['name'] = instance.name;
+  writeNotNull('name', instance.name);
   return val;
 }
 
@@ -766,7 +653,7 @@ ListTypeSpecifier _$ListTypeSpecifierFromJson(Map<String, dynamic> json) =>
       ..locator = json['locator'] as String?
       ..resultTypeName = json['resultTypeName'] as String?
       ..annotation = (json['annotation'] as List<dynamic>?)
-          ?.map((e) => CqlToElmBase.fromJson(e as Map<String, dynamic>))
+          ?.map((e) => Element.fromJson(e as Map<String, dynamic>))
           .toList()
       ..resultTypeSpecifier = json['resultTypeSpecifier'] == null
           ? null
@@ -811,7 +698,7 @@ IntervalTypeSpecifier _$IntervalTypeSpecifierFromJson(
       ..locator = json['locator'] as String?
       ..resultTypeName = json['resultTypeName'] as String?
       ..annotation = (json['annotation'] as List<dynamic>?)
-          ?.map((e) => CqlToElmBase.fromJson(e as Map<String, dynamic>))
+          ?.map((e) => Element.fromJson(e as Map<String, dynamic>))
           .toList()
       ..resultTypeSpecifier = json['resultTypeSpecifier'] == null
           ? null
@@ -839,46 +726,6 @@ Map<String, dynamic> _$IntervalTypeSpecifierToJson(
   return val;
 }
 
-ChoiceTypeSpecifier _$ChoiceTypeSpecifierFromJson(Map<String, dynamic> json) =>
-    ChoiceTypeSpecifier(
-      type: (json['type'] as List<dynamic>?)
-          ?.map((e) => TypeSpecifier.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      choice: (json['choice'] as List<dynamic>?)
-          ?.map((e) => TypeSpecifier.fromJson(e as Map<String, dynamic>))
-          .toList(),
-    )
-      ..localId = json['localId'] as String?
-      ..locator = json['locator'] as String?
-      ..resultTypeName = json['resultTypeName'] as String?
-      ..annotation = (json['annotation'] as List<dynamic>?)
-          ?.map((e) => CqlToElmBase.fromJson(e as Map<String, dynamic>))
-          .toList()
-      ..resultTypeSpecifier = json['resultTypeSpecifier'] == null
-          ? null
-          : TypeSpecifier.fromJson(
-              json['resultTypeSpecifier'] as Map<String, dynamic>);
-
-Map<String, dynamic> _$ChoiceTypeSpecifierToJson(ChoiceTypeSpecifier instance) {
-  final val = <String, dynamic>{};
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull('localId', instance.localId);
-  writeNotNull('locator', instance.locator);
-  writeNotNull('resultTypeName', instance.resultTypeName);
-  writeNotNull(
-      'annotation', instance.annotation?.map((e) => e.toJson()).toList());
-  writeNotNull('resultTypeSpecifier', instance.resultTypeSpecifier?.toJson());
-  writeNotNull('type', instance.type?.map((e) => e.toJson()).toList());
-  writeNotNull('choice', instance.choice?.map((e) => e.toJson()).toList());
-  return val;
-}
-
 ParameterTypeSpecifier _$ParameterTypeSpecifierFromJson(
         Map<String, dynamic> json) =>
     ParameterTypeSpecifier(
@@ -890,7 +737,7 @@ ParameterTypeSpecifier _$ParameterTypeSpecifierFromJson(
       ..locator = json['locator'] as String?
       ..resultTypeName = json['resultTypeName'] as String?
       ..annotation = (json['annotation'] as List<dynamic>?)
-          ?.map((e) => CqlToElmBase.fromJson(e as Map<String, dynamic>))
+          ?.map((e) => Element.fromJson(e as Map<String, dynamic>))
           .toList()
       ..resultTypeSpecifier = json['resultTypeSpecifier'] == null
           ? null
@@ -933,7 +780,7 @@ BoundParameterTypeSpecifier _$BoundParameterTypeSpecifierFromJson(
       ..locator = json['locator'] as String?
       ..resultTypeName = json['resultTypeName'] as String?
       ..annotation = (json['annotation'] as List<dynamic>?)
-          ?.map((e) => CqlToElmBase.fromJson(e as Map<String, dynamic>))
+          ?.map((e) => Element.fromJson(e as Map<String, dynamic>))
           .toList()
       ..resultTypeSpecifier = json['resultTypeSpecifier'] == null
           ? null
@@ -1003,40 +850,3 @@ Map<String, dynamic> _$TupleTypeSpecifierElementToJson(
       'elementType': instance.elementType.toJson(),
       'name': instance.name,
     };
-
-TupleTypeSpecifier _$TupleTypeSpecifierFromJson(Map<String, dynamic> json) =>
-    TupleTypeSpecifier(
-      element: (json['element'] as List<dynamic>?)
-          ?.map(
-              (e) => TupleElementDefinition.fromJson(e as Map<String, dynamic>))
-          .toList(),
-    )
-      ..localId = json['localId'] as String?
-      ..locator = json['locator'] as String?
-      ..resultTypeName = json['resultTypeName'] as String?
-      ..annotation = (json['annotation'] as List<dynamic>?)
-          ?.map((e) => CqlToElmBase.fromJson(e as Map<String, dynamic>))
-          .toList()
-      ..resultTypeSpecifier = json['resultTypeSpecifier'] == null
-          ? null
-          : TypeSpecifier.fromJson(
-              json['resultTypeSpecifier'] as Map<String, dynamic>);
-
-Map<String, dynamic> _$TupleTypeSpecifierToJson(TupleTypeSpecifier instance) {
-  final val = <String, dynamic>{};
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull('localId', instance.localId);
-  writeNotNull('locator', instance.locator);
-  writeNotNull('resultTypeName', instance.resultTypeName);
-  writeNotNull(
-      'annotation', instance.annotation?.map((e) => e.toJson()).toList());
-  writeNotNull('resultTypeSpecifier', instance.resultTypeSpecifier?.toJson());
-  writeNotNull('element', instance.element?.map((e) => e.toJson()).toList());
-  return val;
-}
