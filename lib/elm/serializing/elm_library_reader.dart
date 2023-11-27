@@ -1,15 +1,15 @@
 import 'dart:io';
 
-import '../../model/model.dart';
+import '../../cql_lm/cql_lm.dart';
 
 abstract class ElmLibraryReader {
-  Library readFromFile(File file);
+  ElmLibrary readFromFile(File file);
 
-  Library readFromUrl(Uri url);
+  ElmLibrary readFromUrl(Uri url);
 
-  Library readFromUri(Uri uri);
+  ElmLibrary readFromUri(Uri uri);
 
-  Library readFromString(String string);
+  ElmLibrary readFromString(String string);
 
-  Library readFromInputStream(Stream inputStream);
+  ElmLibrary readFromInputStream(Stream inputStream);
 }

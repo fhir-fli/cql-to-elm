@@ -1,4 +1,4 @@
-import 'src.dart';
+import 'cql_model.dart';
 
 class DataType {
   static final SimpleType ANY = SimpleType('System.Any');

@@ -1,60 +1,10 @@
-import 'dart:math' show BigDecimal;
+import 'package:fhir/r4.dart';
 
-import 'package:fhir/primitive_types/primitive_types.dart';
+mixin QuantityMixin on Quantity {
+  double? getValue() => this.value?.value;
 
-import '../../model/model.dart';
-
-class Literal {
-  String? getValueType() {
-    // Implement this method or provide appropriate behavior
-    return '';
-  }
-
-  String? getValue() {
-    // Implement this method or provide appropriate behavior
-    return '';
-  }
+  String? getUnit() => this.unit;
 }
-
-class Expression {}
-
-class Quantity {
-  BigDecimal? getValue() {
-    // Implement this method or provide appropriate behavior
-    return BigDecimal.zero;
-  }
-
-  String? getUnit() {
-    // Implement this method or provide appropriate behavior
-    return '';
-  }
-}
-
-class CodeSystemRef {
-  String? getLibraryName() {
-    // Implement this method or provide appropriate behavior
-    return '';
-  }
-
-  String? getName() {
-    // Implement this method or provide appropriate behavior
-    return '';
-  }
-}
-
-class ValueSetRef {
-  String? getLibraryName() {
-    // Implement this method or provide appropriate behavior
-    return '';
-  }
-
-  String? getName() {
-    // Implement this method or provide appropriate behavior
-    return '';
-  }
-}
-
-class QName {}
 
 class SimpleElmEngine {
   SimpleElmEngine();
@@ -64,7 +14,7 @@ class SimpleElmEngine {
         (left != null &&
             left.getValueType() != null &&
             left.getValueType() == right?.getValueType() &&
-            stringsEqual(left.getValue(), right?.getValue()));
+            stringsEqual(left.getValue()!, right?.getValue()));
   }
 
   bool booleansEqual(Expression? left, Expression? right) {
@@ -250,15 +200,15 @@ class SimpleElmEngine {
 
     if (left is Literal) {
       if (right is Literal) {
-        return literalsEqual(left as Literal, right as Literal);
+        return literalsEqual(left, right);
       }
       return false;
     }
 
     if (left is FhirDate) {
       if (right is FhirDate) {
-        FhirDate leftDate = left as FhirDate;
-        FhirDate rightDate = right as FhirDate;
+        FhirDate leftDate = left;
+        FhirDate rightDate = right;
         return integersEqual(leftDate.year, rightDate.year) &&
             integersEqual(leftDate.month, rightDate.month) &&
             integersEqual(leftDate.day, rightDate.day);
@@ -268,8 +218,8 @@ class SimpleElmEngine {
 
     if (left is FhirTime) {
       if (right is FhirTime) {
-        FhirTime leftTime = left as FhirTime;
-        FhirTime rightTime = right as FhirTime;
+        FhirTime leftTime = left;
+        FhirTime rightTime = right;
         return integersEqual(leftTime.hour, rightTime.hour) &&
             integersEqual(leftTime.minute, rightTime.minute) &&
             integersEqual(leftTime.second, rightTime.second) &&
@@ -280,8 +230,8 @@ class SimpleElmEngine {
 
     if (left is FhirDateTime) {
       if (right is FhirDateTime) {
-        FhirDateTime leftDateTime = left as FhirDateTime;
-        FhirDateTime rightDateTime = right as FhirDateTime;
+        FhirDateTime leftDateTime = left;
+        FhirDateTime rightDateTime = right;
         return integersEqual(leftDateTime.year, rightDateTime.year) &&
             integersEqual(leftDateTime.month, rightDateTime.month) &&
             integersEqual(leftDateTime.day, rightDateTime.day) &&
@@ -323,15 +273,15 @@ class SimpleElmEngine {
 
       if (left is Literal) {
         if (right is Literal) {
-          return literalsEqual(left as Literal, right as Literal);
+          return literalsEqual(left, right);
         }
         return false;
       }
 
       if (left is FhirDate) {
         if (right is FhirDate) {
-          FhirDate leftDate = left as FhirDate;
-          FhirDate rightDate = right as FhirDate;
+          FhirDate leftDate = left;
+          FhirDate rightDate = right;
           return integersEqual(leftDate.year, rightDate.year) &&
               integersEqual(leftDate.month, rightDate.month) &&
               integersEqual(leftDate.day, rightDate.day);
@@ -341,8 +291,8 @@ class SimpleElmEngine {
 
       if (left is FhirTime) {
         if (right is FhirTime) {
-          FhirTime leftTime = left as FhirTime;
-          FhirTime rightTime = right as FhirTime;
+          FhirTime leftTime = left;
+          FhirTime rightTime = right;
           return integersEqual(leftTime.hour, rightTime.hour) &&
               integersEqual(leftTime.minute, rightTime.minute) &&
               integersEqual(leftTime.second, rightTime.second) &&
@@ -353,8 +303,8 @@ class SimpleElmEngine {
 
       if (left is FhirDateTime) {
         if (right is FhirDateTime) {
-          FhirDateTime leftDateTime = left as FhirDateTime;
-          FhirDateTime rightDateTime = right as FhirDateTime;
+          FhirDateTime leftDateTime = left;
+          FhirDateTime rightDateTime = right;
           return integersEqual(leftDateTime.year, rightDateTime.year) &&
               integersEqual(leftDateTime.month, rightDateTime.month) &&
               integersEqual(leftDateTime.day, rightDateTime.day) &&
@@ -398,7 +348,7 @@ class SimpleElmEngine {
     // Quantity
     if (left is Quantity) {
       if (right is Quantity) {
-        return quantitiesEqual(left as Quantity, right as Quantity);
+        return quantitiesEqual(left, right);
       }
       return false;
     }
@@ -406,10 +356,8 @@ class SimpleElmEngine {
     // Ratio
     if (left is Ratio) {
       if (right is Ratio) {
-        return quantitiesEqual(
-                (left as Ratio).denominator, (right as Ratio).denominator) &&
-            quantitiesEqual(
-                (left as Ratio).numerator, (right as Ratio).numerator);
+        return quantitiesEqual((left).denominator, (right).denominator) &&
+            quantitiesEqual((left).numerator, (right).numerator);
       }
       return false;
     }

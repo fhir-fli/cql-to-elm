@@ -1,6 +1,7 @@
 import 'dart:io';
 
-import 'elm_modelinfo.dart';
+import '../../cql_lm/cql_lm.dart';
+import 'elm_modelinfo_r1_serializing.dart';
 
 class ModelInfoReaderFactory {
   static final List<ModelInfoReaderProvider> _providers = [

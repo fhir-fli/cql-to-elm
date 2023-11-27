@@ -1,4 +1,4 @@
-import 'src.dart';
+import 'cql_model.dart';
 
 class GenericClassSignatureParser {
   static final String OPEN_BRACKET = "<";

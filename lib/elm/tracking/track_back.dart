@@ -1,4 +1,4 @@
-import '../../model/model.dart';
+import '../../cql_lm/cql_lm.dart';
 
 class TrackBack {
   final VersionedIdentifier library;

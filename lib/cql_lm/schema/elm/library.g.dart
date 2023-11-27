@@ -91,7 +91,7 @@ Map<String, dynamic> _$ContextDefToJson(ContextDef instance) {
   return val;
 }
 
-Library _$LibraryFromJson(Map<String, dynamic> json) => Library(
+ElmLibrary _$ElmLibraryFromJson(Map<String, dynamic> json) => ElmLibrary(
       identifier: json['identifier'] == null
           ? null
           : VersionedIdentifier.fromJson(
@@ -126,7 +126,7 @@ Library _$LibraryFromJson(Map<String, dynamic> json) => Library(
           .toList(),
     );
 
-Map<String, dynamic> _$LibraryToJson(Library instance) {
+Map<String, dynamic> _$ElmLibraryToJson(ElmLibrary instance) {
   final val = <String, dynamic>{};
 
   void writeNotNull(String key, dynamic value) {

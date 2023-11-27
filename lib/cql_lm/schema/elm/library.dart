@@ -111,7 +111,7 @@ class ContextDef implements Element {
 }
 
 @JsonSerializable()
-class Library {
+class ElmLibrary {
   VersionedIdentifier? identifier;
   VersionedIdentifier? schemaIdentifier;
   List<UsingDef>? usings;
@@ -123,7 +123,7 @@ class Library {
   List<ConceptDef>? concepts;
   List<ExpressionDef>? statements;
 
-  Library({
+  ElmLibrary({
     required this.identifier,
     required this.schemaIdentifier,
     this.usings,
@@ -136,8 +136,8 @@ class Library {
     this.statements,
   });
 
-  factory Library.fromJson(Map<String, dynamic> json) =>
-      _$LibraryFromJson(json);
+  factory ElmLibrary.fromJson(Map<String, dynamic> json) =>
+      _$ElmLibraryFromJson(json);
 
-  Map<String, dynamic> toJson() => _$LibraryToJson(this);
+  Map<String, dynamic> toJson() => _$ElmLibraryToJson(this);
 }

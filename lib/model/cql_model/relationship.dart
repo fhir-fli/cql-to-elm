@@ -1,4 +1,4 @@
-import 'src.dart';
+import 'cql_model.dart';
 
 class Relationship {
   ModelContext? context;

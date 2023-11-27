@@ -1,6 +1,6 @@
 import 'package:fhir/r4.dart';
 
-import '../../model/model.dart';
+import '../../cql_lm/cql_lm.dart';
 import 'visiting.dart';
 
 abstract class ElmClinicalVisitor<T, C> implements ElmVisitor<T, C> {

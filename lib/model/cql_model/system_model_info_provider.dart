@@ -3,8 +3,8 @@ import 'dart:io';
 
 import 'package:xml/xml.dart';
 
-import '../elm_modelinfo/elm_modelinfo.dart';
-import 'src.dart';
+import '../../cql_lm/cql_lm.dart';
+import '../model.dart';
 
 class SystemModelInfoProvider implements ModelInfoProvider {
   NamespaceManager? namespaceManager;

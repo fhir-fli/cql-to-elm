@@ -1,4 +1,4 @@
-import '../../model/model.dart';
+import '../../cql_lm/cql_lm.dart';
 
 ///
 ///  This interface defines a complete generic visitor for an Elm tree
@@ -16,7 +16,7 @@ abstract class ElmVisitor<T, C> {
   ///  @param context the context passed to the visitor
   ///  @return the visitor result
   ///
-  T visitElement(Element elm, C context);
+  T visitElement(ElmElement elm, C context);
 
   ///
   ///  Visit a TypeSpecifier. This method will be called for every
@@ -256,7 +256,7 @@ abstract class ElmVisitor<T, C> {
   ///  @param context the context passed to the visitor
   ///  @return the visitor result
   ///
-  T visitTupleElement(TupleElement elm, C context);
+  T visitTupleElement(TupleElmElement elm, C context);
 
   ///
   ///  Visit a Tuple. This method will be called for
@@ -276,7 +276,7 @@ abstract class ElmVisitor<T, C> {
   ///  @param context the context passed to the visitor
   ///  @return the visitor result
   ///
-  T visitInstanceElement(InstanceElement elm, C context);
+  T visitInstanceElement(InstanceElmElement elm, C context);
 
   ///
   ///  Visit a Instance. This method will be called for

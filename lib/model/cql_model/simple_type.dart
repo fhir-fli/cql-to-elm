@@ -1,4 +1,4 @@
-import 'src.dart';
+import 'cql_model.dart';
 
 class SimpleType extends DataType implements NamedType {
   final String name;

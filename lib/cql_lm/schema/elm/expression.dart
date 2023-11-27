@@ -1,7 +1,5 @@
-import 'package:collection/collection.dart';
 import 'package:fhir/r4.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:xml/xml.dart';
 
 import '../schema.dart';
 
@@ -301,6 +299,10 @@ class Literal extends Expression {
       _$LiteralFromJson(json);
 
   Map<String, dynamic> toJson() => _$LiteralToJson(this);
+
+  String? getValueType() => valueType.toString();
+
+  String? getValue() => value.toString();
 }
 
 @JsonSerializable()

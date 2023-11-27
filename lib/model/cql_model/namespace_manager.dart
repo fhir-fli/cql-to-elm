@@ -1,4 +1,4 @@
-import 'src.dart';
+import 'cql_model.dart';
 
 class NamespaceManager {
   final Map<String, String> namespaces = {};

@@ -1,4 +1,4 @@
-import 'src.dart';
+import 'cql_model.dart';
 
 class ProfileType extends ClassType {
   ProfileType(String name, DataType baseType, List<ClassTypeElement> elements)

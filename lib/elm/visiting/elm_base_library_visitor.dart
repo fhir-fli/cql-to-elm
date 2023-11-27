@@ -1,6 +1,6 @@
 import 'package:fhir/r4.dart';
 
-import '../../model/model.dart';
+import '../../cql_lm/cql_lm.dart';
 import 'visiting.dart';
 
 class ElmBaseLibraryVisitor<T, C> extends ElmBaseClinicalVisitor<T, C>
@@ -9,12 +9,12 @@ class ElmBaseLibraryVisitor<T, C> extends ElmBaseClinicalVisitor<T, C>
   T visitElement(Element elm, C context) {
     if (elm is IncludeDef) return visitIncludeDef(elm, context);
     if (elm is ContextDef) return visitContextDef(elm, context);
-    if (elm is Library) return visitLibrary(elm, context);
+    if (elm is ElmLibrary) return visitLibrary(elm, context);
     if (elm is UsingDef) return visitUsingDef(elm, context);
     return super.visitElement(elm, context);
   }
 
-  T visitLibrary(Library elm, C context) {
+  T visitLibrary(ElmLibrary elm, C context) {
     T result = defaultResult(elm, context);
     _visitElements(elm.usings?.def, context);
     _visitElements(elm.includes?.def, context);

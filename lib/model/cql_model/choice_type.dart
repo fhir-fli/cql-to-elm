@@ -1,4 +1,4 @@
-import 'src.dart';
+import 'cql_model.dart';
 
 class ChoiceType extends DataType {
   final List<DataType> _types = [];

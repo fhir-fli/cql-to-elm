@@ -1,4 +1,4 @@
-import 'src.dart';
+import 'cql_model.dart';
 
 class ClassType extends DataType implements NamedType {
   String? name;

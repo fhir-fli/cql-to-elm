@@ -1,10 +1,12 @@
-import '../../model/model.dart';
+import 'package:cql_to_elm/cql_lm/cql_lm.dart';
+import 'package:fhir/r4.dart';
+
 import 'visiting.dart';
 
 class ElmBaseClinicalVisitor<T, C> extends ElmBaseVisitor<T, C>
     implements ElmClinicalVisitor<T, C> {
   @override
-  T visitElement(Element elm, C context) {
+  T visitElement(ElmElement elm, C context) {
     if (elm is ExpressionDef)
       return visitExpressionDef(elm, context);
     else if (elm is CodeDef)
@@ -44,9 +46,9 @@ class ElmBaseClinicalVisitor<T, C> extends ElmBaseVisitor<T, C>
     else if (elm is Concept)
       return visitConcept(elm, context);
     else if (elm is Quantity)
-      return visitQuantity(elm, context);
+      return visitQuantity(elm as Quantity, context);
     else if (elm is Ratio)
-      return visitRatio(elm, context);
+      return visitRatio(elm as Ratio, context);
     else if (elm is Retrieve) return visitRetrieve(elm, context);
     return super.visitExpression(elm, context);
   }
@@ -87,28 +89,22 @@ class ElmBaseClinicalVisitor<T, C> extends ElmBaseVisitor<T, C>
 
   T visitCodeFilterElement(CodeFilterElement elm, C context) {
     T result = defaultResult(elm, context);
-    if (elm.value != null) {
-      T childResult = visitElement(elm.value, context);
-      result = aggregateResult(result, childResult);
-    }
+    T childResult = visitElement(elm.value, context);
+    result = aggregateResult(result, childResult);
     return result;
   }
 
   T visitDateFilterElement(DateFilterElement elm, C context) {
     T result = defaultResult(elm, context);
-    if (elm.value != null) {
-      T childResult = visitElement(elm.value, context);
-      result = aggregateResult(result, childResult);
-    }
+    T childResult = visitElement(elm.value, context);
+    result = aggregateResult(result, childResult);
     return result;
   }
 
   T visitOtherFilterElement(OtherFilterElement elm, C context) {
     T result = defaultResult(elm, context);
-    if (elm.value != null) {
-      T childResult = visitElement(elm.value, context);
-      result = aggregateResult(result, childResult);
-    }
+    T childResult = visitElement(elm.value, context);
+    result = aggregateResult(result, childResult);
     return result;
   }
 

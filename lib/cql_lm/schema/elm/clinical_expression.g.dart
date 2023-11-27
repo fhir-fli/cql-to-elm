@@ -190,12 +190,21 @@ Retrieve _$RetrieveFromJson(Map<String, dynamic> json) => Retrieve(
       context: json['context'] == null
           ? null
           : Expression.fromJson(json['context'] as Map<String, dynamic>),
-    );
+    )
+      ..localId = json['localId'] as String?
+      ..locator = json['locator'] as String?
+      ..resultTypeName = json['resultTypeName'] as String?
+      ..annotation = (json['annotation'] as List<dynamic>?)
+          ?.map((e) => CqlToElmBase.fromJson(e as Map<String, dynamic>))
+          .toList()
+      ..resultTypeSpecifier = json['resultTypeSpecifier'] == null
+          ? null
+          : TypeSpecifier.fromJson(
+              json['resultTypeSpecifier'] as Map<String, dynamic>)
+      ..value = json['value'];
 
 Map<String, dynamic> _$RetrieveToJson(Retrieve instance) {
-  final val = <String, dynamic>{
-    'dataType': instance.dataType,
-  };
+  final val = <String, dynamic>{};
 
   void writeNotNull(String key, dynamic value) {
     if (value != null) {
@@ -203,6 +212,14 @@ Map<String, dynamic> _$RetrieveToJson(Retrieve instance) {
     }
   }
 
+  writeNotNull('localId', instance.localId);
+  writeNotNull('locator', instance.locator);
+  writeNotNull('resultTypeName', instance.resultTypeName);
+  writeNotNull(
+      'annotation', instance.annotation?.map((e) => e.toJson()).toList());
+  writeNotNull('resultTypeSpecifier', instance.resultTypeSpecifier?.toJson());
+  writeNotNull('value', instance.value);
+  val['dataType'] = instance.dataType;
   writeNotNull('tempId', instance.tempId);
   writeNotNull('idProperty', instance.idProperty);
   writeNotNull('codeProperty', instance.codeProperty);
@@ -306,7 +323,17 @@ ValueSetDef _$ValueSetDefFromJson(Map<String, dynamic> json) => ValueSetDef(
       id: json['id'] as String,
       version: json['version'] as String?,
       accessLevel: json['accessLevel'] as String? ?? 'Public',
-    );
+    )
+      ..localId = json['localId'] as String?
+      ..locator = json['locator'] as String?
+      ..resultTypeName = json['resultTypeName'] as String?
+      ..annotation = (json['annotation'] as List<dynamic>?)
+          ?.map((e) => CqlToElmBase.fromJson(e as Map<String, dynamic>))
+          .toList()
+      ..resultTypeSpecifier = json['resultTypeSpecifier'] == null
+          ? null
+          : TypeSpecifier.fromJson(
+              json['resultTypeSpecifier'] as Map<String, dynamic>);
 
 Map<String, dynamic> _$ValueSetDefToJson(ValueSetDef instance) {
   final val = <String, dynamic>{};
@@ -317,6 +344,12 @@ Map<String, dynamic> _$ValueSetDefToJson(ValueSetDef instance) {
     }
   }
 
+  writeNotNull('localId', instance.localId);
+  writeNotNull('locator', instance.locator);
+  writeNotNull('resultTypeName', instance.resultTypeName);
+  writeNotNull(
+      'annotation', instance.annotation?.map((e) => e.toJson()).toList());
+  writeNotNull('resultTypeSpecifier', instance.resultTypeSpecifier?.toJson());
   writeNotNull(
       'codeSystem', instance.codeSystem?.map((e) => e.toJson()).toList());
   writeNotNull('name', instance.name);
@@ -334,7 +367,17 @@ CodeDef _$CodeDefFromJson(Map<String, dynamic> json) => CodeDef(
       id: json['id'] as String,
       display: json['display'] as String?,
       accessLevel: json['accessLevel'] as String? ?? 'Public',
-    );
+    )
+      ..localId = json['localId'] as String?
+      ..locator = json['locator'] as String?
+      ..resultTypeName = json['resultTypeName'] as String?
+      ..annotation = (json['annotation'] as List<dynamic>?)
+          ?.map((e) => CqlToElmBase.fromJson(e as Map<String, dynamic>))
+          .toList()
+      ..resultTypeSpecifier = json['resultTypeSpecifier'] == null
+          ? null
+          : TypeSpecifier.fromJson(
+              json['resultTypeSpecifier'] as Map<String, dynamic>);
 
 Map<String, dynamic> _$CodeDefToJson(CodeDef instance) {
   final val = <String, dynamic>{};
@@ -345,6 +388,12 @@ Map<String, dynamic> _$CodeDefToJson(CodeDef instance) {
     }
   }
 
+  writeNotNull('localId', instance.localId);
+  writeNotNull('locator', instance.locator);
+  writeNotNull('resultTypeName', instance.resultTypeName);
+  writeNotNull(
+      'annotation', instance.annotation?.map((e) => e.toJson()).toList());
+  writeNotNull('resultTypeSpecifier', instance.resultTypeSpecifier?.toJson());
   writeNotNull('codeSystem', instance.codeSystem?.toJson());
   val['name'] = instance.name;
   val['id'] = instance.id;
@@ -362,12 +411,20 @@ ConceptDef _$ConceptDefFromJson(Map<String, dynamic> json) => ConceptDef(
       code: (json['code'] as List<dynamic>)
           .map((e) => CodeRef.fromJson(e as Map<String, dynamic>))
           .toList(),
-    );
+    )
+      ..localId = json['localId'] as String?
+      ..locator = json['locator'] as String?
+      ..resultTypeName = json['resultTypeName'] as String?
+      ..annotation = (json['annotation'] as List<dynamic>?)
+          ?.map((e) => CqlToElmBase.fromJson(e as Map<String, dynamic>))
+          .toList()
+      ..resultTypeSpecifier = json['resultTypeSpecifier'] == null
+          ? null
+          : TypeSpecifier.fromJson(
+              json['resultTypeSpecifier'] as Map<String, dynamic>);
 
 Map<String, dynamic> _$ConceptDefToJson(ConceptDef instance) {
-  final val = <String, dynamic>{
-    'name': instance.name,
-  };
+  final val = <String, dynamic>{};
 
   void writeNotNull(String key, dynamic value) {
     if (value != null) {
@@ -375,6 +432,13 @@ Map<String, dynamic> _$ConceptDefToJson(ConceptDef instance) {
     }
   }
 
+  writeNotNull('localId', instance.localId);
+  writeNotNull('locator', instance.locator);
+  writeNotNull('resultTypeName', instance.resultTypeName);
+  writeNotNull(
+      'annotation', instance.annotation?.map((e) => e.toJson()).toList());
+  writeNotNull('resultTypeSpecifier', instance.resultTypeSpecifier?.toJson());
+  val['name'] = instance.name;
   writeNotNull('display', instance.display);
   val['accessLevel'] = _$AccessModifierEnumMap[instance.accessLevel]!;
   val['code'] = instance.code.map((e) => e.toJson()).toList();

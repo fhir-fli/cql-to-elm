@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'elm_modelinfo.dart';
+import '../../cql_lm/cql_lm.dart';
 
 abstract class ModelInfoReader {
   ModelInfo readFromFile(File src);

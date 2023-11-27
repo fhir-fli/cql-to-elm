@@ -1,6 +1,6 @@
 import 'package:meta/meta.dart';
 
-import 'src.dart';
+import 'cql_model.dart';
 
 @immutable
 class IntervalType extends DataType {

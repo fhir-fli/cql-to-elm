@@ -91,7 +91,7 @@ class IncludeElement extends ElmElement {
 }
 
 @JsonSerializable()
-class Retrieve {
+class Retrieve extends Expression {
   String dataType;
   String? tempId;
   String? idProperty;
@@ -150,7 +150,7 @@ class CodeSystemDef extends ElmElement {
 }
 
 @JsonSerializable()
-class ValueSetDef {
+class ValueSetDef extends ElmElement {
   List<CodeSystemRef>? codeSystem;
   String? name;
   String id;
@@ -172,7 +172,7 @@ class ValueSetDef {
 }
 
 @JsonSerializable()
-class CodeDef {
+class CodeDef extends ElmElement {
   CodeSystemRef? codeSystem;
   String name;
   String id;
@@ -194,7 +194,7 @@ class CodeDef {
 }
 
 @JsonSerializable()
-class ConceptDef {
+class ConceptDef extends ElmElement {
   String name;
   String? display;
   AccessModifier accessLevel;
@@ -227,6 +227,10 @@ class CodeSystemRef extends Expression {
       _$CodeSystemRefFromJson(json);
 
   Map<String, dynamic> toJson() => _$CodeSystemRefToJson(this);
+
+  String? getLibraryName() => libraryName;
+
+  String? getName() => name;
 }
 
 @JsonSerializable()
@@ -245,6 +249,10 @@ class ValueSetRef extends Expression {
       _$ValueSetRefFromJson(json);
 
   Map<String, dynamic> toJson() => _$ValueSetRefToJson(this);
+
+  String? getLibraryName() => libraryName;
+
+  String? getName() => name;
 }
 
 @JsonSerializable()

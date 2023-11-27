@@ -1,3 +1,4 @@
+import '../../cql_lm/cql_lm.dart';
 import '../../model/model.dart';
 import 'visiting.dart';
 
@@ -172,25 +173,25 @@ class ElmBaseVisitor<T, C> implements ElmVisitor<T, C> {
     } else if (elm is NaryExpression) {
       return visitNaryExpression(elm, context);
     } else if (elm is Round) {
-      return visitRound(elm as Round, context);
+      return visitRound(elm, context);
     } else if (elm is Combine) {
-      return visitCombine(elm as Combine, context);
+      return visitCombine(elm, context);
     } else if (elm is Split) {
-      return visitSplit(elm as Split, context);
+      return visitSplit(elm, context);
     } else if (elm is SplitOnMatches) {
-      return visitSplitOnMatches(elm as SplitOnMatches, context);
+      return visitSplitOnMatches(elm, context);
     } else if (elm is PositionOf) {
-      return visitPositionOf(elm as PositionOf, context);
+      return visitPositionOf(elm, context);
     } else if (elm is LastPositionOf) {
-      return visitLastPositionOf(elm as LastPositionOf, context);
+      return visitLastPositionOf(elm, context);
     } else if (elm is Substring) {
-      return visitSubstring(elm as Substring, context);
+      return visitSubstring(elm, context);
     } else if (elm is TimeOfDay) {
-      return visitTimeOfDay(elm as TimeOfDay, context);
+      return visitTimeOfDay(elm, context);
     } else if (elm is Today) {
-      return visitToday(elm as Today, context);
+      return visitToday(elm, context);
     } else if (elm is Now) {
-      return visitNow(elm as Now, context);
+      return visitNow(elm, context);
     } else if (elm is Time) {
       return visitTime(elm as Time, context);
     } else if (elm is Date) {
@@ -224,51 +225,51 @@ class ElmBaseVisitor<T, C> implements ElmVisitor<T, C> {
 
   T visitUnaryExpression(UnaryExpression elm, C context) {
     if (elm is Abs) {
-      return visitAbs(elm as Abs, context);
+      return visitAbs(elm, context);
     } else if (elm is As) {
       return visitAs(elm as As, context);
     } else if (elm is Ceiling) {
-      return visitCeiling(elm as Ceiling, context);
+      return visitCeiling(elm, context);
     } else if (elm is CanConvert) {
       return visitCanConvert(elm as CanConvert, context);
     } else if (elm is Convert) {
       return visitConvert(elm as Convert, context);
     } else if (elm is ConvertsToBoolean) {
-      return visitConvertsToBoolean(elm as ConvertsToBoolean, context);
+      return visitConvertsToBoolean(elm, context);
     } else if (elm is ConvertsToDate) {
-      return visitConvertsToDate(elm as ConvertsToDate, context);
+      return visitConvertsToDate(elm, context);
     } else if (elm is ConvertsToDateTime) {
-      return visitConvertsToDateTime(elm as ConvertsToDateTime, context);
+      return visitConvertsToDateTime(elm, context);
     } else if (elm is ConvertsToDecimal) {
-      return visitConvertsToDecimal(elm as ConvertsToDecimal, context);
+      return visitConvertsToDecimal(elm, context);
     } else if (elm is ConvertsToInteger) {
-      return visitConvertsToInteger(elm as ConvertsToInteger, context);
+      return visitConvertsToInteger(elm, context);
     } else if (elm is ConvertsToLong) {
-      return visitConvertsToLong(elm as ConvertsToLong, context);
+      return visitConvertsToLong(elm, context);
     } else if (elm is ConvertsToQuantity) {
-      return visitConvertsToQuantity(elm as ConvertsToQuantity, context);
+      return visitConvertsToQuantity(elm, context);
     } else if (elm is ConvertsToRatio) {
-      return visitConvertsToRatio(elm as ConvertsToRatio, context);
+      return visitConvertsToRatio(elm, context);
     } else if (elm is ConvertsToString) {
-      return visitConvertsToString(elm as ConvertsToString, context);
+      return visitConvertsToString(elm, context);
     } else if (elm is ConvertsToTime) {
-      return visitConvertsToTime(elm as ConvertsToTime, context);
+      return visitConvertsToTime(elm, context);
     } else if (elm is DateFrom) {
-      return visitDateFrom(elm as DateFrom, context);
+      return visitDateFrom(elm, context);
     } else if (elm is DateTimeComponentFrom) {
-      return visitDateTimeComponentFrom(elm as DateTimeComponentFrom, context);
+      return visitDateTimeComponentFrom(elm, context);
     } else if (elm is Distinct) {
       return visitDistinct(elm as Distinct, context);
     } else if (elm is End) {
-      return visitEnd(elm as End, context);
+      return visitEnd(elm, context);
     } else if (elm is Exists) {
       return visitExists(elm as Exists, context);
     } else if (elm is Exp) {
-      return visitExp(elm as Exp, context);
+      return visitExp(elm, context);
     } else if (elm is Flatten) {
       return visitFlatten(elm as Flatten, context);
     } else if (elm is Floor) {
-      return visitFloor(elm as Floor, context);
+      return visitFloor(elm, context);
     } else if (elm is Is) {
       return visitIs(elm as Is, context);
     } else if (elm is IsFalse) {
@@ -278,67 +279,67 @@ class ElmBaseVisitor<T, C> implements ElmVisitor<T, C> {
     } else if (elm is IsTrue) {
       return visitIsTrue(elm as IsTrue, context);
     } else if (elm is Length) {
-      return visitLength(elm as Length, context);
+      return visitLength(elm, context);
     } else if (elm is Ln) {
-      return visitLn(elm as Ln, context);
+      return visitLn(elm, context);
     } else if (elm is Lower) {
-      return visitLower(elm as Lower, context);
+      return visitLower(elm, context);
     } else if (elm is Negate) {
-      return visitNegate(elm as Negate, context);
+      return visitNegate(elm, context);
     } else if (elm is Not) {
       return visitNot(elm as Not, context);
     } else if (elm is PointFrom) {
-      return visitPointFrom(elm as PointFrom, context);
+      return visitPointFrom(elm, context);
     } else if (elm is Precision) {
-      return visitPrecision(elm as Precision, context);
+      return visitPrecision(elm, context);
     } else if (elm is Predecessor) {
-      return visitPredecessor(elm as Predecessor, context);
+      return visitPredecessor(elm, context);
     } else if (elm is SingletonFrom) {
       return visitSingletonFrom(elm as SingletonFrom, context);
     } else if (elm is Size) {
-      return visitSize(elm as Size, context);
+      return visitSize(elm, context);
     } else if (elm is Start) {
-      return visitStart(elm as Start, context);
+      return visitStart(elm, context);
     } else if (elm is Successor) {
-      return visitSuccessor(elm as Successor, context);
+      return visitSuccessor(elm, context);
     } else if (elm is TimeFrom) {
-      return visitTimeFrom(elm as TimeFrom, context);
+      return visitTimeFrom(elm, context);
     } else if (elm is TimezoneFrom) {
-      return visitTimezoneFrom(elm as TimezoneFrom, context);
+      return visitTimezoneFrom(elm, context);
     } else if (elm is TimezoneOffsetFrom) {
-      return visitTimezoneOffsetFrom(elm as TimezoneOffsetFrom, context);
+      return visitTimezoneOffsetFrom(elm, context);
     } else if (elm is ToBoolean) {
-      return visitToBoolean(elm as ToBoolean, context);
+      return visitToBoolean(elm, context);
     } else if (elm is ToConcept) {
-      return visitToConcept(elm as ToConcept, context);
+      return visitToConcept(elm, context);
     } else if (elm is ToChars) {
-      return visitToChars(elm as ToChars, context);
+      return visitToChars(elm, context);
     } else if (elm is ToDate) {
-      return visitToDate(elm as ToDate, context);
+      return visitToDate(elm, context);
     } else if (elm is ToDateTime) {
-      return visitToDateTime(elm as ToDateTime, context);
+      return visitToDateTime(elm, context);
     } else if (elm is ToDecimal) {
-      return visitToDecimal(elm as ToDecimal, context);
+      return visitToDecimal(elm, context);
     } else if (elm is ToInteger) {
-      return visitToInteger(elm as ToInteger, context);
+      return visitToInteger(elm, context);
     } else if (elm is ToLong) {
-      return visitToLong(elm as ToLong, context);
+      return visitToLong(elm, context);
     } else if (elm is ToList) {
-      return visitToList(elm as ToList, context);
+      return visitToList(elm, context);
     } else if (elm is ToQuantity) {
-      return visitToQuantity(elm as ToQuantity, context);
+      return visitToQuantity(elm, context);
     } else if (elm is ToRatio) {
-      return visitToRatio(elm as ToRatio, context);
+      return visitToRatio(elm, context);
     } else if (elm is ToString) {
-      return visitToString(elm as ToString, context);
+      return visitToString(elm, context);
     } else if (elm is ToTime) {
-      return visitToTime(elm as ToTime, context);
+      return visitToTime(elm, context);
     } else if (elm is Truncate) {
-      return visitTruncate(elm as Truncate, context);
+      return visitTruncate(elm, context);
     } else if (elm is Upper) {
-      return visitUpper(elm as Upper, context);
+      return visitUpper(elm, context);
     } else if (elm is Width) {
-      return visitWidth(elm as Width, context);
+      return visitWidth(elm, context);
     }
     return visitChildren(elm, context);
   }
@@ -354,7 +355,7 @@ class ElmBaseVisitor<T, C> implements ElmVisitor<T, C> {
 
   T visitBinaryExpression(BinaryExpression elm, C context) {
     if (elm is Add) {
-      return visitAdd(elm as Add, context);
+      return visitAdd(elm, context);
     } else if (elm is After) {
       return visitAfter(elm as After, context);
     } else if (elm is And) {
@@ -362,35 +363,35 @@ class ElmBaseVisitor<T, C> implements ElmVisitor<T, C> {
     } else if (elm is Before) {
       return visitBefore(elm as Before, context);
     } else if (elm is CanConvertQuantity) {
-      return visitCanConvertQuantity(elm as CanConvertQuantity, context);
+      return visitCanConvertQuantity(elm, context);
     } else if (elm is Contains) {
       return visitContains(elm as Contains, context);
     } else if (elm is ConvertQuantity) {
-      return visitConvertQuantity(elm as ConvertQuantity, context);
+      return visitConvertQuantity(elm, context);
     } else if (elm is Collapse) {
       return visitCollapse(elm as Collapse, context);
     } else if (elm is DifferenceBetween) {
-      return visitDifferenceBetween(elm as DifferenceBetween, context);
+      return visitDifferenceBetween(elm, context);
     } else if (elm is Divide) {
-      return visitDivide(elm as Divide, context);
+      return visitDivide(elm, context);
     } else if (elm is DurationBetween) {
-      return visitDurationBetween(elm as DurationBetween, context);
+      return visitDurationBetween(elm, context);
     } else if (elm is Ends) {
       return visitEnds(elm as Ends, context);
     } else if (elm is EndsWith) {
-      return visitEndsWith(elm as EndsWith, context);
+      return visitEndsWith(elm, context);
     } else if (elm is Equal) {
-      return visitEqual(elm as Equal, context);
+      return visitEqual(elm, context);
     } else if (elm is Equivalent) {
-      return visitEquivalent(elm as Equivalent, context);
+      return visitEquivalent(elm, context);
     } else if (elm is Expand) {
       return visitExpand(elm as Expand, context);
     } else if (elm is Greater) {
-      return visitGreater(elm as Greater, context);
+      return visitGreater(elm, context);
     } else if (elm is GreaterOrEqual) {
-      return visitGreaterOrEqual(elm as GreaterOrEqual, context);
+      return visitGreaterOrEqual(elm, context);
     } else if (elm is HighBoundary) {
-      return visitHighBoundary(elm as HighBoundary, context);
+      return visitHighBoundary(elm, context);
     } else if (elm is Implies) {
       return visitImplies(elm as Implies, context);
     } else if (elm is In) {
@@ -400,17 +401,17 @@ class ElmBaseVisitor<T, C> implements ElmVisitor<T, C> {
     } else if (elm is Includes) {
       return visitIncludes(elm as Includes, context);
     } else if (elm is Indexer) {
-      return visitIndexer(elm as Indexer, context);
+      return visitIndexer(elm, context);
     } else if (elm is Less) {
-      return visitLess(elm as Less, context);
+      return visitLess(elm, context);
     } else if (elm is LessOrEqual) {
-      return visitLessOrEqual(elm as LessOrEqual, context);
+      return visitLessOrEqual(elm, context);
     } else if (elm is Log) {
-      return visitLog(elm as Log, context);
+      return visitLog(elm, context);
     } else if (elm is LowBoundary) {
-      return visitLowBoundary(elm as LowBoundary, context);
+      return visitLowBoundary(elm, context);
     } else if (elm is Matches) {
-      return visitMatches(elm as Matches, context);
+      return visitMatches(elm, context);
     } else if (elm is Meets) {
       return visitMeets(elm as Meets, context);
     } else if (elm is MeetsAfter) {
@@ -418,11 +419,11 @@ class ElmBaseVisitor<T, C> implements ElmVisitor<T, C> {
     } else if (elm is MeetsBefore) {
       return visitMeetsBefore(elm as MeetsBefore, context);
     } else if (elm is Modulo) {
-      return visitModulo(elm as Modulo, context);
+      return visitModulo(elm, context);
     } else if (elm is Multiply) {
-      return visitMultiply(elm as Multiply, context);
+      return visitMultiply(elm, context);
     } else if (elm is NotEqual) {
-      return visitNotEqual(elm as NotEqual, context);
+      return visitNotEqual(elm, context);
     } else if (elm is Or) {
       return visitOr(elm as Or, context);
     } else if (elm is Overlaps) {
@@ -432,7 +433,7 @@ class ElmBaseVisitor<T, C> implements ElmVisitor<T, C> {
     } else if (elm is OverlapsBefore) {
       return visitOverlapsBefore(elm as OverlapsBefore, context);
     } else if (elm is Power) {
-      return visitPower(elm as Power, context);
+      return visitPower(elm, context);
     } else if (elm is ProperContains) {
       return visitProperContains(elm as ProperContains, context);
     } else if (elm is ProperIn) {
@@ -442,21 +443,21 @@ class ElmBaseVisitor<T, C> implements ElmVisitor<T, C> {
     } else if (elm is ProperIncludes) {
       return visitProperIncludes(elm as ProperIncludes, context);
     } else if (elm is SameAs) {
-      return visitSameAs(elm as SameAs, context);
+      return visitSameAs(elm, context);
     } else if (elm is SameOrAfter) {
-      return visitSameOrAfter(elm as SameOrAfter, context);
+      return visitSameOrAfter(elm, context);
     } else if (elm is SameOrBefore) {
-      return visitSameOrBefore(elm as SameOrBefore, context);
+      return visitSameOrBefore(elm, context);
     } else if (elm is Starts) {
       return visitStarts(elm as Starts, context);
     } else if (elm is StartsWith) {
-      return visitStartsWith(elm as StartsWith, context);
+      return visitStartsWith(elm, context);
     } else if (elm is Subtract) {
-      return visitSubtract(elm as Subtract, context);
+      return visitSubtract(elm, context);
     } else if (elm is Times) {
       return visitTimes(elm as Times, context);
     } else if (elm is TruncatedDivide) {
-      return visitTruncatedDivide(elm as TruncatedDivide, context);
+      return visitTruncatedDivide(elm, context);
     } else if (elm is Xor) {
       return visitXor(elm as Xor, context);
     }
@@ -477,7 +478,7 @@ class ElmBaseVisitor<T, C> implements ElmVisitor<T, C> {
       visitElement(element, context);
     }
     if (elm is ReplaceMatches) {
-      return visitReplaceMatches(elm as ReplaceMatches, context);
+      return visitReplaceMatches(elm, context);
     }
     return visitChildren(elm, context);
   }
@@ -495,7 +496,7 @@ class ElmBaseVisitor<T, C> implements ElmVisitor<T, C> {
     if (elm is Coalesce) {
       return visitCoalesce(elm as Coalesce, context);
     } else if (elm is Concatenate) {
-      return visitConcatenate(elm as Concatenate, context);
+      return visitConcatenate(elm, context);
     } else if (elm is Except) {
       return visitExcept(elm as Except, context);
     } else if (elm is Intersect) {
@@ -600,10 +601,8 @@ class ElmBaseVisitor<T, C> implements ElmVisitor<T, C> {
 
   T visitTupleElement(TupleElement elm, C context) {
     T result = defaultResult(elm, context);
-    if (elm.value != null) {
-      T childResult = visitExpression(elm.value, context);
-      result = aggregateResult(result, childResult);
-    }
+    T childResult = visitExpression(elm.value, context);
+    result = aggregateResult(result, childResult);
     return result;
   }
 
@@ -618,10 +617,8 @@ class ElmBaseVisitor<T, C> implements ElmVisitor<T, C> {
 
   T visitInstanceElement(InstanceElement elm, C context) {
     T result = defaultResult(elm, context);
-    if (elm.value != null) {
-      T childResult = visitExpression(elm.value, context);
-      result = aggregateResult(result, childResult);
-    }
+    T childResult = visitExpression(elm.value, context);
+    result = aggregateResult(result, childResult);
     return result;
   }
 

@@ -1,8 +1,8 @@
-import '../../model/model.dart';
+import '../../cql_lm/cql_lm.dart';
 import 'serializing.dart';
 
 abstract class ElmLibraryWriter {
-  void write(Library library, Writer writer);
+  void write(ElmLibrary library, Writer writer);
 
-  String writeAsString(Library library);
+  String writeAsString(ElmLibrary library);
 }

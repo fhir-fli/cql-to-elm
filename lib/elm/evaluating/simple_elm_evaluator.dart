@@ -1,4 +1,3 @@
-import '../../model/model.dart';
 import '../elm.dart';
 
 class SimpleElmEvaluator {
@@ -24,7 +23,7 @@ class SimpleElmEvaluator {
   }
 
   static bool stringsEqual(String left, String right) {
-    return engine.stringsEqual(left, right);
+    return engine.stringsEqual(Expression(operand: left), Expression(right));
   }
 
   static bool dateTimesEqual(Expression left, Expression right) {
