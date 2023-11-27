@@ -18,6 +18,18 @@ class Annotation {
 }
 
 @JsonSerializable()
+class Tag {
+  String? name;
+  String? value;
+
+  Tag({this.name, this.value});
+
+  factory Tag.fromJson(Map<String, dynamic> json) => _$TagFromJson(json);
+
+  Map<String, dynamic> toJson() => _$TagToJson(this);
+}
+
+@JsonSerializable()
 class Locator {
   Locator({this.startLine, this.startChar, this.endLine, this.endChar});
 

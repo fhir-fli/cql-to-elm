@@ -136,42 +136,6 @@ class Library {
     this.statements,
   });
 
-  factory Library.fromXmlElement(XmlElement element) {
-    final identifierElement = element.findElements('identifier').firstOrNull;
-    final schemaIdentifierElement =
-        element.findElements('schemaIdentifier').firstOrNull;
-    final usingsElements = element.findElements('usings').firstOrNull;
-    final includesElements = element.findElements('includes').firstOrNull;
-    final parametersElements = element.findElements('parameters').firstOrNull;
-
-    return Library(
-      identifier: identifierElement != null
-          ? VersionedIdentifier.fromXmlElement(identifierElement)
-          : null,
-      schemaIdentifier: schemaIdentifierElement != null
-          ? VersionedIdentifier.fromXmlElement(schemaIdentifierElement)
-          : null,
-      usings: usingsElements != null
-          ? usingsElements
-              .findElements('def')
-              .map((def) => UsingDef.fromXmlElement(def))
-              .toList()
-          : null,
-      includes: includesElements != null
-          ? includesElements
-              .findElements('def')
-              .map((def) => IncludeDef.fromXmlElement(def))
-              .toList()
-          : null,
-      parameters: parametersElements != null
-          ? parametersElements
-              .findElements('def')
-              .map((def) => ParameterDef.fromXmlElement(def))
-              .toList()
-          : null,
-    );
-  }
-
   factory Library.fromJson(Map<String, dynamic> json) =>
       _$LibraryFromJson(json);
 

@@ -53,7 +53,7 @@ class TypeSpecifier {
 }
 
 @JsonSerializable()
-class TupleElementDefinition {
+class TupleElementDefinition extends ElmElement {
   String name;
   TypeSpecifier? type; // Deprecated, use elementType
   TypeSpecifier? elementType;
@@ -67,18 +67,10 @@ class TupleElementDefinition {
 }
 
 @JsonSerializable()
-class Expression {
-  Expression();
+class Expression extends ElmElement {
+  Expression([this.value]);
 
-  factory Expression.fromXmlElement(XmlElement element) {
-    var expressionElement = element.children
-        .whereType<XmlElement>()
-        .firstWhereOrNull((e) => e.name.local == 'Expression');
-
-    return expressionElement != null
-        ? Expression.fromXmlElement(expressionElement)
-        : Expression();
-  }
+  dynamic value;
 
   factory Expression.fromJson(Map<String, dynamic> json) =>
       _$ExpressionFromJson(json);
@@ -88,7 +80,6 @@ class Expression {
 
 @JsonSerializable()
 class OperatorExpression extends Expression {
-  @JsonKey(name: 'signature')
   List<TypeSpecifier>? signature;
 
   OperatorExpression({this.signature});
@@ -101,10 +92,9 @@ class OperatorExpression extends Expression {
 
 @JsonSerializable()
 class UnaryExpression extends OperatorExpression {
-  @JsonKey(name: 'operand', required: true)
-  Expression operand;
+  Expression? operand;
 
-  UnaryExpression({required this.operand});
+  UnaryExpression({this.operand});
 
   factory UnaryExpression.fromJson(Map<String, dynamic> json) =>
       _$UnaryExpressionFromJson(json);
@@ -114,7 +104,6 @@ class UnaryExpression extends OperatorExpression {
 
 @JsonSerializable()
 class BinaryExpression extends OperatorExpression {
-  @JsonKey(name: 'operand', required: true)
   List<Expression> operand;
 
   BinaryExpression({required this.operand});
@@ -127,10 +116,9 @@ class BinaryExpression extends OperatorExpression {
 
 @JsonSerializable()
 class TernaryExpression extends OperatorExpression {
-  @JsonKey(name: 'operand', required: true)
-  List<Expression> operand;
+  List<Expression>? operand;
 
-  TernaryExpression({required this.operand});
+  TernaryExpression({this.operand});
 
   factory TernaryExpression.fromJson(Map<String, dynamic> json) =>
       _$TernaryExpressionFromJson(json);
@@ -140,7 +128,6 @@ class TernaryExpression extends OperatorExpression {
 
 @JsonSerializable()
 class NaryExpression extends OperatorExpression {
-  @JsonKey(name: 'operand')
   List<Expression>? operand;
 
   NaryExpression({this.operand});
@@ -154,7 +141,7 @@ class NaryExpression extends OperatorExpression {
 enum AccessModifier { Public, Private }
 
 @JsonSerializable()
-class ExpressionDef {
+class ExpressionDef extends ElmElement {
   Expression? expression;
   String? name;
   String? context;
@@ -230,7 +217,7 @@ class FunctionRef extends ExpressionRef {
 }
 
 @JsonSerializable()
-class ParameterDef {
+class ParameterDef extends ElmElement {
   String? name;
   String? parameterType;
   AccessModifier accessLevel;
@@ -244,34 +231,6 @@ class ParameterDef {
     this.defaultExpr,
     this.parameterTypeSpecifier,
   });
-
-  factory ParameterDef.fromXmlElement(XmlElement element) {
-    var defaultElement = element.children
-        .whereType<XmlElement>()
-        .firstWhereOrNull((e) => e.name.local == 'Default');
-
-    var defaultExpressionElement = defaultElement != null
-        ? defaultElement.children
-            .whereType<XmlElement>()
-            .firstWhereOrNull((e) => e.name.local == 'Expression')
-        : null;
-
-    var defaultExpr = defaultExpressionElement != null
-        ? Expression.fromXmlElement(defaultExpressionElement)
-        : null;
-
-    var accessLevelString = element.getAttribute('accessLevel');
-    var accessLevel = accessLevelString == 'Private'
-        ? AccessModifier.Private
-        : AccessModifier.Public;
-
-    return ParameterDef(
-      name: element.getAttribute('name'),
-      parameterType: element.getAttribute('type'),
-      accessLevel: accessLevel,
-      defaultExpr: defaultExpr,
-    );
-  }
 
   factory ParameterDef.fromJson(Map<String, dynamic> json) =>
       _$ParameterDefFromJson(json);
@@ -396,9 +355,9 @@ class Instance extends Expression {
 
 @JsonSerializable()
 class Interval extends Expression {
-  dynamic low;
+  Object? low;
   Expression? lowClosedExpression;
-  dynamic high;
+  Object? high;
   Expression? highClosedExpression;
   bool lowClosed = true;
   bool highClosed = true;
@@ -419,271 +378,708 @@ class Interval extends Expression {
 }
 
 @JsonSerializable()
-class IntegerInterval extends Interval {
-  IntegerInterval({FhirInteger? low, FhirInteger? high})
-      : super(low: low, high: high);
-
-  factory IntegerInterval.fromJson(Map<String, dynamic> json) =>
-      _$IntegerIntervalFromJson(json);
-
-  Map<String, dynamic> toJson() => _$IntegerIntervalToJson(this);
-}
-
-@JsonSerializable()
-class DecimalInterval extends Interval {
-  DecimalInterval({FhirDecimal? low, FhirDecimal? high});
-
-  factory DecimalInterval.fromJson(Map<String, dynamic> json) =>
-      _$DecimalIntervalFromJson(json);
-
-  Map<String, dynamic> toJson() => _$DecimalIntervalToJson(this);
-}
-
-@JsonSerializable()
-class QuantityInterval extends Interval {
-  QuantityInterval({Quantity? low, Quantity? high});
-
-  factory QuantityInterval.fromJson(Map<String, dynamic> json) =>
-      _$QuantityIntervalFromJson(json);
-
-  Map<String, dynamic> toJson() => _$QuantityIntervalToJson(this);
-}
-
-@JsonSerializable()
-class DateInterval extends Interval {
-  DateInterval({FhirDate? low, FhirDate? high});
-
-  factory DateInterval.fromJson(Map<String, dynamic> json) =>
-      _$DateIntervalFromJson(json);
-
-  Map<String, dynamic> toJson() => _$DateIntervalToJson(this);
-}
-
-@JsonSerializable()
-class DateTimeInterval extends Interval {
-  DateTimeInterval({FhirDateTime? low, FhirDateTime? high});
-
-  factory DateTimeInterval.fromJson(Map<String, dynamic> json) =>
-      _$DateTimeIntervalFromJson(json);
-
-  Map<String, dynamic> toJson() => _$DateTimeIntervalToJson(this);
-}
-
-@JsonSerializable()
-class TimeInterval extends Interval {
-  TimeInterval({FhirTime? low, FhirTime? high});
-
-  factory TimeInterval.fromJson(Map<String, dynamic> json) =>
-      _$TimeIntervalFromJson(json);
-
-  Map<String, dynamic> toJson() => _$TimeIntervalToJson(this);
-}
-
-@JsonSerializable()
-class ListSelector extends Expression {
+class ElmList extends Expression {
   late TypeSpecifier? typeSpecifier;
   late List<Expression> element;
 
-  ListSelector({this.typeSpecifier, required this.element});
+  ElmList({this.typeSpecifier, required this.element});
 
-  factory ListSelector.fromJson(Map<String, dynamic> json) =>
-      _$ListSelectorFromJson(json);
+  factory ElmList.fromJson(Map<String, dynamic> json) =>
+      _$ElmListFromJson(json);
 
-  Map<String, dynamic> toJson() => _$ListSelectorToJson(this);
+  Map<String, dynamic> toJson() => _$ElmListToJson(this);
 }
 
 @JsonSerializable()
-class And extends BinaryExpression {
-  And({required super.operand});
+class ToBoolean extends UnaryExpression {
+  ToBoolean({required super.operand});
 
-  factory And.fromJson(Map<String, dynamic> json) => _$AndFromJson(json);
+  String? convertThisToBoolean() => convertToBoolean(value);
 
-  Map<String, dynamic> toJson() => _$AndToJson(this);
+  static String? convertToBoolean(dynamic value) {
+    // Define the logic to convert the value to a Boolean according to the specified rules
+
+    if (value == null) {
+      return null;
+    } else if (value is String) {
+      switch (value.toLowerCase()) {
+        case 'true':
+        case 't':
+        case 'yes':
+        case 'y':
+        case '1':
+          return 'true';
+        case 'false':
+        case 'f':
+        case 'no':
+        case 'n':
+        case '0':
+          return 'false';
+        default:
+          return null;
+      }
+    } else if (value is int || value is double) {
+      return value == 1 ? 'true' : (value == 0 ? 'false' : null);
+    } else {
+      return null;
+    }
+  }
+
+  factory ToBoolean.fromJson(Map<String, dynamic> json) =>
+      _$ToBooleanFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ToBooleanToJson(this);
 }
 
 @JsonSerializable()
-class Or extends BinaryExpression {
-  Or({required super.operand});
+class ConvertsToBoolean extends UnaryExpression {
+  ConvertsToBoolean({required super.operand});
 
-  factory Or.fromJson(Map<String, dynamic> json) => _$OrFromJson(json);
+  bool checkThisBooleanValue() => checkBooleanValue(value);
 
-  Map<String, dynamic> toJson() => _$OrToJson(this);
+  static bool checkBooleanValue(dynamic value) {
+    if (value == null) {
+      return false;
+    } else if (value is String) {
+      switch (value.toLowerCase()) {
+        case 'true':
+        case 't':
+        case 'yes':
+        case 'y':
+        case '1':
+          return true;
+        case 'false':
+        case 'f':
+        case 'no':
+        case 'n':
+        case '0':
+          return true;
+        default:
+          return false;
+      }
+    } else if (value is int || value is double) {
+      return value == 1 || value == 0;
+    } else {
+      return false;
+    }
+  }
+
+  factory ConvertsToBoolean.fromJson(Map<String, dynamic> json) =>
+      _$ConvertsToBooleanFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ConvertsToBooleanToJson(this);
 }
 
 @JsonSerializable()
-class Xor extends BinaryExpression {
-  Xor({required super.operand});
+class ToConcept extends UnaryExpression {
+  ToConcept({required super.operand});
 
-  factory Xor.fromJson(Map<String, dynamic> json) => _$XorFromJson(json);
+  dynamic convertThisToConcept() => convertToConcept(value);
 
-  Map<String, dynamic> toJson() => _$XorToJson(this);
+  static dynamic convertToConcept(dynamic value) {
+    if (value == null) {
+      return null;
+    } else if (value is List<String>) {
+      return value.map((code) => {'code': code}).toList();
+    } else if (value is String) {
+      return {'code': value};
+    } else {
+      return null;
+    }
+  }
+
+  factory ToConcept.fromJson(Map<String, dynamic> json) =>
+      _$ToConceptFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ToConceptToJson(this);
 }
 
 @JsonSerializable()
-class Implies extends BinaryExpression {
-  Implies({required super.operand});
+class ConvertsToDate extends UnaryExpression {
+  ConvertsToDate({required super.operand});
 
-  factory Implies.fromJson(Map<String, dynamic> json) =>
-      _$ImpliesFromJson(json);
+  bool isThisConvertsToDate() => isConvertsToDate(value);
 
-  Map<String, dynamic> toJson() => _$ImpliesToJson(this);
+  static bool isConvertsToDate(dynamic value) {
+    if (value == null || value is! String) {
+      return false;
+    }
+
+    // Date format: YYYY-MM-DD
+    final dateRegex = RegExp(r'^\d{4}-\d{2}-\d{2}$');
+    return dateRegex.hasMatch(value);
+  }
+
+  factory ConvertsToDate.fromJson(Map<String, dynamic> json) =>
+      _$ConvertsToDateFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ConvertsToDateToJson(this);
 }
 
 @JsonSerializable()
-class Not extends UnaryExpression {
-  Not({required super.operand});
+class ToDate extends UnaryExpression {
+  ToDate({required super.operand});
 
-  factory Not.fromJson(Map<String, dynamic> json) => _$NotFromJson(json);
+  DateTime? convertThisToDate() => toDate(value);
 
-  Map<String, dynamic> toJson() => _$NotToJson(this);
+  static DateTime? toDate(dynamic value) {
+    if (value == null || value is! String) {
+      return null;
+    }
+
+    // Date format: YYYY-MM-DD
+    final dateRegex = RegExp(r'^\d{4}-\d{2}-\d{2}$');
+    if (!dateRegex.hasMatch(value)) {
+      return null;
+    }
+
+    try {
+      return DateTime.parse(value);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  factory ToDate.fromJson(Map<String, dynamic> json) => _$ToDateFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ToDateToJson(this);
 }
 
 @JsonSerializable()
-class If extends Expression {
-  late Expression condition;
-  late Expression then;
-  late Expression elseExpression;
+class ConvertsToDateTime extends UnaryExpression {
+  ConvertsToDateTime({required super.operand});
 
-  If(
-      {required this.condition,
-      required this.then,
-      required this.elseExpression});
+  bool convertsThisToDateTime() => convertsToDateTime(value);
 
-  factory If.fromJson(Map<String, dynamic> json) => _$IfFromJson(json);
+  static bool convertsToDateTime(dynamic value) {
+    if (value == null || value is! String) {
+      return false;
+    }
 
-  Map<String, dynamic> toJson() => _$IfToJson(this);
+    // Date time format: YYYY-MM-DDThh:mm:ss.fff(Z|((+|-)hh:mm))
+    final dateTimeRegex = RegExp(
+        r'^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}(Z|(\+|-)\d{2}:\d{2})?$');
+    return dateTimeRegex.hasMatch(value);
+  }
+
+  factory ConvertsToDateTime.fromJson(Map<String, dynamic> json) =>
+      _$ConvertsToDateTimeFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ConvertsToDateTimeToJson(this);
 }
 
 @JsonSerializable()
-class CaseItem {
-  late Expression when;
-  late Expression then;
+class ToDateTime extends UnaryExpression {
+  ToDateTime({required super.operand});
 
-  CaseItem({required this.when, required this.then});
+  DateTime? toThisDateTime() => toDateTime(value);
 
-  factory CaseItem.fromJson(Map<String, dynamic> json) =>
-      _$CaseItemFromJson(json);
+  static DateTime? toDateTime(dynamic value) {
+    if (value == null || value is! String) {
+      return null;
+    }
 
-  Map<String, dynamic> toJson() => _$CaseItemToJson(this);
+    final dateTimeRegex = RegExp(
+        r'^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}(Z|(\+|-)\d{2}:\d{2})?$');
+    if (!dateTimeRegex.hasMatch(value)) {
+      return null;
+    }
+
+    try {
+      return DateTime.parse(value);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  factory ToDateTime.fromJson(Map<String, dynamic> json) =>
+      _$ToDateTimeFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ToDateTimeToJson(this);
 }
 
 @JsonSerializable()
-class Case extends Expression {
-  late Expression? comparand;
-  late List<CaseItem> caseItems;
-  late Expression elseExpression;
+class ConvertsToDecimal extends UnaryExpression {
+  ConvertsToDecimal({required super.operand});
 
-  Case({this.comparand, required this.caseItems, required this.elseExpression});
+  bool convertsThisToDecimal() => convertsToDecimal(value);
 
-  factory Case.fromJson(Map<String, dynamic> json) => _$CaseFromJson(json);
+  static bool convertsToDecimal(dynamic value) {
+    if (value == null) {
+      return false;
+    }
 
-  Map<String, dynamic> toJson() => _$CaseToJson(this);
+    if (value is bool) {
+      return true;
+    }
+
+    final decimalRegex = RegExp(r'^[+-]?(\d+(\.\d+)?|\.\d+)$');
+    return decimalRegex.hasMatch(value.toString());
+  }
+
+  factory ConvertsToDecimal.fromJson(Map<String, dynamic> json) =>
+      _$ConvertsToDecimalFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ConvertsToDecimalToJson(this);
 }
 
 @JsonSerializable()
-class Null extends Expression {
-  QName? valueType;
+class ToDecimal extends UnaryExpression {
+  ToDecimal({required super.operand});
 
-  Null({this.valueType});
+  num? toThisDecimal() => toDecimal(value);
 
-  factory Null.fromJson(Map<String, dynamic> json) => _$NullFromJson(json);
+  static num? toDecimal(dynamic value) {
+    if (value == null) {
+      return null;
+    }
 
-  Map<String, dynamic> toJson() => _$NullToJson(this);
+    if (value is bool) {
+      return value ? 1.0 : 0.0;
+    }
+
+    final decimalRegex = RegExp(r'^[+-]?(\d+(\.\d+)?|\.\d+)$');
+    final valueString = value.toString();
+    if (!decimalRegex.hasMatch(valueString)) {
+      return null;
+    }
+
+    return num.tryParse(valueString);
+  }
+
+  factory ToDecimal.fromJson(Map<String, dynamic> json) =>
+      _$ToDecimalFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ToDecimalToJson(this);
 }
 
 @JsonSerializable()
-class IsNull extends UnaryExpression {
-  IsNull({required super.operand});
+class ConvertsToInteger extends UnaryExpression {
+  ConvertsToInteger({required super.operand});
 
-  factory IsNull.fromJson(Map<String, dynamic> json) => _$IsNullFromJson(json);
+  bool convertsThisToInteger() => convertsToInteger(value);
 
-  Map<String, dynamic> toJson() => _$IsNullToJson(this);
+  static bool convertsToInteger(dynamic value) {
+    if (value == null) {
+      return false;
+    }
+
+    if (value is bool) {
+      return true;
+    }
+
+    final intRegex = RegExp(r'^[+-]?\d+$');
+    final valueString = value.toString();
+    if (!intRegex.hasMatch(valueString)) {
+      return false;
+    }
+
+    try {
+      int.parse(valueString);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  factory ConvertsToInteger.fromJson(Map<String, dynamic> json) =>
+      _$ConvertsToIntegerFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ConvertsToIntegerToJson(this);
 }
 
 @JsonSerializable()
-class IsTrue extends UnaryExpression {
-  IsTrue({required super.operand});
+class ToInteger extends UnaryExpression {
+  ToInteger({required super.operand});
 
-  factory IsTrue.fromJson(Map<String, dynamic> json) => _$IsTrueFromJson(json);
+  int? toThisInteger() => toInteger(value);
 
-  Map<String, dynamic> toJson() => _$IsTrueToJson(this);
+  static int? toInteger(dynamic value) {
+    if (value == null) {
+      return null;
+    } else if (value is bool) {
+      return value ? 1 : 0;
+    } else if (value is String) {
+      String formattedvalue = value.trim();
+
+      if (formattedvalue.isEmpty) {
+        return null;
+      }
+
+      RegExp integerRegex = RegExp(r'^[+-]?\d+$');
+
+      if (!integerRegex.hasMatch(formattedvalue)) {
+        return null; // Not a valid integer format
+      }
+
+      try {
+        return int.parse(formattedvalue);
+      } catch (e) {
+        return null; // Parsing error
+      }
+    } else {
+      return null; // Unsupported type
+    }
+  }
+
+  factory ToInteger.fromJson(Map<String, dynamic> json) =>
+      _$ToIntegerFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ToIntegerToJson(this);
 }
 
 @JsonSerializable()
-class IsFalse extends UnaryExpression {
-  IsFalse({required super.operand});
+class ConvertsToLong extends UnaryExpression {
+  ConvertsToLong({required super.operand});
 
-  factory IsFalse.fromJson(Map<String, dynamic> json) =>
-      _$IsFalseFromJson(json);
+  bool convertsThisToLong() => convertsToLong(value);
 
-  Map<String, dynamic> toJson() => _$IsFalseToJson(this);
+  static bool convertsToLong(dynamic value) {
+    if (value == null) {
+      return false;
+    } else if (value is bool) {
+      return true;
+    } else if (value is String) {
+      String formattedvalue = value.trim();
+
+      if (formattedvalue.isEmpty) {
+        return false;
+      }
+
+      RegExp longRegex = RegExp(r'^[+-]?\d+$');
+
+      if (!longRegex.hasMatch(formattedvalue)) {
+        return false; // Not a valid long format
+      }
+
+      try {
+        // Check if the parsed value fits in the range of a Dart 'int' type
+        int parsedValue = int.parse(formattedvalue);
+        return parsedValue >= -9223372036854775808 &&
+            parsedValue <= 9223372036854775807;
+      } catch (e) {
+        return false; // Parsing error
+      }
+    } else {
+      return false; // Unsupported type
+    }
+  }
+
+  factory ConvertsToLong.fromJson(Map<String, dynamic> json) =>
+      _$ConvertsToLongFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ConvertsToLongToJson(this);
 }
 
 @JsonSerializable()
-class Coalesce extends NaryExpression {
-  Coalesce();
+class ToLong extends UnaryExpression {
+  ToLong({required super.operand});
 
-  factory Coalesce.fromJson(Map<String, dynamic> json) =>
-      _$CoalesceFromJson(json);
+  int? convertThisToLong() => toLong(value);
 
-  Map<String, dynamic> toJson() => _$CoalesceToJson(this);
+  static int? toLong(dynamic value) {
+    if (value == null) {
+      return null;
+    } else if (value is String) {
+      String formattedvalue = value.trim();
+
+      if (formattedvalue.isEmpty) {
+        return null;
+      }
+
+      RegExp longRegex = RegExp(r'^[+-]?\d+$');
+
+      if (!longRegex.hasMatch(formattedvalue)) {
+        return null; // Not a valid long format
+      }
+
+      try {
+        // Parsing the value to an integer
+        int parsedValue = int.parse(formattedvalue);
+        // Checking if the parsed value fits in the range of a Dart 'int' type (corresponds to Long in CQL)
+        if (parsedValue >= -9223372036854775808 &&
+            parsedValue <= 9223372036854775807) {
+          return parsedValue;
+        } else {
+          return null; // Value out of Long range
+        }
+      } catch (e) {
+        return null; // Parsing error
+      }
+    } else {
+      return null; // Unsupported type
+    }
+  }
+
+  factory ToLong.fromJson(Map<String, dynamic> json) => _$ToLongFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ToLongToJson(this);
 }
 
 @JsonSerializable()
-class Is extends UnaryExpression {
-  TypeSpecifier? isTypeSpecifier;
-  QName? isType;
+class ConvertsToQuantity extends UnaryExpression {
+  ConvertsToQuantity({required super.operand});
 
-  Is({this.isTypeSpecifier, this.isType, required super.operand});
+  bool convertsThisToQuantity() => convertsToQuantity(value);
 
-  factory Is.fromJson(Map<String, dynamic> json) => _$IsFromJson(json);
+  static bool convertsToQuantity(dynamic value) {
+    if (value == null) {
+      return false;
+    } else if (value is int || value is double || value is Ratio) {
+      return true;
+    } else if (value is String) {
+      String formattedvalue = value.trim();
 
-  Map<String, dynamic> toJson() => _$IsToJson(this);
+      if (formattedvalue.isEmpty) {
+        return false;
+      }
+
+      RegExp quantityRegex = RegExp(r"^[+-]?\d+(\.\d+)?(\s+\'[\w\s]+\'\s*)?$");
+
+      if (!quantityRegex.hasMatch(formattedvalue)) {
+        return false; // Not a valid quantity format
+      }
+
+      // Further validation for quantity value and unit designator (if present)
+      List<String> parts = formattedvalue.split(' ');
+      String quantityValue = parts[0];
+
+      try {
+        // Check if the parsed value is a valid decimal
+        double parsedValue = double.parse(quantityValue);
+        if (parsedValue.isNaN || parsedValue.isInfinite) {
+          return false; // NaN or Infinite value is not valid
+        }
+      } catch (e) {
+        return false; // Parsing error
+      }
+
+      // Check if the quantity format contains the unit designator
+      if (parts.length > 1) {
+        String unitDesignator = parts[1];
+        // Implement validation for the unit designator (if needed)
+        // This is a placeholder for checking the unit designator's validity
+      }
+
+      return true; // Valid quantity format
+    } else {
+      return false; // Unsupported type
+    }
+  }
+
+  factory ConvertsToQuantity.fromJson(Map<String, dynamic> json) =>
+      _$ConvertsToQuantityFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ConvertsToQuantityToJson(this);
 }
 
 @JsonSerializable()
-class As extends UnaryExpression {
-  TypeSpecifier? asTypeSpecifier;
-  QName? asType;
-  bool strict = false;
+class ToQuantity extends UnaryExpression {
+  ToQuantity({required super.operand});
 
-  As(
-      {this.asTypeSpecifier,
-      this.asType,
-      this.strict = false,
-      required super.operand});
+  Quantity? toThisQuantity() => toQuantity(value);
 
-  factory As.fromJson(Map<String, dynamic> json) => _$AsFromJson(json);
+  static Quantity? toQuantity(dynamic value) {
+    if (value == null) {
+      return null;
+    }
 
-  Map<String, dynamic> toJson() => _$AsToJson(this);
+    if (value is int || value is double || value is num) {
+      return Quantity(value: FhirDecimal(value.toDouble()));
+    }
+
+    if (value is String) {
+      String formattedvalue = value.trim();
+
+      if (formattedvalue.isEmpty) {
+        return null;
+      }
+
+      RegExp quantityRegex = RegExp(r'^([+-]?\d+(\.\d+)?)(\s*[a-zA-Z]+)?$');
+
+      if (!quantityRegex.hasMatch(formattedvalue)) {
+        return null; // Not a valid quantity format
+      }
+
+      try {
+        List<String> parts = formattedvalue.split(' ');
+        double parsedValue = double.parse(parts[0]);
+
+        String unit = '1';
+        if (parts.length > 1) {
+          unit = parts.sublist(1).join(' ').trim();
+        }
+
+        return Quantity(value: FhirDecimal(parsedValue), unit: unit);
+      } catch (e) {
+        return null; // Parsing error
+      }
+    }
+
+    if (value is List && value.length == 2 && value.every((e) => e is num)) {
+      double numerator = value[0].toDouble();
+      double denominator = value[1].toDouble();
+      if (denominator == 0) {
+        return null; // Division by zero
+      }
+      return Quantity(value: FhirDecimal(numerator / denominator));
+    }
+
+    return null; // Other types are not supported
+  }
+
+  factory ToQuantity.fromJson(Map<String, dynamic> json) =>
+      _$ToQuantityFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ToQuantityToJson(this);
 }
 
 @JsonSerializable()
-class Convert extends UnaryExpression {
-  TypeSpecifier? toTypeSpecifier;
-  QName? toType;
+class ConvertsToRatio extends UnaryExpression {
+  ConvertsToRatio({required super.operand});
 
-  Convert({this.toTypeSpecifier, this.toType, required super.operand});
+  bool convertsThisToRatio() => convertsToRatio(value);
 
-  factory Convert.fromJson(Map<String, dynamic> json) =>
-      _$ConvertFromJson(json);
+  static bool convertsToRatio(dynamic value) {
+    if (value == null) {
+      return false;
+    }
 
-  Map<String, dynamic> toJson() => _$ConvertToJson(this);
+    if (value is String) {
+      String formattedvalue = value.trim();
+
+      if (formattedvalue.isEmpty) {
+        return false;
+      }
+
+      RegExp ratioRegex = RegExp(
+          r'^\s*([+-]?\d+(\.\d+)?(\s*[a-zA-Z]+)?)\s*:\s*([+-]?\d+(\.\d+)?(\s*[a-zA-Z]+)?)\s*$');
+
+      if (!ratioRegex.hasMatch(formattedvalue)) {
+        return false; // Not a valid ratio format
+      }
+
+      List<String> parts = formattedvalue.split(':');
+      Quantity? firstQuantity = ToQuantity.toQuantity(parts[0].trim());
+      Quantity? secondQuantity = ToQuantity.toQuantity(parts[1].trim());
+
+      return secondQuantity != null;
+    }
+
+    return false; // Unsupported type
+  }
+
+  factory ConvertsToRatio.fromJson(Map<String, dynamic> json) =>
+      _$ConvertsToRatioFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ConvertsToRatioToJson(this);
 }
 
 @JsonSerializable()
-class CanConvert {
-  CanConvert();
+class ToRatio extends UnaryExpression {
+  ToRatio({required super.operand});
 
-  factory CanConvert.fromJson(Map<String, dynamic> json) =>
-      _$CanConvertFromJson(json);
+  List<Quantity>? toThisRatio() => toRatio(value);
 
-  Map<String, dynamic> toJson() => _$CanConvertToJson(this);
+  static List<Quantity>? toRatio(dynamic value) {
+    if (value == null) {
+      return null;
+    }
+
+    if (value is String) {
+      String formattedvalue = value.trim();
+
+      if (formattedvalue.isEmpty) {
+        return null;
+      }
+
+      RegExp ratioRegex = RegExp(
+          r'^\s*([+-]?\d+(\.\d+)?(\s*[a-zA-Z]+)?)\s*:\s*([+-]?\d+(\.\d+)?(\s*[a-zA-Z]+)?)\s*$');
+
+      if (!ratioRegex.hasMatch(formattedvalue)) {
+        return null; // Not a valid ratio format
+      }
+
+      List<String> parts = formattedvalue.split(':');
+      Quantity? firstQuantity = ToQuantity.toQuantity(parts[0].trim());
+      Quantity? secondQuantity = ToQuantity.toQuantity(parts[1].trim());
+
+      return firstQuantity == null
+          ? secondQuantity == null
+              ? null
+              : [secondQuantity]
+          : secondQuantity == null
+              ? [firstQuantity]
+              : [firstQuantity, secondQuantity];
+    }
+
+    return null; // Unsupported type or invalid value
+  }
+
+  factory ToRatio.fromJson(Map<String, dynamic> json) =>
+      _$ToRatioFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ToRatioToJson(this);
+}
+
+@JsonSerializable()
+class ToList extends UnaryExpression {
+  ToList({required super.operand});
+
+  List<dynamic> toThisList() => toList(value);
+
+  static List<dynamic> toList(dynamic operand) {
+    if (operand == null) {
+      return [];
+    } else {
+      return [operand];
+    }
+  }
+
+  factory ToList.fromJson(Map<String, dynamic> json) => _$ToListFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ToListToJson(this);
+}
+
+@JsonSerializable()
+class ToChars extends UnaryExpression {
+  ToChars({required super.operand});
+
+  List<String>? toThisChars() => toChars(value);
+
+  static List<String>? toChars(dynamic value) {
+    if (value == null || value is! String) {
+      return null;
+    } else {
+      return value.split('');
+    }
+  }
+
+  factory ToChars.fromJson(Map<String, dynamic> json) =>
+      _$ToCharsFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ToCharsToJson(this);
 }
 
 @JsonSerializable()
 class ConvertsToString extends UnaryExpression {
   ConvertsToString({required super.operand});
+
+  bool convertThisToString() => convertsToString(value);
+
+  static bool convertsToString(dynamic argument) {
+    if (argument == null) {
+      return false;
+    } else {
+      return argument is bool ||
+          argument is int ||
+          argument is double ||
+          argument is DateTime ||
+          argument is String ||
+          argument is Quantity ||
+          argument is Ratio;
+    }
+  }
 
   factory ConvertsToString.fromJson(Map<String, dynamic> json) =>
       _$ConvertsToStringFromJson(json);
@@ -695,6 +1091,28 @@ class ConvertsToString extends UnaryExpression {
 class ToString extends UnaryExpression {
   ToString({required super.operand});
 
+  String? toThisString() => toElmString(value);
+
+  static String? toElmString(dynamic value) {
+    if (value == null) {
+      return null;
+    } else if (value is bool) {
+      return value.toString();
+    } else if (value is int || value is double) {
+      return value.toString();
+    } else if (value is DateTime) {
+      return value.toIso8601String();
+    } else if (value is String) {
+      return value;
+    } else if (value is Quantity) {
+      return '${value.value}${value.unit != null ? ' ${value.unit}' : ''}';
+    } else if (value is Ratio) {
+      return '${ToString.toElmString(value.numerator)}:${ToString.toElmString(value.denominator)}';
+    } else {
+      return null; // Unsupported type
+    }
+  }
+
   factory ToString.fromJson(Map<String, dynamic> json) =>
       _$ToStringFromJson(json);
 
@@ -704,6 +1122,37 @@ class ToString extends UnaryExpression {
 @JsonSerializable()
 class ConvertsToTime extends UnaryExpression {
   ConvertsToTime({required super.operand});
+
+  bool convertThisToTime() => convertsToTime(value);
+
+  static bool convertsToTime(dynamic value) {
+    if (value == null) {
+      return false;
+    } else if (value is String) {
+      RegExp timeRegex = RegExp(
+          r'^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)(\.\d+)?$'); // Validates ISO-8601 time representation
+
+      if (timeRegex.hasMatch(value)) {
+        // Additional validation for a valid time-of-day value
+        List<String> parts = value.split(':');
+        int hours = int.parse(parts[0]);
+        int minutes = int.parse(parts[1]);
+        int seconds = int.parse(parts[2].split('.')[0]);
+
+        if (hours >= 0 &&
+            hours < 24 &&
+            minutes >= 0 &&
+            minutes < 60 &&
+            seconds >= 0 &&
+            seconds < 60) {
+          return true;
+        }
+      }
+      return false;
+    } else {
+      return false; // Unsupported type
+    }
+  }
 
   factory ConvertsToTime.fromJson(Map<String, dynamic> json) =>
       _$ConvertsToTimeFromJson(json);
@@ -715,6 +1164,40 @@ class ConvertsToTime extends UnaryExpression {
 class ToTime extends UnaryExpression {
   ToTime({required super.operand});
 
+  DateTime? toThisTime() => toTime(value);
+
+  static DateTime? toTime(dynamic value) {
+    if (value == null) {
+      return null;
+    } else if (value is String) {
+      RegExp timeRegex = RegExp(
+          r'^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)(\.\d+)?$'); // Validates ISO-8601 time representation
+
+      if (timeRegex.hasMatch(value)) {
+        // Additional validation for a valid time-of-day value
+        List<String> parts = value.split(':');
+        int hours = int.parse(parts[0]);
+        int minutes = int.parse(parts[1]);
+        int seconds = int.parse(parts[2].split('.')[0]);
+
+        if (hours >= 0 &&
+            hours < 24 &&
+            minutes >= 0 &&
+            minutes < 60 &&
+            seconds >= 0 &&
+            seconds < 60) {
+          return DateTime.parse('1970-01-01 $value');
+        }
+      }
+      return null; // Invalid time format or value
+    } else if (value is DateTime) {
+      return DateTime(1970, 1, 1, value.hour, value.minute, value.second,
+          value.millisecond);
+    } else {
+      return null; // Unsupported type
+    }
+  }
+
   factory ToTime.fromJson(Map<String, dynamic> json) => _$ToTimeFromJson(json);
 
   Map<String, dynamic> toJson() => _$ToTimeToJson(this);
@@ -722,7 +1205,28 @@ class ToTime extends UnaryExpression {
 
 @JsonSerializable()
 class CanConvertQuantity extends BinaryExpression {
-  CanConvertQuantity({required super.operand});
+  CanConvertQuantity(
+      {required dynamic arg1, required dynamic arg2, this.targetUnit})
+      : super(operand: [Expression(arg1), Expression(arg2)]);
+
+  final String? targetUnit;
+
+  bool canThisConvertQuantity() => canConvertQuantity(value, targetUnit);
+
+  static bool canConvertQuantity(Quantity quantity, [String? targetUnit]) {
+    if (targetUnit == null) {
+      return false;
+    }
+    // Implement conversion logic based on UCUM (Unified Code for Units of Measure)
+    // Add your conversion logic here or integrate any external libraries for unit conversion
+
+    // Placeholder logic assuming simple quantity conversion
+    if (quantity.unit == targetUnit) {
+      return true; // Quantity can be converted to the target unit
+    } else {
+      return false; // Quantity cannot be converted to the target unit
+    }
+  }
 
   factory CanConvertQuantity.fromJson(Map<String, dynamic> json) =>
       _$CanConvertQuantityFromJson(json);
@@ -732,7 +1236,35 @@ class CanConvertQuantity extends BinaryExpression {
 
 @JsonSerializable()
 class ConvertQuantity extends BinaryExpression {
-  ConvertQuantity({required super.operand});
+  ConvertQuantity(
+      {required dynamic arg1, required dynamic arg2, this.targetUnit})
+      : super(operand: [Expression(arg1), Expression(arg2)]);
+
+  final String? targetUnit;
+
+  Quantity? convertThisQuantity() => convertQuantity(value, targetUnit);
+
+  static Quantity? convertQuantity(dynamic valueQuantity,
+      [String? targetUnit]) {
+    if (targetUnit == null) {
+      return null;
+    }
+
+    // Placeholder logic assuming simple quantity conversion
+    // Replace this with proper UCUM-compliant unit conversion logic
+    if (valueQuantity is Quantity && valueQuantity.unit == targetUnit) {
+      return Quantity(
+          value: valueQuantity.value,
+          unit: targetUnit); // Quantity with the same unit
+    } else {
+      // Implement proper unit conversion logic here based on UCUM
+      // If conversion is not supported, handle appropriately (return null or throw an error)
+      // Example: throw UnimplementedError('Unit conversion not supported');
+      // Actual conversion logic would depend on the specific unit conversion rules
+      // ...
+      return null; // Placeholder for unsupported unit conversion
+    }
+  }
 
   factory ConvertQuantity.fromJson(Map<String, dynamic> json) =>
       _$ConvertQuantityFromJson(json);
@@ -740,9 +1272,63 @@ class ConvertQuantity extends BinaryExpression {
   Map<String, dynamic> toJson() => _$ConvertQuantityToJson(this);
 }
 
+// TODO(Dokotela): sleepy, start here
 @JsonSerializable()
 class Equal extends BinaryExpression {
-  Equal({required super.operand});
+  Equal({required dynamic arg1, required dynamic arg2, this.targetUnit})
+      : super(operand: [Expression(arg1), Expression(arg2)]);
+
+  final String? targetUnit;
+
+  bool equalThis() => equals(value, targetUnit);
+
+  static bool equals(dynamic arg1, dynamic arg2) {
+    if (arg1 == null || arg2 == null) {
+      return false;
+    } else if (arg1 is int ||
+        arg1 is double ||
+        arg1 is String ||
+        arg1 is bool) {
+      return arg1 == arg2;
+    } else if (arg1 is Quantity && arg2 is Quantity) {
+      // Check if dimensions are the same
+      // Note: This is a placeholder; actual quantity comparison might involve more complex logic
+      return arg1.value == arg2.value;
+    } else if (arg1 is Ratio && arg2 is Ratio) {
+      // Check if numerator and denominator quantities are equal
+      // This is a placeholder; actual ratio comparison might involve more complex logic
+      return arg1.numerator == arg2.numerator &&
+          arg1.denominator == arg2.denominator;
+    } else if (arg1 is List && arg2 is List) {
+      // Check list equality
+      if (arg1.length != arg2.length) {
+        return false;
+      }
+      for (int i = 0; i < arg1.length; i++) {
+        if (!equals(arg1[i], arg2[i])) {
+          return false;
+        }
+      }
+      return true;
+    } else if (arg1 is Map && arg2 is Map) {
+      // Check map equality
+      if (arg1.length != arg2.length) {
+        return false;
+      }
+      for (var key in arg1.keys) {
+        if (!arg2.containsKey(key) || !equals(arg1[key], arg2[key])) {
+          return false;
+        }
+      }
+      return true;
+    } else if (arg1 is DateTime && arg2 is DateTime) {
+      // Compare DateTime values
+      // This is a placeholder; actual comparison involves comparing each precision
+      return arg1 == arg2;
+    } else {
+      return false; // Unsupported type for comparison
+    }
+  }
 
   factory Equal.fromJson(Map<String, dynamic> json) => _$EqualFromJson(json);
 
@@ -752,6 +1338,59 @@ class Equal extends BinaryExpression {
 @JsonSerializable()
 class Equivalent extends BinaryExpression {
   Equivalent({required super.operand});
+
+  static bool equivalent(dynamic arg1, dynamic arg2) {
+    if (arg1 == null && arg2 == null) {
+      return true;
+    } else if (arg1 == null || arg2 == null) {
+      return false;
+    } else if (arg1 is int ||
+        arg1 is double ||
+        arg1 is String ||
+        arg1 is bool) {
+      return arg1 == arg2;
+    } else if (arg1 is String && arg2 is String) {
+      // Compare strings while ignoring case and normalizing whitespace
+      return arg1.trim().toLowerCase() == arg2.trim().toLowerCase();
+    } else if (arg1 is Quantity && arg2 is Quantity) {
+      // Check if quantities are equivalent
+      // This is a placeholder; actual quantity comparison might involve unit conversion and value comparison
+      return false; // Implement logic for quantity equivalence here
+    } else if (arg1 is Ratio && arg2 is Ratio) {
+      // Check if ratios are equivalent
+      // This is a placeholder; actual ratio comparison might involve more complex logic
+      return arg1.numerator == arg2.numerator &&
+          arg1.denominator == arg2.denominator;
+    } else if (arg1 is List && arg2 is List) {
+      // Check list equivalence
+      if (arg1.length != arg2.length) {
+        return false;
+      }
+      for (int i = 0; i < arg1.length; i++) {
+        if (!equivalent(arg1[i], arg2[i])) {
+          return false;
+        }
+      }
+      return true;
+    } else if (arg1 is Map && arg2 is Map) {
+      // Check map equivalence
+      if (arg1.length != arg2.length) {
+        return false;
+      }
+      for (var key in arg1.keys) {
+        if (!arg2.containsKey(key) || !equivalent(arg1[key], arg2[key])) {
+          return false;
+        }
+      }
+      return true;
+    } else if (arg1 is DateTime && arg2 is DateTime) {
+      // Compare DateTime values
+      // This is a placeholder; actual comparison involves comparing each precision
+      return arg1 == arg2;
+    } else {
+      return false; // Unsupported type for equivalence comparison
+    }
+  }
 
   factory Equivalent.fromJson(Map<String, dynamic> json) =>
       _$EquivalentFromJson(json);
@@ -763,6 +1402,10 @@ class Equivalent extends BinaryExpression {
 class NotEqual extends BinaryExpression {
   NotEqual({required super.operand});
 
+  static bool notEqual(dynamic arg1, dynamic arg2) {
+    return !(Equal.equals(arg1, arg2));
+  }
+
   factory NotEqual.fromJson(Map<String, dynamic> json) =>
       _$NotEqualFromJson(json);
 
@@ -773,6 +1416,29 @@ class NotEqual extends BinaryExpression {
 class Less extends BinaryExpression {
   Less({required super.operand});
 
+  static bool less(dynamic arg1, dynamic arg2) {
+    if (arg1 == null || arg2 == null) {
+      return false;
+    } else if (arg1 is int || arg1 is double || arg1 is String) {
+      // For simple types like int, double, and string
+      if (arg1 is String && arg2 is String) {
+        return arg1.compareTo(arg2) < 0;
+      } else {
+        return arg1 < arg2;
+      }
+    } else if (arg1 is DateTime && arg2 is DateTime) {
+      // Comparison for DateTime values
+      // This is a placeholder; actual comparison involves comparing each precision
+      return arg1.isBefore(arg2);
+    } else if (arg1 is Quantity && arg2 is Quantity) {
+      // Comparison for quantities
+      // This is a placeholder; actual comparison might involve unit conversion and value comparison
+      return false; // Implement logic for quantity comparison here
+    } else {
+      return false; // Unsupported type for less comparison
+    }
+  }
+
   factory Less.fromJson(Map<String, dynamic> json) => _$LessFromJson(json);
 
   Map<String, dynamic> toJson() => _$LessToJson(this);
@@ -781,6 +1447,29 @@ class Less extends BinaryExpression {
 @JsonSerializable()
 class Greater extends BinaryExpression {
   Greater({required super.operand});
+
+  static bool greater(dynamic arg1, dynamic arg2) {
+    if (arg1 == null || arg2 == null) {
+      return false;
+    } else if (arg1 is int || arg1 is double || arg1 is String) {
+      // For simple types like int, double, and string
+      if (arg1 is String && arg2 is String) {
+        return arg1.compareTo(arg2) > 0;
+      } else {
+        return arg1 > arg2;
+      }
+    } else if (arg1 is DateTime && arg2 is DateTime) {
+      // Comparison for DateTime values
+      // This is a placeholder; actual comparison involves comparing each precision
+      return arg1.isAfter(arg2);
+    } else if (arg1 is Quantity && arg2 is Quantity) {
+      // Comparison for quantities
+      // This is a placeholder; actual comparison might involve unit conversion and value comparison
+      return false; // Implement logic for quantity comparison here
+    } else {
+      return false; // Unsupported type for greater comparison
+    }
+  }
 
   factory Greater.fromJson(Map<String, dynamic> json) =>
       _$GreaterFromJson(json);
@@ -792,15 +1481,42 @@ class Greater extends BinaryExpression {
 class LessOrEqual extends BinaryExpression {
   LessOrEqual({required super.operand});
 
+  static bool lessOrEqual(dynamic arg1, dynamic arg2) {
+    if (arg1 == null || arg2 == null) {
+      return false;
+    } else if (arg1 is int || arg1 is double || arg1 is String) {
+      // For simple types like int, double, and string
+      if (arg1 is String && arg2 is String) {
+        return arg1.compareTo(arg2) <= 0;
+      } else {
+        return arg1 <= arg2;
+      }
+    } else if (arg1 is DateTime && arg2 is DateTime) {
+      // Comparison for DateTime values
+      // This is a placeholder; actual comparison involves comparing each precision
+      return FhirDateTime(arg1) == FhirDateTime(arg2);
+    } else if (arg1 is Quantity && arg2 is Quantity) {
+      // Comparison for quantities
+      // This is a placeholder; actual comparison might involve unit conversion and value comparison
+      return false; // Implement logic for quantity comparison here
+    } else {
+      return false; // Unsupported type for less or equal comparison
+    }
+  }
+
   factory LessOrEqual.fromJson(Map<String, dynamic> json) =>
       _$LessOrEqualFromJson(json);
 
   Map<String, dynamic> toJson() => _$LessOrEqualToJson(this);
 }
 
+/// The GreaterOrEqual operator returns true if the first argument is greater
+/// than or equal to the second argument. (rest of the documentation)
 @JsonSerializable()
 class GreaterOrEqual extends BinaryExpression {
-  GreaterOrEqual({required super.operand});
+  GreaterOrEqual({required super.operand, required this.binaryExpression});
+  BinaryExpression
+      binaryExpression; // Assuming BinaryExpression is a defined class
 
   factory GreaterOrEqual.fromJson(Map<String, dynamic> json) =>
       _$GreaterOrEqualFromJson(json);
@@ -810,7 +1526,10 @@ class GreaterOrEqual extends BinaryExpression {
 
 @JsonSerializable()
 class Add extends BinaryExpression {
-  Add({required super.operand});
+  BinaryExpression
+      binaryExpression; // Assuming BinaryExpression is a defined class
+
+  Add({required super.operand, required this.binaryExpression});
 
   factory Add.fromJson(Map<String, dynamic> json) => _$AddFromJson(json);
 
@@ -819,7 +1538,10 @@ class Add extends BinaryExpression {
 
 @JsonSerializable()
 class Subtract extends BinaryExpression {
-  Subtract({required super.operand});
+  BinaryExpression
+      binaryExpression; // Assuming BinaryExpression is a defined class
+
+  Subtract(this.binaryExpression);
 
   factory Subtract.fromJson(Map<String, dynamic> json) =>
       _$SubtractFromJson(json);
@@ -827,9 +1549,18 @@ class Subtract extends BinaryExpression {
   Map<String, dynamic> toJson() => _$SubtractToJson(this);
 }
 
+/// The Multiply operator performs numeric multiplication of its arguments.
+/// For multiplication operations involving quantities, the resulting quantity
+/// will have the appropriate unit.
+/// If either argument is null, the result is null.
+/// If the result of the operation cannot be represented, the result is null.
+/// The Multiply operator is defined for the Integer, Long, Decimal, and Quantity types.
 @JsonSerializable()
 class Multiply extends BinaryExpression {
-  Multiply({required super.operand});
+  BinaryExpression
+      binaryExpression; // Assuming BinaryExpression is a defined class
+
+  Multiply(this.binaryExpression);
 
   factory Multiply.fromJson(Map<String, dynamic> json) =>
       _$MultiplyFromJson(json);
@@ -837,18 +1568,41 @@ class Multiply extends BinaryExpression {
   Map<String, dynamic> toJson() => _$MultiplyToJson(this);
 }
 
+/// The Divide operator performs numeric division of its arguments.
+/// Note that the result type of Divide is Decimal, even if its arguments are
+/// of type Integer. For integer division, use the truncated divide operator.
+/// For division operations involving quantities, the resulting quantity will
+/// have the appropriate unit.
+/// If either argument is null, the result is null.
+/// If the result of the division cannot be represented, or the right argument
+/// is 0, the result is null.
+/// The Divide operator is defined for the Decimal and Quantity types.
 @JsonSerializable()
 class Divide extends BinaryExpression {
-  Divide({required super.operand});
+  BinaryExpression
+      binaryExpression; // Assuming BinaryExpression is a defined class
+
+  Divide(this.binaryExpression);
 
   factory Divide.fromJson(Map<String, dynamic> json) => _$DivideFromJson(json);
 
   Map<String, dynamic> toJson() => _$DivideToJson(this);
 }
 
+///  The TruncatedDivide operator performs integer division of its arguments.
+/// If either argument is null, the result is null.
+/// If the result of the operation cannot be represented, or the right argument
+/// is 0, the result is null.
+/// The TruncatedDivide operator is defined for the Integer, Long, Decimal, and
+/// Quantity types.
+/// For TruncatedDivide operations involving quantities, the resulting quantity
+/// will have the appropriate unit.
 @JsonSerializable()
 class TruncatedDivide extends BinaryExpression {
-  TruncatedDivide({required super.operand});
+  BinaryExpression
+      binaryExpression; // Assuming BinaryExpression is a defined class
+
+  TruncatedDivide(this.binaryExpression);
 
   factory TruncatedDivide.fromJson(Map<String, dynamic> json) =>
       _$TruncatedDivideFromJson(json);
@@ -856,18 +1610,34 @@ class TruncatedDivide extends BinaryExpression {
   Map<String, dynamic> toJson() => _$TruncatedDivideToJson(this);
 }
 
+/// The Modulo operator computes the remainder of the division of its arguments.
+/// If either argument is null, the result is null.
+/// If the result of the modulo cannot be represented, or the right argument is
+/// 0, the result is null.
+/// The Modulo operator is defined for the Integer, Long, Decimal, and Quantity
+/// types.
+/// For Modulo operations involving quantities, the resulting quantity will have
+/// the appropriate unit.
 @JsonSerializable()
 class Modulo extends BinaryExpression {
-  Modulo({required super.operand});
+  BinaryExpression
+      binaryExpression; // Assuming BinaryExpression is a defined class
+
+  Modulo(this.binaryExpression);
 
   factory Modulo.fromJson(Map<String, dynamic> json) => _$ModuloFromJson(json);
 
   Map<String, dynamic> toJson() => _$ModuloToJson(this);
 }
 
+/// The Ceiling operator returns the first integer greater than or equal to the argument.
+/// If the argument is null, the result is null.
 @JsonSerializable()
 class Ceiling extends UnaryExpression {
-  Ceiling({required super.operand});
+  UnaryExpression
+      unaryExpression; // Assuming UnaryExpression is a defined class
+
+  Ceiling(this.unaryExpression);
 
   factory Ceiling.fromJson(Map<String, dynamic> json) =>
       _$CeilingFromJson(json);
@@ -875,18 +1645,28 @@ class Ceiling extends UnaryExpression {
   Map<String, dynamic> toJson() => _$CeilingToJson(this);
 }
 
+/// The Floor operator returns the first integer less than or equal to the argument.
+/// If the argument is null, the result is null.
 @JsonSerializable()
 class Floor extends UnaryExpression {
-  Floor({required super.operand});
+  UnaryExpression
+      unaryExpression; // Assuming UnaryExpression is a defined class
+
+  Floor(this.unaryExpression);
 
   factory Floor.fromJson(Map<String, dynamic> json) => _$FloorFromJson(json);
 
   Map<String, dynamic> toJson() => _$FloorToJson(this);
 }
 
+/// The Truncate operator returns the integer component of its argument.
+/// If the argument is null, the result is null.
 @JsonSerializable()
 class Truncate extends UnaryExpression {
-  Truncate({required super.operand});
+  UnaryExpression
+      unaryExpression; // Assuming UnaryExpression is a defined class
+
+  Truncate(this.unaryExpression);
 
   factory Truncate.fromJson(Map<String, dynamic> json) =>
       _$TruncateFromJson(json);
@@ -894,36 +1674,63 @@ class Truncate extends UnaryExpression {
   Map<String, dynamic> toJson() => _$TruncateToJson(this);
 }
 
+/// The Abs operator returns the absolute value of its argument
+/// When taking the absolute value of a quantity, the unit is unchanged.
+/// If the argument is null, the result is null.
+/// If the result of taking the absolute value of the argument cannot be
+/// represented (e.g. Abs(minimum Integer)), the result is null.
+/// The Abs operator is defined for the Integer, Long, Decimal, and Quantity types.
 @JsonSerializable()
 class Abs extends UnaryExpression {
-  Abs({required super.operand});
+  UnaryExpression
+      unaryExpression; // Assuming UnaryExpression is a defined class
+
+  Abs(this.unaryExpression);
 
   factory Abs.fromJson(Map<String, dynamic> json) => _$AbsFromJson(json);
 
   Map<String, dynamic> toJson() => _$AbsToJson(this);
 }
 
+/// The Negate operator returns the negative of its argument.
+/// When negating quantities, the unit is unchanged.
+/// If the argument is null, the result is null.
+/// If the result of negating the argument cannot be represented
+/// (e.g. -(minimum Integer)), the result is null.
+/// The Negate operator is defined for the Integer, Long, Decimal, and Quantity types.
 @JsonSerializable()
 class Negate extends UnaryExpression {
-  Negate({required super.operand});
+  UnaryExpression
+      unaryExpression; // Assuming UnaryExpression is a defined class
+
+  Negate(this.unaryExpression);
 
   factory Negate.fromJson(Map<String, dynamic> json) => _$NegateFromJson(json);
 
   Map<String, dynamic> toJson() => _$NegateToJson(this);
 }
 
+/// The Round operator returns the nearest integer to its argument.
+/// The semantics of round are defined as a traditional round, meaning that a
+/// decimal value of 0.5 or higher will round to 1.
+/// If the argument is null, the result is null.
+/// Precision determines the decimal place at which the rounding will occur. If
+/// precision is not specified or null, 0 is assumed.
 @JsonSerializable()
 class Round extends OperatorExpression {
-  Expression? operand;
+  Expression operand;
   Expression? precision;
 
-  Round({this.operand, this.precision}) : super();
+  Round({required this.operand, this.precision});
 
   factory Round.fromJson(Map<String, dynamic> json) => _$RoundFromJson(json);
 
   Map<String, dynamic> toJson() => _$RoundToJson(this);
 }
 
+/// The Ln operator computes the natural logarithm of its argument.
+/// If the argument is null, the result is null.
+/// If the result of the operation cannot be represented, the result is null.
 @JsonSerializable()
 class Ln extends UnaryExpression {
   Ln({required super.operand});
@@ -933,33 +1740,57 @@ class Ln extends UnaryExpression {
   Map<String, dynamic> toJson() => _$LnToJson(this);
 }
 
+/// The Exp operator returns e raised to the given power.
+/// If the argument is null, the result is null.
+/// If the result of the operation cannot be represented, the result is null.
 @JsonSerializable()
 class Exp extends UnaryExpression {
-  Exp({required super.operand});
+  Exp({super.operand});
 
   factory Exp.fromJson(Map<String, dynamic> json) => _$ExpFromJson(json);
 
   Map<String, dynamic> toJson() => _$ExpToJson(this);
 }
 
+/// The Log operator computes the logarithm of its first argument, using the
+/// second argument as the base.
+/// If either argument is null, the result is null.
+/// If the result of the operation cannot be represented, the result is null.
 @JsonSerializable()
 class Log extends BinaryExpression {
-  Log({required super.operand});
+  Log({required this.firstArgument, required this.secondArgument});
+
+  final Expression firstArgument;
+  final Expression secondArgument;
 
   factory Log.fromJson(Map<String, dynamic> json) => _$LogFromJson(json);
 
   Map<String, dynamic> toJson() => _$LogToJson(this);
 }
 
+/// The Power operator raises the first argument to the power given by the second argument.
+/// If either argument is null, the result is null.
+/// If the result of the operation cannot be represented, the result is null.
 @JsonSerializable()
 class Power extends BinaryExpression {
-  Power({required super.operand});
+  Power({required this.firstArgument, required this.secondArgument});
+
+  final Expression firstArgument;
+  final Expression secondArgument;
 
   factory Power.fromJson(Map<String, dynamic> json) => _$PowerFromJson(json);
 
   Map<String, dynamic> toJson() => _$PowerToJson(this);
 }
 
+/// The Successor operator returns the successor of the argument.
+/// For example, the successor of 1 is 2. If the argument is already the
+/// maximum value for the type, a run-time error is thrown.
+/// The Successor operator is defined for the Integer, Long, Decimal, Date,
+/// DateTime, and Time types.
+/// [More documentation...]
+/// If the argument is null, the result is null.
+/// If the result of the operation cannot be represented, the result is null.
 @JsonSerializable()
 class Successor extends UnaryExpression {
   Successor({required super.operand});
@@ -970,6 +1801,14 @@ class Successor extends UnaryExpression {
   Map<String, dynamic> toJson() => _$SuccessorToJson(this);
 }
 
+/// The Predecessor operator returns the predecessor of the argument.
+/// For example, the predecessor of 2 is 1. If the argument is already the
+/// minimum value for the type, a run-time error is thrown.
+/// The Predecessor operator is defined for the Integer, Long, Decimal, Date,
+/// DateTime, and Time types.
+/// [More documentation...]
+/// If the argument is null, the result is null.
+/// If the result of the operation cannot be represented, the result is null.
 @JsonSerializable()
 class Predecessor extends UnaryExpression {
   Predecessor({required super.operand});
@@ -980,11 +1819,15 @@ class Predecessor extends UnaryExpression {
   Map<String, dynamic> toJson() => _$PredecessorToJson(this);
 }
 
+/// The MinValue operator returns the minimum representable value for the given type.
+/// [Details about MinValue for different types...]
+/// Note that implementations may choose to represent the minimum DateTime
+/// value using a constant offset such as UTC.
 @JsonSerializable()
 class MinValue extends Expression {
   String valueType;
 
-  MinValue({required this.valueType});
+  MinValue(this.valueType);
 
   factory MinValue.fromJson(Map<String, dynamic> json) =>
       _$MinValueFromJson(json);
@@ -992,10 +1835,13 @@ class MinValue extends Expression {
   Map<String, dynamic> toJson() => _$MinValueToJson(this);
 }
 
-// MaxValue
+/// The MaxValue operator returns the maximum representable value for the given type.
+/// [Details about MaxValue for different types...]
+/// Note that implementations may choose to represent the maximum DateTime
+/// value using a constant offset such as UTC.
 @JsonSerializable()
 class MaxValue extends Expression {
-  final QName valueType;
+  String valueType;
 
   MaxValue(this.valueType);
 
@@ -1005,10 +1851,12 @@ class MaxValue extends Expression {
   Map<String, dynamic> toJson() => _$MaxValueToJson(this);
 }
 
-// Precision
+/// The Precision operator returns the number of digits of precision in the value value.
+/// [Details about Precision for Decimal, Date, DateTime, and Time values...]
+/// If the argument is null, the result is null.
 @JsonSerializable()
 class Precision extends UnaryExpression {
-  Precision({required super.operand});
+  Precision({super.operand});
 
   factory Precision.fromJson(Map<String, dynamic> json) =>
       _$PrecisionFromJson(json);
@@ -1016,10 +1864,15 @@ class Precision extends UnaryExpression {
   Map<String, dynamic> toJson() => _$PrecisionToJson(this);
 }
 
-// LowBoundary
+/// The LowBoundary operator returns the least possible value of the value to the specified precision.
+/// [Details about LowBoundary for Decimal, Date, DateTime, and Time values...]
+/// If the value value is null, the result is null.
 @JsonSerializable()
 class LowBoundary extends BinaryExpression {
-  LowBoundary({required super.operand});
+  LowBoundary({required this.value, this.precision});
+
+  final Expression value;
+  final int? precision;
 
   factory LowBoundary.fromJson(Map<String, dynamic> json) =>
       _$LowBoundaryFromJson(json);
@@ -1027,101 +1880,243 @@ class LowBoundary extends BinaryExpression {
   Map<String, dynamic> toJson() => _$LowBoundaryToJson(this);
 }
 
-// HighBoundary
+/// The HighBoundary operator returns the greatest possible value of the value
+/// to the specified precision.
+/// [Details about HighBoundary for Decimal, Date, DateTime, and Time values...]
+/// If the value value is null, the result is null.
+@JsonSerializable()
 class HighBoundary extends BinaryExpression {
-  HighBoundary({required super.operand});
+  HighBoundary({required this.value, this.precision});
+
+  final Expression value;
+  final int? precision;
+
+  factory HighBoundary.fromJson(Map<String, dynamic> json) =>
+      _$HighBoundaryFromJson(json);
+
+  Map<String, dynamic> toJson() => _$HighBoundaryToJson(this);
 }
 
-// Concatenate
+/// The Concatenate operator performs string concatenation of its arguments.
+/// If any argument is null, the result is null.
+@JsonSerializable()
 class Concatenate extends NaryExpression {
-  Concatenate();
+  Concatenate({required this.arguments});
+
+  final List<Expression> arguments;
+
+  factory Concatenate.fromJson(Map<String, dynamic> json) =>
+      _$ConcatenateFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ConcatenateToJson(this);
 }
 
-// Combine
+/// The Combine operator combines a list of strings, optionally separating each
+/// string with the given separator.
+/// If either argument is null, the result is null. If the source list is empty,
+/// the result is an empty string ('').
+/// For consistency with aggregate operator behavior, null elements in the value list are ignored.
+@JsonSerializable()
 class Combine extends OperatorExpression {
   final Expression source;
-  final Expression separator;
+  final Expression? separator;
 
-  Combine(this.source, this.separator);
+  Combine({required this.source, this.separator});
+
+  factory Combine.fromJson(Map<String, dynamic> json) =>
+      _$CombineFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CombineToJson(this);
 }
 
-// Split
+/// The Split operator splits a string into a list of strings using a separator.
+/// If the stringToSplit argument is null, the result is null.
+/// If the stringToSplit argument does not contain any appearances of the
+/// separator, the result is a list of strings containing one element that is
+/// the value of the stringToSplit argument.
+@JsonSerializable()
 class Split extends OperatorExpression {
-  final Expression stringToSplit;
-  final Expression separator;
+  Expression stringToSplit;
+  Expression separator;
 
-  Split(this.stringToSplit, this.separator);
+  Split({required this.stringToSplit, required this.separator});
+
+  factory Split.fromJson(Map<String, dynamic> json) => _$SplitFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SplitToJson(this);
 }
 
-// SplitOnMatches
+/// The SplitOnMatches operator splits a string into a list of strings using
+/// matches of a regex pattern.
+/// The separatorPattern argument is a regex pattern, following the same
+/// semantics as the Matches operator.
+/// If the stringToSplit argument is null, the result is null.
+/// If the stringToSplit argument does not contain any appearances of the
+/// separator pattern, the result is a list of strings containing one element
+/// that is the value value of the stringToSplit argument.
+@JsonSerializable()
 class SplitOnMatches extends OperatorExpression {
-  final Expression stringToSplit;
-  final Expression separatorPattern;
+  Expression stringToSplit;
+  Expression separatorPattern;
 
-  SplitOnMatches(this.stringToSplit, this.separatorPattern);
+  SplitOnMatches({required this.stringToSplit, required this.separatorPattern});
+
+  factory SplitOnMatches.fromJson(Map<String, dynamic> json) =>
+      _$SplitOnMatchesFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SplitOnMatchesToJson(this);
 }
 
-// Length
+/// The Length operator returns the length of its argument.
+/// For strings, the length is the number of characters in the string.
+/// For lists, the length is the number of elements in the list.
+/// If the argument is null, the result is 0.
+@JsonSerializable()
 class Length extends UnaryExpression {
   Length({required super.operand});
+
+  factory Length.fromJson(Map<String, dynamic> json) => _$LengthFromJson(json);
+
+  Map<String, dynamic> toJson() => _$LengthToJson(this);
 }
 
-// Upper
+/// The Upper operator returns the given string with all characters converted
+/// to their upper case equivalents.
+/// Note that the definition of uppercase for a given character is a
+/// locale-dependent determination, and is not specified by CQL. Implementations
+/// are expected to provide appropriate and consistent handling of locale for their environment.
+/// If the argument is null, the result is null.
+@JsonSerializable()
 class Upper extends UnaryExpression {
   Upper({required super.operand});
+
+  factory Upper.fromJson(Map<String, dynamic> json) => _$UpperFromJson(json);
+
+  Map<String, dynamic> toJson() => _$UpperToJson(this);
 }
 
-// Lower
-class Lower extends UnaryExpression {
-  Lower({required super.operand});
-}
+/// The Lower operator returns the given string with all characters converted
+/// to their lowercase equivalents.
+/// Note that the definition of lowercase for a given character is a
+/// locale-dependent determination,
+/// and is not specified by CQL. Implementations are expected to provide
+/// appropriate and consistent
+/// handling of the locale for their environment.
+/// If the argument is null, the result is null.
+@JsonSerializable()
+class Lower extends UnaryExpression {}
 
-// Indexer
+@JsonSerializable()
 class Indexer extends BinaryExpression {
-  Indexer({required super.operand});
+  /// The Indexer operator returns the indexth element in a string or list.
+  ///
+  /// Indexes in strings and lists are defined to be 0-based.
+  ///
+  /// If the index is less than 0 or greater than the length of the string or list being indexed,
+  /// the result is null.
+  ///
+  /// If either argument is null, the result is null.
 }
 
-// PositionOf
+/// The PositionOf operator returns the 0-based index of the beginning given
+/// pattern in the given string.
+/// If the pattern is not found, the result is -1.
+/// If either argument is null, the result is null.
+
+@JsonSerializable()
 class PositionOf extends OperatorExpression {
-  final Expression pattern;
-  final Expression string;
+  Expression pattern;
+  Expression string;
 
   PositionOf(this.pattern, this.string);
+
+  factory PositionOf.fromJson(Map<String, dynamic> json) =>
+      _$PositionOfFromJson(json);
+
+  Map<String, dynamic> toJson() => _$PositionOfToJson(this);
 }
 
-// LastPositionOf
+@JsonSerializable()
 class LastPositionOf extends OperatorExpression {
+  LastPositionOf({required this.pattern, required this.string});
+
   final Expression pattern;
   final Expression string;
 
-  LastPositionOf(this.pattern, this.string);
+  factory LastPositionOf.fromJson(Map<String, dynamic> json) =>
+      _$LastPositionOfFromJson(json);
+
+  Map<String, dynamic> toJson() => _$LastPositionOfToJson(this);
 }
 
-// Substring
+@JsonSerializable()
 class Substring extends OperatorExpression {
+  Substring({required this.stringToSub, required this.startIndex, this.length});
+
   final Expression stringToSub;
   final Expression startIndex;
   final Expression? length;
 
-  Substring(this.stringToSub, this.startIndex, [this.length]);
+  factory Substring.fromJson(Map<String, dynamic> json) =>
+      _$SubstringFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SubstringToJson(this);
 }
 
-// StartsWith
+@JsonSerializable()
 class StartsWith extends BinaryExpression {
-  StartsWith({required super.operand});
+  StartsWith({required this.prefix, required this.string});
+
+  final Expression prefix;
+  final Expression string;
+
+  factory StartsWith.fromJson(Map<String, dynamic> json) =>
+      _$StartsWithFromJson(json);
+
+  Map<String, dynamic> toJson() => _$StartsWithToJson(this);
 }
 
-// EndsWith
+@JsonSerializable()
 class EndsWith extends BinaryExpression {
-  EndsWith({required super.operand});
+  EndsWith({required this.suffix, required this.string});
+
+  final Expression suffix;
+  final Expression string;
+
+  factory EndsWith.fromJson(Map<String, dynamic> json) =>
+      _$EndsWithFromJson(json);
+
+  Map<String, dynamic> toJson() => _$EndsWithToJson(this);
 }
 
-class Matches {
-  // TODO: Add implementation for Matches
+@JsonSerializable()
+class Matches extends BinaryExpression {
+  Matches({required this.pattern, required this.string});
+
+  final Expression pattern;
+  final Expression string;
+
+  factory Matches.fromJson(Map<String, dynamic> json) =>
+      _$MatchesFromJson(json);
+
+  Map<String, dynamic> toJson() => _$MatchesToJson(this);
 }
 
-class ReplaceMatches {
-  // TODO: Add implementation for ReplaceMatches
+@JsonSerializable()
+class ReplaceMatches extends TernaryExpression {
+  ReplaceMatches(
+      {required this.pattern,
+      required this.string,
+      required this.substitution});
+
+  final Expression pattern;
+  final Expression string;
+  final Expression substitution;
+
+  factory ReplaceMatches.fromJson(Map<String, dynamic> json) =>
+      _$ReplaceMatchesFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ReplaceMatchesToJson(this);
 }
 
 enum DateTimePrecision {
@@ -1135,638 +2130,791 @@ enum DateTimePrecision {
   Millisecond,
 }
 
-class DurationBetween {
-  DurationBetween({required this.precision});
-  // TODO: Add implementation for DurationBetween
-  DateTimePrecision precision;
+@JsonSerializable()
+class DurationBetween extends BinaryExpression {
+  DurationBetween({required this.first, required this.second, this.precision});
+
+  final Expression first;
+  final Expression second;
+  final DateTimePrecision? precision;
+
+  factory DurationBetween.fromJson(Map<String, dynamic> json) =>
+      _$DurationBetweenFromJson(json);
+
+  Map<String, dynamic> toJson() => _$DurationBetweenToJson(this);
 }
 
-class DifferenceBetween {
-  DifferenceBetween({required this.precision});
-  // TODO: Add implementation for DifferenceBetween
-  DateTimePrecision precision;
+@JsonSerializable()
+class DifferenceBetween extends BinaryExpression {
+  DifferenceBetween(
+      {required this.first, required this.second, this.precision});
+
+  final Expression first;
+  final Expression second;
+  final DateTimePrecision? precision;
+
+  factory DifferenceBetween.fromJson(Map<String, dynamic> json) =>
+      _$DifferenceBetweenFromJson(json);
+
+  Map<String, dynamic> toJson() => _$DifferenceBetweenToJson(this);
 }
 
-class DateFrom {
-  // TODO: Add implementation for DateFrom
+@JsonSerializable()
+class DateFrom extends UnaryExpression {
+  DateFrom({required super.operand});
+
+  factory DateFrom.fromJson(Map<String, dynamic> json) =>
+      _$DateFromFromJson(json);
+
+  Map<String, dynamic> toJson() => _$DateFromToJson(this);
 }
 
-class TimeFrom {
-  // TODO: Add implementation for TimeFrom
+@JsonSerializable()
+class TimeFrom extends UnaryExpression {
+  TimeFrom({required super.operand});
+
+  factory TimeFrom.fromJson(Map<String, dynamic> json) =>
+      _$TimeFromFromJson(json);
+
+  Map<String, dynamic> toJson() => _$TimeFromToJson(this);
 }
 
-class TimezoneOffsetFrom {
-  // TODO: Add implementation for TimezoneOffsetFrom
+@Deprecated('as of 1.4')
+@JsonSerializable()
+class TimezoneFrom extends UnaryExpression {
+  TimezoneFrom({required super.operand});
+
+  factory TimezoneFrom.fromJson(Map<String, dynamic> json) =>
+      _$TimezoneFromFromJson(json);
+
+  Map<String, dynamic> toJson() => _$TimezoneFromToJson(this);
 }
 
-class DateTimeComponentFrom {
-  DateTimeComponentFrom({required this.precision});
-  // TODO: Add implementation for DateTimeComponentFrom
-  DateTimePrecision precision;
+@JsonSerializable()
+class TimezoneOffsetFrom extends UnaryExpression {
+  TimezoneOffsetFrom({required super.operand});
+
+  factory TimezoneOffsetFrom.fromJson(Map<String, dynamic> json) =>
+      _$TimezoneOffsetFromFromJson(json);
+
+  Map<String, dynamic> toJson() => _$TimezoneOffsetFromToJson(this);
 }
 
-class TimeOfDay {
-  // TODO: Add implementation for TimeOfDay
+@JsonSerializable()
+class DateTimeComponentFrom extends UnaryExpression {
+  DateTimeComponentFrom({required super.operand, this.precision});
+
+  final DateTimePrecision? precision;
+
+  factory DateTimeComponentFrom.fromJson(Map<String, dynamic> json) =>
+      _$DateTimeComponentFromFromJson(json);
+
+  Map<String, dynamic> toJson() => _$DateTimeComponentFromToJson(this);
 }
 
-class Today {
-  // TODO: Add implementation for Today
+@JsonSerializable()
+class TimeOfDay extends OperatorExpression {}
+
+@JsonSerializable()
+class Today extends OperatorExpression {}
+
+@JsonSerializable()
+class Now extends OperatorExpression {}
+
+@JsonSerializable()
+class DateTimeOperator extends OperatorExpression {
+  DateTimeOperator({
+    required this.year,
+    this.month,
+    this.day,
+    this.hour,
+    this.minute,
+    this.second,
+    this.millisecond,
+    this.timezoneOffset,
+  });
+
+  final Expression year;
+  final Expression? month;
+  final Expression? day;
+  final Expression? hour;
+  final Expression? minute;
+  final Expression? second;
+  final Expression? millisecond;
+  final Expression? timezoneOffset;
+
+  factory DateTimeOperator.fromJson(Map<String, dynamic> json) =>
+      _$DateTimeOperatorFromJson(json);
+
+  Map<String, dynamic> toJson() => _$DateTimeOperatorToJson(this);
 }
 
-class Now {
-  // TODO: Add implementation for Now
-}
-
-class SameAs {
-  // TODO: Add implementation for SameAs
+@JsonSerializable()
+class SameAs extends BinaryExpression {
+  SameAs(Expression left, Expression right, {DateTimePrecision? precision})
+      : super([left, right]) {
+    this.precision = precision;
+  }
   DateTimePrecision? precision;
 }
 
-class SameOrBefore {
-  // TODO: Add implementation for SameOrBefore
+@JsonSerializable()
+class SameOrBefore extends BinaryExpression {
+  SameOrBefore(Expression left, Expression right,
+      {DateTimePrecision? precision})
+      : super([left, right]) {
+    this.precision = precision;
+  }
   DateTimePrecision? precision;
 }
 
-class SameOrAfter {
-  // TODO: Add implementation for SameOrAfter
+@JsonSerializable()
+class SameOrAfter extends BinaryExpression {
+  SameOrAfter(Expression left, Expression right, {DateTimePrecision? precision})
+      : super([left, right]) {
+    this.precision = precision;
+  }
   DateTimePrecision? precision;
 }
 
+@JsonSerializable()
 class PointFrom extends UnaryExpression {
   PointFrom({required super.operand});
-
-  // The PointFrom expression extracts the single point from the source interval.
-  // The source interval must be a unit interval, otherwise, a run-time error is thrown.
-  // If the source interval is null, the result is null.
 }
 
+@JsonSerializable()
 class Width extends UnaryExpression {
   Width({required super.operand});
-  // The Width operator returns the width of an interval.
-  // The result of this operator is equivalent to invoking: End(i) - Start(i)
-  // Note: This operator is not defined for intervals of type Date, DateTime, and Time.
-  // If the argument is null, the result is null.
 }
 
+@JsonSerializable()
 class Size extends UnaryExpression {
   Size({required super.operand});
-  // The Size operator returns the size of an interval.
-  // The result of this operator is equivalent to invoking: End(i) - Start(i) + point-size
-  // Note: This operator is not defined for intervals of type Date, DateTime, and Time.
-  // If the argument is null, the result is null.
 }
 
+@JsonSerializable()
+class Size extends UnaryExpression {
+  Size({required super.operand});
+}
+
+@JsonSerializable()
 class Start extends UnaryExpression {
   Start({required super.operand});
-  // The Start operator returns the starting point of an interval.
-  // If the low boundary of the interval is open, this operator returns the Successor of the low value of the interval.
-  // If the low boundary is closed and the low value of the interval is not null, this operator returns the low value of the interval.
-  // Otherwise, the result is the minimum value of the point type of the interval.
-  // If the argument is null, the result is null.
 }
 
+@JsonSerializable()
 class End extends UnaryExpression {
   End({required super.operand});
-  // The End operator returns the ending point of an interval.
-  // If the high boundary of the interval is open, this operator returns the Predecessor of the high value of the interval.
-  // If the high boundary is closed and the high value of the interval is not null, this operator returns the high value of the interval.
-  // Otherwise, the result is the maximum value of the point type of the interval.
-  // If the argument is null, the result is null.
 }
 
-class Contains extends BinaryExpression {
-  Contains({required super.operand});
-  // The Contains operator returns true if the first operand contains the second.
-  // There are two overloads of this operator: List, T and Interval, T.
-  // For List, T overload, this operator returns true if the given element is in the list, using equality semantics.
-  // For Interval, T overload, this operator returns true if the given point is within the interval boundaries.
-  // If the first argument is null, the result is false. If the second argument is null, the result is null.
-}
+// @JsonSerializable()
+// class Contains extends BinaryExpression {
+//   Contains(Expression left, Expression right, {DateTimePrecision? precision})
+//       : super([left, right]) {
+//     this.precision = precision;
+//   }
+//   DateTimePrecision? precision;
+// }
 
-class ProperContains extends BinaryExpression {
-  ProperContains({required super.operand});
-  // The ProperContains operator returns true if the first operand properly contains the second.
-  // There are two overloads of this operator: List, T and Interval, T.
-  // For List, T overload, this operator returns true if the given element is in the list and not the only element in the list, using equality semantics.
-  // For Interval, T overload, this operator returns true if the given point is within the interval boundaries.
-  // If either argument is null, the result is null.
-}
+// @JsonSerializable()
+// class ProperContains extends BinaryExpression {
+//   ProperContains(Expression left, Expression right, {DateTimePrecision? precision})
+//       : super([left, right]) {
+//     this.precision = precision;
+//   }
+//   DateTimePrecision? precision;
+// }
 
-class In extends BinaryExpression {
-  In({required super.operand});
-  // The In operator tests for membership in an interval or list.
-  // There are two overloads of this operator: T, List and T, Interval.
-  // For T, List overload, this operator returns true if the given element is in the list, using equality semantics.
-  // For T, Interval overload, this operator returns true if the given point is within the interval boundaries.
-  // If the first argument is null, the result is null. If the second argument is null, the result is false.
-}
+// @JsonSerializable()
+// class In extends BinaryExpression {
+//   In(Expression left, Expression right, {DateTimePrecision? precision})
+//       : super([left, right]) {
+//     this.precision = precision;
+//   }
+//   DateTimePrecision? precision;
+// }
 
-class ProperIn extends BinaryExpression {
-  ProperIn({required super.operand});
-  // The ProperIn operator tests for proper membership in an interval or list.
-  // There are two overloads of this operator: T, List and T, Interval.
-  // For T, List overload, this operator returns if the given element is in the list and not the only element in the list, using equality semantics.
-  // For T, Interval overload, this operator returns true if the given point is within the interval boundaries.
-  // If either argument is null, the result is null.
-}
+// @JsonSerializable()
+// class ProperIn extends BinaryExpression {
+//   ProperIn(Expression left, Expression right, {DateTimePrecision? precision})
+//       : super([left, right]) {
+//     this.precision = precision;
+//   }
+//   DateTimePrecision? precision;
+// }
 
-class Includes extends BinaryExpression {
-  Includes({required super.operand});
-  // The Includes operator returns true if the first operand completely includes the second.
-  // There are two overloads of this operator: List, List and Interval, Interval.
-  // For List, List overload, this operator returns true if the first operand includes every element of the second operand, using equality semantics.
-  // For Interval, Interval overload, this operator returns true if the first interval completely includes the second interval.
-  // If either argument is null, the result is null.
-}
+// @JsonSerializable()
+// class Includes extends BinaryExpression {
+//   Includes(Expression left, Expression right, {DateTimePrecision? precision})
+//       : super([left, right]) {
+//     this.precision = precision;
+//   }
+//   DateTimePrecision? precision;
+// }
 
-class IncludedIn extends BinaryExpression {
-  IncludedIn({required super.operand});
-  // The IncludedIn operator returns true if the first operand is completely included in the second.
-  // There are two overloads of this operator: List, List and Interval, Interval.
-  // For the List, List overload, this operator returns true if every element in the first list is included in the second list, using equality semantics.
-  // For the Interval, Interval overload, this operator returns true if the first interval is completely included in the second interval.
-  // If either argument is null, the result is null.
-}
+// @JsonSerializable()
+// class IncludedIn extends BinaryExpression {
+//   IncludedIn(Expression left, Expression right, {DateTimePrecision? precision})
+//       : super([left, right]) {
+//     this.precision = precision;
+//   }
+//   DateTimePrecision? precision;
+// }
 
-class ProperIncludes extends BinaryExpression {
-  ProperIncludes({required super.operand});
-  // The ProperIncludes operator returns true if the first operand includes the second, and is strictly larger.
-  // There are two overloads of this operator: List, List and Interval, Interval.
-  // For the List, List overload, this operator returns true if the first list includes every element of the second list, using equality semantics, and the first list is strictly larger.
-  // For the Interval, Interval overload, this operator returns true if the first interval includes the second interval, and the intervals are not equal.
-  // If either argument is null, the result is null.
-}
+// @JsonSerializable()
+// class ProperIncludes extends BinaryExpression {
+//   ProperIncludes(Expression left, Expression right, {DateTimePrecision? precision})
+//       : super([left, right]) {
+//     this.precision = precision;
+//   }
+//   DateTimePrecision? precision;
+// }
 
-class ProperIncludedIn extends BinaryExpression {
-  ProperIncludedIn({required super.operand});
-  // The ProperIncludedIn operator returns true if the first operand is included in the second, and is strictly smaller.
-  // There are two overloads of this operator: List, List and Interval, Interval.
-  // For the List, List overload, this operator returns true if every element of the first list is included in the second list, using equality semantics, and the first list is strictly smaller.
-  // For the Interval, Interval overload, this operator returns true if the first interval is included in the second interval, and the intervals are not equal.
-  // If either argument is null, the result is null.
-}
+// @JsonSerializable()
+// class ProperIncludedIn extends BinaryExpression {
+//   ProperIncludedIn(Expression left, Expression right, {DateTimePrecision? precision})
+//       : super([left, right]) {
+//     this.precision = precision;
+//   }
+//   DateTimePrecision? precision;
+// }
 
-class Before extends BinaryExpression {
-  Before({required super.operand});
-  // The Before operator is defined for Intervals, as well as Date, DateTime, and Time values.
-  // For the Interval overload, it returns true if the first interval ends before the second one starts.
-  // For Date, DateTime, and Time overloads, it compares the values considering precision specified and returns true or false accordingly.
-  // If no precision is specified, the comparison is performed beginning with years (or hours for time values) and proceeding to the finest precision specified in either input.
-  // If either argument is null, the result is null.
-}
+// @JsonSerializable()
+// class Before extends BinaryExpression {
+//   Before(Expression left, Expression right, {DateTimePrecision? precision})
+//       : super([left, right]) {
+//     this.precision = precision;
+//   }
+//   DateTimePrecision? precision;
+// }
 
-class After extends BinaryExpression {
-  After({required super.operand});
-  // The After operator is defined for Intervals, as well as Date, DateTime, and Time values.
-  // For the Interval overload, it returns true if the first interval starts after the second one ends.
-  // For Date, DateTime, and Time overloads, it compares the values considering precision specified and returns true or false accordingly.
-  // If no precision is specified, the comparison is performed beginning with years (or hours for time values) and proceeding to the finest precision specified in either input.
-  // If either argument is null, the result is null.
-}
+// @JsonSerializable()
+// class After extends BinaryExpression {
+//   After(Expression left, Expression right, {DateTimePrecision? precision})
+//       : super([left, right]) {
+//     this.precision = precision;
+//   }
+//   DateTimePrecision? precision;
+// }
 
-class Meets extends BinaryExpression {
-  Meets({required super.operand});
-  // The Meets operator returns true if the first interval ends immediately before the second interval starts or vice versa.
-  // If either argument is null, the result is null.
-}
+// @JsonSerializable()
+// class Meets extends BinaryExpression {
+//   Meets(Expression left, Expression right, {DateTimePrecision? precision})
+//       : super([left, right]) {
+//     this.precision = precision;
+//   }
+//   DateTimePrecision? precision;
+// }
 
-class MeetsBefore extends BinaryExpression {
-  MeetsBefore({required super.operand});
-  // The MeetsBefore operator returns true if the first interval ends immediately before the second interval starts.
-  // If either argument is null, the result is null.
-}
+// @JsonSerializable()
+// class MeetsBefore extends BinaryExpression {
+//   MeetsBefore(Expression left, Expression right, {DateTimePrecision? precision})
+//       : super([left, right]) {
+//     this.precision = precision;
+//   }
+//   DateTimePrecision? precision;
+// }
 
-class MeetsAfter extends BinaryExpression {
-  MeetsAfter({required super.operand});
-  // The MeetsAfter operator returns true if the first interval starts immediately after the second interval ends.
-  // If either argument is null, the result is null.
-}
+// @JsonSerializable()
+// class MeetsAfter extends BinaryExpression {
+//   MeetsAfter(Expression left, Expression right, {DateTimePrecision? precision})
+//       : super([left, right]) {
+//     this.precision = precision;
+//   }
+//   DateTimePrecision? precision;
+// }
 
-class Overlaps extends BinaryExpression {
-  Overlaps({required super.operand});
-  // The Overlaps operator returns true if the first interval overlaps the second.
-  // If either argument is null, the result is null.
-}
+// @JsonSerializable()
+// class Overlaps extends BinaryExpression {
+//   Overlaps(Expression left, Expression right, {DateTimePrecision? precision})
+//       : super([left, right]) {
+//     this.precision = precision;
+//   }
+//   DateTimePrecision? precision;
+// }
 
-class OverlapsBefore extends BinaryExpression {
-  OverlapsBefore({required super.operand});
-  // The OverlapsBefore operator returns true if the first interval starts before and overlaps the second interval.
-  // If either argument is null, the result is null.
-}
+// @JsonSerializable()
+// class OverlapsBefore extends BinaryExpression {
+//   OverlapsBefore(Expression left, Expression right, {DateTimePrecision? precision})
+//       : super([left, right]) {
+//     this.precision = precision;
+//   }
+//   DateTimePrecision? precision;
+// }
 
-class OverlapsAfter extends BinaryExpression {
-  OverlapsAfter({required super.operand});
-  // The OverlapsAfter operator returns true if the first interval overlaps and ends after the second.
-  // If either argument is null, the result is null.
-}
+// @JsonSerializable()
+// class OverlapsAfter extends BinaryExpression {
+//   OverlapsAfter(Expression left, Expression right, {DateTimePrecision? precision})
+//       : super([left, right]) {
+//     this.precision = precision;
+//   }
+//   DateTimePrecision? precision;
+// }
 
-class Starts extends BinaryExpression {
-  Starts({required super.operand});
-  // The Starts operator returns true if the first interval starts the second.
-  // If either argument is null, the result is null.
-}
+// @JsonSerializable()
+// class Starts extends BinaryExpression {
+//   Starts(Expression left, Expression right, {DateTimePrecision? precision})
+//       : super([left, right]) {
+//     this.precision = precision;
+//   }
+//   DateTimePrecision? precision;
+// }
 
-class Ends extends BinaryExpression {
-  Ends({required super.operand});
-  // The Ends operator returns true if the first interval ends the second.
-  // If either argument is null, the result is null.
-}
+// @JsonSerializable()
+// class Ends extends BinaryExpression {
+//   Ends(Expression left, Expression right, {DateTimePrecision? precision})
+//       : super([left, right]) {
+//     this.precision = precision;
+//   }
+//   DateTimePrecision? precision;
+// }
 
-class Collapse extends BinaryExpression {
-  Collapse({required super.operand});
-  // The Collapse operator returns the unique set of intervals that completely covers the ranges present in the given list of intervals.
-  // If the source argument is null, the result is null.
-}
+// @JsonSerializable()
+// class Collapse extends BinaryExpression {
+//   Collapse(Expression left, Expression right) : super([left, right]);
+// }
 
-class Expand extends BinaryExpression {
-  Expand({required super.operand});
-  // The Expand operator returns the set of intervals of size per for all the ranges present in the given list of intervals.
-  // If the source argument is null, the result is null.
-}
+// @JsonSerializable()
+// class Expand extends BinaryExpression {
+//   Expand(Expression left, Expression right) : super([left, right]);
+// }
 
-class Union extends NaryExpression {
-  // The Union operator returns the union of its arguments.
-  // If either argument is null, the operation is performed as though the argument was an empty list.
-}
+// @JsonSerializable()
+// class Union extends NaryExpression {
+//   Union(List<Expression> arguments) : super(arguments);
+// }
 
-class Intersect extends NaryExpression {
-  // The Intersect operator returns the intersection of its arguments.
-  // If either argument is null, the result is null.
-}
+// @JsonSerializable()
+// class Intersect extends NaryExpression {
+//   Intersect(List<Expression> arguments) : super(arguments);
+// }
 
-class Except extends NaryExpression {
-  // The Except operator returns the set difference of the two arguments.
-  // If the first argument is null, the result is null. If the second argument is null, the operation is performed as though the second argument was an empty list.
-}
+// @JsonSerializable()
+// class ExceptListList extends NaryExpression {
+//   ExceptListList(Expression left, Expression right) : super([left, right]);
+// }
 
-class Exists extends UnaryExpression {
-  Exists({required super.operand});
-  // The Exists operator returns true if the list contains any elements.
-  // If the argument is null, the result is false.
-}
+// @JsonSerializable()
+// class ExceptIntervalInterval extends NaryExpression {
+//   ExceptIntervalInterval(Expression left, Expression right) : super([left, right]);
+// }
 
-class Times extends BinaryExpression {
-  Times({required super.operand});
-  // The Times operator performs the cartesian product of two lists of tuples.
-  // If either argument is null, the result is null.
-}
+// @JsonSerializable()
+// class Exists extends UnaryExpression {
+//   Exists(Expression operand) : super(operand);
+// }
 
-class Filter extends Expression {
-  // The Filter operator returns a list with only those elements in the source list for which the condition element evaluates to true.
-  // If the source argument is null, the result is null.
-}
+// @JsonSerializable()
+// class Times extends BinaryExpression {
+//   Times(Expression left, Expression right) : super(left, right);
+// }
 
-class First extends OperatorExpression {
-  // The First operator returns the first element in a list.
-  // If the argument is null, the result is null.
-}
+// @JsonSerializable()
+// class Filter extends Expression {
+//   Filter(Expression source, Expression condition, {String? scope})
+//       : source = source,
+//         condition = condition,
+//         scope = scope;
 
-class Last extends OperatorExpression {
-  // The Last operator returns the last element in a list.
-  // If the argument is null, the result is null.
-}
+//   Expression source;
+//   Expression condition;
+//   String? scope;
+// }
 
-class Slice extends OperatorExpression {
-  // The Slice operator returns a portion of the elements in a list, beginning at the start index and ending just before the ending index.
-  // If the source list is null, the result is null.
-  // If the startIndex is null, the slice begins at the first element of the list.
-  // If the endIndex is null, the slice continues to the last element of the list.
-  // If the startIndex or endIndex is less than 0, or if the endIndex is less than the startIndex, the result is an empty list.
-}
+// @JsonSerializable()
+// class First extends OperatorExpression {
+//   First(Expression source, {String? orderBy})
+//       : source = source,
+//         orderBy = orderBy;
 
-class IndexOf extends OperatorExpression {
-  // The IndexOf operator returns the 0-based index of the given element in the given source list.
-  // If the list is empty, or no element is found, the result is -1.
-  // If either argument is null, the result is null.
-}
+//   Expression source;
+//   String? orderBy;
+// }
 
-class Flatten extends UnaryExpression {
-  Flatten({required super.operand});
-  // The Flatten operator flattens a list of lists into a single list.
-  // If the argument is null, the result is null.
-}
+// @JsonSerializable()
+// class Last extends OperatorExpression {
+//   Last(Expression source, {String? orderBy})
+//       : source = source,
+//         orderBy = orderBy;
 
-class Sort extends Expression {
-  // The Sort operator returns a list with all the elements in source, sorted as described by the by element.
-  // If the argument is null, the result is null.
-}
+//   Expression source;
+//   String? orderBy;
+// }
 
-class ForEach extends Expression {
-  // The ForEach expression iterates over the list of elements in the source element, and returns a list with the same number of elements.
-  // If the source argument is null, the result is null.
-  // If the element argument evaluates to null for some item in the source list, the resulting list will contain a null for that element.
-}
+// @JsonSerializable()
+// class Slice extends OperatorExpression {
+//   Slice(Expression source, Expression startIndex, Expression endIndex)
+//       : source = source,
+//         startIndex = startIndex,
+//         endIndex = endIndex;
 
-class Repeat extends Expression {
-  // The Repeat expression performs successive ForEach until no new elements are returned.
-  // If the source argument is null, the result is null.
-  // If the element argument evaluates to null for some item in the source list, the resulting list will contain a null for that element.
-}
+//   Expression source;
+//   Expression startIndex;
+//   Expression endIndex;
+// }
 
-class Distinct extends UnaryExpression {
-  Distinct({required super.operand});
-  // The Distinct operator takes a list of elements and returns a list containing only the unique elements within the input.
-  // If the source argument is null, the result is null.
-}
+// @JsonSerializable()
+// class IndexOf extends OperatorExpression {
+//   IndexOf(Expression source, Expression element)
+//       : source = source,
+//         element = element;
 
-class Current extends Expression {
-  // The Current expression returns the value of the object currently in scope.
-  // It is an error to invoke the Current operator outside of a scoped operation.
-}
+//   Expression source;
+//   Expression element;
+// }
 
-class Iteration extends Expression {
-  // The Iteration expression returns the current iteration number of a scoped operation.
-}
+// // Flatten operator@JsonSerializable()
+// @JsonSerializable()
+// class Flatten extends UnaryExpression {}
 
-class Total extends Expression {
-  // The Total expression returns the current value of the total aggregation accumulator in an aggregate operation.
-}
+// // Sort operator@JsonSerializable()
+// @JsonSerializable()
+// class Sort extends Expression {
+//   Sort(Expression source, List<SortByItem> by)
+//       : source = source,
+//         by = by;
 
-class SingletonFrom extends UnaryExpression {
-  SingletonFrom({required super.operand});
-  // The SingletonFrom expression extracts a single element from the source list.
-  // If the source list is empty, the result is null.
-  // If the source list contains one element, that element is returned.
-  // If the list contains more than one element, a run-time error is thrown.
-  // If the source list is null, the result is null.
-}
+//   Expression source;
+//   List<SortByItem> by;
+// }
 
-abstract class AggregateExpression extends Expression {
-  // Aggregate expressions perform operations on lists of data, either directly on a list of scalars, or indirectly on a list of objects, with a reference to a property present on each object in the list.
-  // Aggregate expressions deal with missing information by excluding missing values from consideration before performing the aggregated operation.
-  // An aggregate operation performed over an empty list is defined to return null, except as noted in the documentation for each operator (Count, AllTrue, and AnyTrue are the exceptions).
-}
+// // ForEach expression@JsonSerializable()
+// @JsonSerializable()
+// class ForEach extends Expression {
+//   ForEach(Expression source, Expression element, {String? scope})
+//       : source = source,
+//         element = element,
+//         scope = scope;
 
-class Aggregate extends AggregateExpression {
-  // The Aggregate operator performs custom aggregation by evaluating an expression for each element of the source.
-  // If a path is specified, the aggregation is performed for value of the property specified by the path for each element of the source.
-  // The iteration expression has access to the $this, $index, and $total variables.
-  // At the end of each iteration, the value of the $total variable is updated to the result of the iteration expression.
-  // The value of the $total variable is initialized to the result of the initialValue expression, if present.
-  // If the list is null, the result is null.
-}
+//   Expression source;
+//   Expression element;
+//   String? scope;
+// }
 
-class Count extends AggregateExpression {
-  // The Count operator returns the number of non-null elements in the source.
-  // If a path is specified, the count returns the number of elements that have a value for the property specified by the path.
-  // If the list is empty, the result is 0.
-  // If the list is null, the result is 0.
-}
+// // Repeat expression@JsonSerializable()
+// @JsonSerializable()
+// class Repeat extends Expression {
+//   Repeat(Expression source, Expression element, {String? scope})
+//       : source = source,
+//         element = element,
+//         scope = scope;
 
-class Sum extends AggregateExpression {
-  // The Sum operator returns the sum of non-null elements in the source.
-  // If a path is specified, elements with no value for the property specified by the path are ignored.
-  // If the source contains no non-null elements, null is returned.
-  // If the list is null, the result is null.
-}
+//   Expression source;
+//   Expression element;
+//   String? scope;
+// }
 
-class Product extends AggregateExpression {
-  // The Product operator returns the geometric product of non-null elements in the source.
-  // If a path is specified, elements with no value for the property specified by the path are ignored.
-  // If the source contains no non-null elements, null is returned.
-  // If the list is null, the result is null.
-}
+// // Distinct operator@JsonSerializable()
+// @JsonSerializable()
+// class Distinct extends UnaryExpression {}
 
-class Min extends AggregateExpression {
-  // The Min operator returns the minimum element in the source.
-  // Comparison semantics are defined by the comparison operators for the type of the values being aggregated.
-  // If a path is specified, elements with no value for the property specified by the path are ignored.
-  // If the source contains no non-null elements, null is returned.
-  // If the source is null, the result is null.
-}
+// // Current expression@JsonSerializable()
+// @JsonSerializable()
+// class Current extends Expression {
+//   Current({String? scope}) : scope = scope;
 
-class Max extends AggregateExpression {
-  // The Max operator returns the maximum element in the source.
-  // Comparison semantics are defined by the comparison operators for the type of the values being aggregated.
-  // If a path is specified, elements with no value for the property specified by the path are ignored.
-  // If the source contains no non-null elements, null is returned.
-  // If the source is null, the result is null.
-}
+//   String? scope;
+// }
 
-class Avg extends AggregateExpression {
-  // The Avg operator returns the average of the non-null elements in source.
-  // If a path is specified, elements with no value for the property specified by the path are ignored.
-  // If the source contains no non-null elements, null is returned.
-  // If the source is null, the result is null.
-}
+// // Iteration expression@JsonSerializable()
+// @JsonSerializable()
+// class Iteration extends Expression {
+//   Iteration({String? scope}) : scope = scope;
 
-class GeometricMean extends AggregateExpression {
-  // The GeometricMean operator returns the geometric mean of the non-null elements in source.
-  // If a path is specified, elements with no value for the property specified by the path are ignored.
-  // If the source contains no non-null elements, null is returned.
-  // If the source is null, the result is null.
-}
+//   String? scope;
+// }
 
-class Median extends AggregateExpression {
-  // The Median operator returns the median of the elements in source.
-  // If a path is specified, elements with no value for the property specified by the path are ignored.
-  // If the source contains no non-null elements, null is returned.
-  // If the source is null, the result is null.
-}
+// // Total expression@JsonSerializable()
+// @JsonSerializable()
+// class Total extends Expression {
+//   Total({String? scope}) : scope = scope;
 
-class Mode extends AggregateExpression {
-  // The Mode operator returns the statistical mode of the elements in source.
-  // If a path is specified, elements with no value for the property specified by the path are ignored.
-  // If the source contains no non-null elements, null is returned.
-  // If the source is null, the result is null.
-}
+//   String? scope;
+// }
 
-class Variance extends AggregateExpression {
-  // The Variance operator returns the statistical variance of the elements in source.
-  // If a path is specified, elements with no value for the property specified by the path are ignored.
-  // If the source contains no non-null elements, null is returned.
-  // If the source is null, the result is null.
-}
+// // SingletonFrom expression@JsonSerializable()
+// @JsonSerializable()
+// class SingletonFrom extends UnaryExpression {}
 
-class PopulationVariance extends AggregateExpression {
-  // The PopulationVariance operator returns the statistical population variance of the elements in source.
-  // If a path is specified, elements with no value for the property specified by the path are ignored.
-  // If the source contains no non-null elements, null is returned.
-  // If the source is null, the result is null.
-}
+// // AggregateExpression abstract class
+// @JsonSerializable()
+// abstract class AggregateExpression extends Expression {
+//   AggregateExpression(List<TypeSpecifier> signature, Expression source,
+//       {String? path})
+//       : signature = signature,
+//         source = source,
+//         path = path;
 
-class StdDev extends AggregateExpression {
-  // The StdDev operator returns the statistical standard deviation of the elements in source.
-  // If a path is specified, elements with no value for the property specified by the path are ignored.
-  // If the source contains no non-null elements, null is returned.
-  // If the list is null, the result is null.
-}
+//   List<TypeSpecifier> signature;
+//   Expression source;
+//   String? path;
+// }
 
-class PopulationStdDev extends AggregateExpression {
-  // The PopulationStdDev operator returns the statistical standard deviation of the elements in source.
-  // If a path is specified, elements with no value for the property specified by the path are ignored.
-  // If the source contains no non-null elements, null is returned.
-  // If the source is null, the result is null.
-}
+// // Aggregate operator@JsonSerializable()
+// @JsonSerializable()
+// class Aggregate extends AggregateExpression {
+//   Aggregate(Expression source, Expression iteration,
+//       {Expression? initialValue})
+//       : super([], source) {
+//     this.iteration = iteration;
+//     this.initialValue = initialValue;
+//   }
 
-class AllTrue extends AggregateExpression {
-  // The AllTrue operator returns true if all the non-null elements in source are true.
-  // If a path is specified, elements with no value for the property specified by the path are ignored.
-  // If the source contains no non-null elements, true is returned.
-  // If the source is null, the result is true.
-}
+//   Expression iteration;
+//   Expression? initialValue;
+// }
 
-class AnyTrue extends AggregateExpression {
-  // The AnyTrue operator returns true if any non-null element in source is true.
-  // If a path is specified, elements with no value for the property specified by the path are ignored.
-  // If the source contains no non-null elements, false is returned.
-  // If the source is null, the result is false.
-}
+// // Count operator@JsonSerializable()
+// @JsonSerializable()
+// class Count extends AggregateExpression {
+//   Count(Expression source, {String? path}) : super([], source, path: path);
+// }
 
+// // Sum operator@JsonSerializable()
+// @JsonSerializable()
+// class Sum extends AggregateExpression {
+//   Sum(Expression source, {String? path}) : super([], source, path: path);
+// }
+
+// // Product operator@JsonSerializable()
+// @JsonSerializable()
+// class Product extends AggregateExpression {
+//   Product(Expression source, {String? path}) : super([], source, path: path);
+// }
+
+// // Min operator@JsonSerializable()
+// @JsonSerializable()
+// class Min extends AggregateExpression {
+//   Min(Expression source, {String? path}) : super([], source, path: path);
+// }
+
+// // Max operator@JsonSerializable()
+// @JsonSerializable()
+// class Max extends AggregateExpression {
+//   Max(Expression source, {String? path}) : super([], source, path: path);
+// }
+
+// // Avg operator@JsonSerializable()
+// @JsonSerializable()
+// class Avg extends AggregateExpression {
+//   Avg(Expression source, {String? path}) : super([], source, path: path);
+// }
+
+// // GeometricMean operator@JsonSerializable()
+// @JsonSerializable()
+// class GeometricMean extends AggregateExpression {
+//   GeometricMean(Expression source, {String? path}) : super([], source, path: path);
+// }
+
+// // Median operator@JsonSerializable()
+// @JsonSerializable()
+// class Median extends AggregateExpression {
+//   Median(Expression source, {String? path}) : super([], source, path: path);
+// }
+
+// // Mode operator@JsonSerializable()
+// @JsonSerializable()
+// class Mode extends AggregateExpression {
+//   Mode(Expression source, {String? path}) : super([], source, path: path);
+// }
+
+// // Variance operator@JsonSerializable()
+// @JsonSerializable()
+// class Variance extends AggregateExpression {
+//   Variance(Expression source, {String? path}) : super([], source, path: path);
+// }
+
+// // PopulationVariance operator@JsonSerializable()
+// @JsonSerializable()
+// class PopulationVariance extends AggregateExpression {
+//   PopulationVariance(Expression source, {String? path}) : super([], source, path: path);
+// }
+
+// // StdDev operator@JsonSerializable()
+// @JsonSerializable()
+// class StdDev extends AggregateExpression {
+//   StdDev(Expression source, {String? path}) : super([], source, path: path);
+// }
+
+// // PopulationStdDev operator@JsonSerializable()
+// @JsonSerializable()
+// class PopulationStdDev extends AggregateExpression {
+//   PopulationStdDev(Expression source, {String? path}) : super([], source, path: path);
+// }
+
+// // AllTrue operator@JsonSerializable()
+// @JsonSerializable()
+// class AllTrue extends AggregateExpression {
+//   AllTrue(Expression source, {String? path}) : super([], source, path: path);
+// }
+
+// // AnyTrue operator@JsonSerializable()
+// @JsonSerializable()
+// class AnyTrue extends AggregateExpression {
+//   AnyTrue(Expression source, {String? path}) : super([], source, path: path);
+// }
+
+// Property operator@JsonSerializable()
+@JsonSerializable()
 class Property extends Expression {
-  // The Property operator returns the value of the property on source specified by the path attribute.
-  // If the result of evaluating source is null, the result is null.
-  // The path attribute may include qualifiers (.) and indexers ([x]). Indexers must be literal integer values.
-  // If the path attribute contains qualifiers or indexers, each qualifier or indexer is traversed to obtain the actual value. If the object of the property access at any point in traversing the path is null, the result is null.
-  // If a scope is specified, the name is used to resolve the scope in which the path will be resolved. Scopes can be named by operators such as Filter and ForEach.
-  // Property expressions can also be used to access the individual points and closed indicators for interval types using the property names low, high, lowClosed, and highClosed.
+  final String path;
+  final String? scope;
+
+  Property({required this.path, this.scope}) : super();
+
+  factory Property.fromJson(Map<String, dynamic> json) =>
+      _$PropertyFromJson(json);
+
+  Map<String, dynamic> toJson() => _$PropertyToJson(this);
 }
 
-class AliasedQuerySource {
-  AliasedQuerySource({required this.expression, required this.alias});
-  // The AliasedQuerySource element defines a single source for inclusion in a query scope.
-  // The type of the source is determined by the expression element, and the source can be accessed within the query scope by the given alias.
-  Expression expression;
-  String alias;
-}
+// // AliasedQuerySource element@JsonSerializable()
+// @JsonSerializable()
+// class AliasedQuerySource extends Element {
+//   AliasedQuerySource(Expression expression, String alias)
+//       : super(sequence: [expression], attributes: {'alias': alias});
+// }
 
-class LetClause {
-  LetClause({required this.expression, required this.identifier});
-  // The LetClause element allows any number of expression definitions to be introduced within a query scope.
-  // Defined expressions can be referenced by name within the query scope.
-  Expression expression;
-  String identifier;
-}
+// // LetClause element@JsonSerializable()
+// @JsonSerializable()
+// class LetClause extends Element {
+//   LetClause(Expression expression, String identifier)
+//       : super(sequence: [expression], attributes: {'identifier': identifier});
+// }
 
-abstract class RelationshipClause extends AliasedQuerySource {
-  RelationshipClause(
-      {required this.suchThat,
-      required super.expression,
-      required super.alias});
-  // The RelationshipClause element allows related sources to be used to restrict the elements included from another source in a query scope.
-  // Note that the elements referenced by the relationship clause can only be accessed within the suchThat condition, and that elements of the related source are not included in the query scope.
-  Expression suchThat;
-}
+// // RelationshipClause element
+// @JsonSerializable()
+// abstract class RelationshipClause extends AliasedQuerySource {
+//   RelationshipClause(Expression expression, String alias, Expression suchThat)
+//       : super(expression, alias) {
+//     sequence.add(suchThat);
+//   }
+// }
 
-class With extends RelationshipClause {
-  With(
-      {required super.suchThat,
-      required super.expression,
-      required super.alias});
-  // The With clause restricts the elements of a given source to only those elements that have elements in the related source that satisfy the suchThat condition.
-  // This operation is known as a semi-join in database languages.
-}
+// // With clause@JsonSerializable()
+// @JsonSerializable()
+// class With extends RelationshipClause {
+//   With(Expression expression, String alias, Expression suchThat)
+//       : super(expression, alias, suchThat);
+// }
 
-class Without extends RelationshipClause {
-  Without(
-      {required super.suchThat,
-      required super.expression,
-      required super.alias});
-  // The Without clause restricts the elements of a given source to only those elements that do not have elements in the related source that satisfy the suchThat condition.
-  // This operation is known as a semi-difference in database languages.
-}
+// // Without clause@JsonSerializable()
+// @JsonSerializable()
+// class Without extends RelationshipClause {
+//   Without(Expression expression, String alias, Expression suchThat)
+//       : super(expression, alias, suchThat);
+// }
 
-enum SortDirection { asc, ascending, desc, descending }
+// // SortDirection enumeration
+// enum SortDirection { asc, ascending, desc, descending }
 
-abstract class SortByItem {
-  SortByItem({required this.direction});
-  SortDirection direction;
-}
+// // SortByItem abstract type
+// @JsonSerializable()
+// abstract class SortByItem extends Element {
+//   SortByItem({SortDirection? direction})
+//       : super(attributes: {'direction': direction.toString().split('.').last});
+// }
 
-class ByDirection extends SortByItem {
-  ByDirection({required super.direction});
-  // The ByDirection element specifies that the sort should be performed using the given direction.
-  // This approach is used when the result of the query is a list of non-tuple elements and only the sort direction needs to be specified.
-}
+// // ByDirection element@JsonSerializable()
+// @JsonSerializable()
+// class ByDirection extends SortByItem {
+//   ByDirection({SortDirection? direction}) : super(direction: direction);
+// }
 
-class ByColumn extends SortByItem {
-  // The ByColumn element specifies that the sort should be performed using the given column and direction.
-  // This approach is used to specify the sort order for a query when the result is a list of tuples.
-  String path;
+// // ByColumn element@JsonSerializable()
+// @JsonSerializable()
+// class ByColumn extends SortByItem {
+//   ByColumn({SortDirection? direction, String? path})
+//       : super(direction: direction, attributes: {'path': path});
+// }
 
-  ByColumn({required super.direction, required this.path});
-}
+// // ByExpression element@JsonSerializable()
+// @JsonSerializable()
+// class ByExpression extends SortByItem {
+//   ByExpression(Expression expression, {SortDirection? direction})
+//       : super(direction: direction, sequence: [expression]);
+// }
 
-class ByExpression extends SortByItem {
-  // The ByExpression element specifies that the sort should be performed using the given expression and direction.
-  // This approach is used to specify the sort order as a calculated expression.
-  Expression expression;
+// // SortClause element@JsonSerializable()
+// @JsonSerializable()
+// class SortClause extends Element {
+//   SortClause(List<SortByItem> by)
+//       : super(sequence: by.map((item) => item).toList());
+// }
 
-  ByExpression({required super.direction, required this.expression});
-}
+// // ReturnClause element@JsonSerializable()
+// @JsonSerializable()
+// class ReturnClause extends Element {
+//   ReturnClause(Expression expression, {bool distinct = true})
+//       : super(sequence: [expression], attributes: {'distinct': distinct});
+// }
 
-class SortClause {
-  SortClause({required this.by});
-  // The SortClause element defines the sort order for the query.
-  List<SortByItem> by;
-}
+// // AggregateClause element@JsonSerializable()
+// @JsonSerializable()
+// class AggregateClause extends Element {
+//   AggregateClause(Expression expression,
+//       {Expression? starting, required String identifier, bool distinct = false})
+//       : super(
+//             sequence: starting != null ? [expression, starting] : [expression],
+//             attributes: {'identifier': identifier, 'distinct': distinct});
+// }
 
-class ReturnClause {
-  ReturnClause({required this.expression, this.distinct = true});
-  // The ReturnClause element defines the shape of the result set of the query.
-  Expression expression;
-  bool distinct = true;
-}
+// // Query operator@JsonSerializable()
+// @JsonSerializable()
+// class Query extends Expression {
+//   Query(List<AliasedQuerySource> source,
+//       {List<LetClause>? let,
+//       List<RelationshipClause>? relationship,
+//       Expression? where,
+//       ReturnClause? returnClause,
+//       AggregateClause? aggregate,
+//       SortClause? sort})
+//       : super(
+//             sequence: [
+//               ...source,
+//               if (let != null) ...let,
+//               if (relationship != null) ...relationship,
+//               if (where != null) where,
+//               if (returnClause != null) returnClause,
+//               if (aggregate != null) aggregate,
+//               if (sort != null) sort,
+//             ],
+//             attributes: {});
+// }
 
-class Query extends Expression {
-  Query(
-      {required this.source,
-      required this.let,
-      required this.relationship,
-      required this.where,
-      required this.returnClause,
-      required this.sortClause});
-  // The Query operator represents a clause-based query.
-  // The result of the query is determined by the type of sources included, as well as the clauses used in the query.
-  List<AliasedQuerySource> source;
-  List<LetClause> let;
-  List<RelationshipClause> relationship;
-  Expression where;
-  ReturnClause? returnClause;
-  SortClause? sortClause;
-}
+// // AliasRef expression@JsonSerializable()
+// @JsonSerializable()
+// class AliasRef extends Expression {
+//   AliasRef(String name) : super(attributes: {'name': name});
+// }
 
-class AliasRef extends Expression {
-  AliasRef({required this.name});
-  // The AliasRef expression allows for the reference of a specific source within the scope of a query.
-  String name;
-}
+// // QueryLetRef expression@JsonSerializable()
+// @JsonSerializable()
+// class QueryLetRef extends Expression {
+//   QueryLetRef(String name) : super(attributes: {'name': name});
+// }
 
-class QueryLetRef extends Expression {
-  QueryLetRef({required this.name});
-  // The QueryLetRef expression allows for the reference of a specific let definition within the scope of a query.
-  String name;
-}
+// // Children operator@JsonSerializable()
+// @JsonSerializable()
+// class Children extends OperatorExpression {
+//   Children(Expression source) : super(sequence: [source]);
+// }
 
-class Children extends OperatorExpression {
-  Children({required this.source});
-  // For structured types, the Children operator returns a list of all the values of the elements of the type.
-  // List-valued elements are expanded and added to the result individually, rather than as a single list.
-  // For list types, the result is the same as invoking Children on each element in the list and flattening the resulting lists into a single result.
-  Expression source;
-}
+// // Descendents operator@JsonSerializable()
+// @JsonSerializable()
+// class Descendents extends OperatorExpression {
+//   Descendents(Expression source) : super(sequence: [source]);
+// }
 
-class Descendents extends OperatorExpression {
-  Descendents({required this.source});
-  // For structured types, the Descendents operator returns a list of all the values of the elements of the type, recursively.
-  // List-valued elements are expanded and added to the result individually, rather than as a single list.
-  // For list types, the result is the same as invoking Descendents on each element in the list and flattening the resulting lists into a single result.
-  Expression source;
-}
-
-class Message extends OperatorExpression {
-  Message(
-      {required this.source,
-      this.condition,
-      this.code,
-      this.severity,
-      this.message});
-  // The Message operator is used to support errors, warnings, messages, and tracing in an ELM evaluation environment.
-  // The operator is defined to return the input source.
-  // It supports various severities such as Error, Trace, Warning, and Message.
-  Expression source;
-  Expression? condition;
-  Expression? code;
-  Expression? severity;
-  Expression? message;
-}
+// // Message operator@JsonSerializable()
+// @JsonSerializable()
+// class Message extends OperatorExpression {
+//   Message(Expression source,
+//       {Expression? condition,
+//       Expression? code,
+//       Expression? severity,
+//       Expression? message})
+//       : super(
+//             sequence: [source, condition, code, severity, message],
+//             attributes: {});
+// }

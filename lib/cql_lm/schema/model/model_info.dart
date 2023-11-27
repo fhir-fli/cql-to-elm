@@ -486,9 +486,9 @@ abstract class TypeSpecifier extends ElmElement {}
 class NamedTypeSpecifier extends TypeSpecifier {
   String? modelName;
   String? namespace;
-  String? name;
+  String name;
 
-  NamedTypeSpecifier({this.modelName, this.namespace, this.name});
+  NamedTypeSpecifier({this.modelName, this.namespace, required this.name});
 
   factory NamedTypeSpecifier.fromJson(Map<String, dynamic> json) =>
       _$NamedTypeSpecifierFromJson(json);

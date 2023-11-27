@@ -757,7 +757,7 @@ NamedTypeSpecifier _$NamedTypeSpecifierFromJson(Map<String, dynamic> json) =>
     NamedTypeSpecifier(
       modelName: json['modelName'] as String?,
       namespace: json['namespace'] as String?,
-      name: json['name'] as String?,
+      name: json['name'] as String,
     )
       ..localId = json['localId'] as String?
       ..locator = json['locator'] as String?
@@ -787,7 +787,7 @@ Map<String, dynamic> _$NamedTypeSpecifierToJson(NamedTypeSpecifier instance) {
   writeNotNull('resultTypeSpecifier', instance.resultTypeSpecifier?.toJson());
   writeNotNull('modelName', instance.modelName);
   writeNotNull('namespace', instance.namespace);
-  writeNotNull('name', instance.name);
+  val['name'] = instance.name;
   return val;
 }
 

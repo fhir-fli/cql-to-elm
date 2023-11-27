@@ -125,7 +125,9 @@ class Retrieve {
 }
 
 @JsonSerializable()
-class Search extends Property {}
+class Search extends Property {
+  Search({required super.path});
+}
 
 @JsonSerializable()
 class CodeSystemDef extends ElmElement {
@@ -275,12 +277,14 @@ class ConceptRef extends Expression {
 class ElmCode extends Expression {
   String code;
   String? display;
-  CodeSystemRef system;
+  CodeSystemRef? system;
+  String? version;
 
   ElmCode({
     required this.code,
     this.display,
-    required this.system,
+    this.system,
+    this.version,
   });
 
   factory ElmCode.fromJson(Map<String, dynamic> json) =>
@@ -408,25 +412,25 @@ class SubsumedBy extends BinaryExpression {
 }
 
 @JsonSerializable()
-class CalcuAge extends UnaryExpression {
+class CalculateAge extends UnaryExpression {
   DateTimePrecision precision;
 
-  CalcuAge({required this.precision, required super.operand});
+  CalculateAge({required this.precision, required super.operand});
 
-  factory CalcuAge.fromJson(Map<String, dynamic> json) =>
-      _$CalcuAgeFromJson(json);
+  factory CalculateAge.fromJson(Map<String, dynamic> json) =>
+      _$CalculateAgeFromJson(json);
 
-  Map<String, dynamic> toJson() => _$CalcuAgeToJson(this);
+  Map<String, dynamic> toJson() => _$CalculateAgeToJson(this);
 }
 
 @JsonSerializable()
-class CalcuAgeAt extends BinaryExpression {
+class CalculateAgeAt extends BinaryExpression {
   DateTimePrecision precision;
 
-  CalcuAgeAt({required this.precision, required super.operand});
+  CalculateAgeAt({required this.precision, required super.operand});
 
-  factory CalcuAgeAt.fromJson(Map<String, dynamic> json) =>
-      _$CalcuAgeAtFromJson(json);
+  factory CalculateAgeAt.fromJson(Map<String, dynamic> json) =>
+      _$CalculateAgeAtFromJson(json);
 
-  Map<String, dynamic> toJson() => _$CalcuAgeAtToJson(this);
+  Map<String, dynamic> toJson() => _$CalculateAgeAtToJson(this);
 }
