@@ -256,7 +256,7 @@ abstract class ElmVisitor<T, C> {
   ///  @param context the context passed to the visitor
   ///  @return the visitor result
   ///
-  T visitTupleElement(TupleElmElement elm, C context);
+  T visitTupleElement(TupleElement elm, C context);
 
   ///
   ///  Visit a Tuple. This method will be called for
@@ -276,7 +276,7 @@ abstract class ElmVisitor<T, C> {
   ///  @param context the context passed to the visitor
   ///  @return the visitor result
   ///
-  T visitInstanceElement(InstanceElmElement elm, C context);
+  T visitInstanceElement(InstanceElement elm, C context);
 
   ///
   ///  Visit a Instance. This method will be called for

@@ -173,23 +173,37 @@ Map<String, dynamic> _$IncludeElementToJson(IncludeElement instance) {
 }
 
 Retrieve _$RetrieveFromJson(Map<String, dynamic> json) => Retrieve(
+      id: Expression.fromJson(json['id'] as Map<String, dynamic>),
+      codes: Expression.fromJson(json['codes'] as Map<String, dynamic>),
+      dateRange: Expression.fromJson(json['dateRange'] as Map<String, dynamic>),
+      context: Expression.fromJson(json['context'] as Map<String, dynamic>),
+      include: (json['include'] as List<dynamic>)
+          .map((e) => IncludeElement.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      codeFilter: (json['codeFilter'] as List<dynamic>)
+          .map((e) => CodeFilterElement.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      dateFilter: (json['dateFilter'] as List<dynamic>)
+          .map((e) => DateFilterElement.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      otherFilter: (json['otherFilter'] as List<dynamic>)
+          .map((e) => OtherFilterElement.fromJson(e as Map<String, dynamic>))
+          .toList(),
       dataType: json['dataType'] as String,
-      tempId: json['tempId'] as String?,
+      templateId: json['templateId'] as String?,
       idProperty: json['idProperty'] as String?,
+      idSearch: json['idSearch'] as String?,
+      contextProperty: json['contextProperty'] as String?,
+      contextSearch: json['contextSearch'] as String?,
       codeProperty: json['codeProperty'] as String?,
+      codeSearch: json['codeSearch'] as String?,
+      codeComparator: json['codeComparator'] as String?,
       valueSetProperty: json['valueSetProperty'] as String?,
       dateProperty: json['dateProperty'] as String?,
       dateLowProperty: json['dateLowProperty'] as String?,
       dateHighProperty: json['dateHighProperty'] as String?,
-      codes: json['codes'] == null
-          ? null
-          : Expression.fromJson(json['codes'] as Map<String, dynamic>),
-      dateRange: json['dateRange'] == null
-          ? null
-          : Expression.fromJson(json['dateRange'] as Map<String, dynamic>),
-      context: json['context'] == null
-          ? null
-          : Expression.fromJson(json['context'] as Map<String, dynamic>),
+      dateSearch: json['dateSearch'] as String?,
+      includedIn: json['includedIn'] as String?,
     )
       ..localId = json['localId'] as String?
       ..locator = json['locator'] as String?
@@ -219,17 +233,29 @@ Map<String, dynamic> _$RetrieveToJson(Retrieve instance) {
       'annotation', instance.annotation?.map((e) => e.toJson()).toList());
   writeNotNull('resultTypeSpecifier', instance.resultTypeSpecifier?.toJson());
   writeNotNull('value', instance.value);
+  val['id'] = instance.id.toJson();
+  val['codes'] = instance.codes.toJson();
+  val['dateRange'] = instance.dateRange.toJson();
+  val['context'] = instance.context.toJson();
+  val['include'] = instance.include.map((e) => e.toJson()).toList();
+  val['codeFilter'] = instance.codeFilter.map((e) => e.toJson()).toList();
+  val['dateFilter'] = instance.dateFilter.map((e) => e.toJson()).toList();
+  val['otherFilter'] = instance.otherFilter.map((e) => e.toJson()).toList();
   val['dataType'] = instance.dataType;
-  writeNotNull('tempId', instance.tempId);
+  writeNotNull('templateId', instance.templateId);
   writeNotNull('idProperty', instance.idProperty);
+  writeNotNull('idSearch', instance.idSearch);
+  writeNotNull('contextProperty', instance.contextProperty);
+  writeNotNull('contextSearch', instance.contextSearch);
   writeNotNull('codeProperty', instance.codeProperty);
+  writeNotNull('codeSearch', instance.codeSearch);
+  writeNotNull('codeComparator', instance.codeComparator);
   writeNotNull('valueSetProperty', instance.valueSetProperty);
   writeNotNull('dateProperty', instance.dateProperty);
   writeNotNull('dateLowProperty', instance.dateLowProperty);
   writeNotNull('dateHighProperty', instance.dateHighProperty);
-  writeNotNull('codes', instance.codes?.toJson());
-  writeNotNull('dateRange', instance.dateRange?.toJson());
-  writeNotNull('context', instance.context?.toJson());
+  writeNotNull('dateSearch', instance.dateSearch);
+  writeNotNull('includedIn', instance.includedIn);
   return val;
 }
 
@@ -322,7 +348,9 @@ ValueSetDef _$ValueSetDefFromJson(Map<String, dynamic> json) => ValueSetDef(
       name: json['name'] as String?,
       id: json['id'] as String,
       version: json['version'] as String?,
-      accessLevel: json['accessLevel'] as String? ?? 'Public',
+      accessLevel:
+          $enumDecodeNullable(_$AccessModifierEnumMap, json['accessLevel']) ??
+              AccessModifier.Public,
     )
       ..localId = json['localId'] as String?
       ..locator = json['locator'] as String?
@@ -355,7 +383,7 @@ Map<String, dynamic> _$ValueSetDefToJson(ValueSetDef instance) {
   writeNotNull('name', instance.name);
   val['id'] = instance.id;
   writeNotNull('version', instance.version);
-  val['accessLevel'] = instance.accessLevel;
+  val['accessLevel'] = _$AccessModifierEnumMap[instance.accessLevel]!;
   return val;
 }
 
@@ -366,7 +394,9 @@ CodeDef _$CodeDefFromJson(Map<String, dynamic> json) => CodeDef(
       name: json['name'] as String,
       id: json['id'] as String,
       display: json['display'] as String?,
-      accessLevel: json['accessLevel'] as String? ?? 'Public',
+      accessLevel:
+          $enumDecodeNullable(_$AccessModifierEnumMap, json['accessLevel']) ??
+              AccessModifier.Public,
     )
       ..localId = json['localId'] as String?
       ..locator = json['locator'] as String?
@@ -398,7 +428,7 @@ Map<String, dynamic> _$CodeDefToJson(CodeDef instance) {
   val['name'] = instance.name;
   val['id'] = instance.id;
   writeNotNull('display', instance.display);
-  val['accessLevel'] = instance.accessLevel;
+  val['accessLevel'] = _$AccessModifierEnumMap[instance.accessLevel]!;
   return val;
 }
 
@@ -729,7 +759,7 @@ Map<String, dynamic> _$InCodeSystemToJson(InCodeSystem instance) {
 
 AnyInCodeSystem _$AnyInCodeSystemFromJson(Map<String, dynamic> json) =>
     AnyInCodeSystem(
-      code: Expression.fromJson(json['code'] as Map<String, dynamic>),
+      codes: Expression.fromJson(json['codes'] as Map<String, dynamic>),
       codesystem: json['codesystem'] == null
           ? null
           : CodeSystemRef.fromJson(json['codesystem'] as Map<String, dynamic>),
@@ -771,7 +801,7 @@ Map<String, dynamic> _$AnyInCodeSystemToJson(AnyInCodeSystem instance) {
   writeNotNull('value', instance.value);
   writeNotNull(
       'signature', instance.signature?.map((e) => e.toJson()).toList());
-  val['code'] = instance.code.toJson();
+  val['codes'] = instance.codes.toJson();
   writeNotNull('codesystem', instance.codesystem?.toJson());
   writeNotNull('codesystemExpression', instance.codesystemExpression?.toJson());
   return val;

@@ -949,6 +949,400 @@ Map<String, dynamic> _$ElmListToJson(ElmList instance) {
   return val;
 }
 
+And _$AndFromJson(Map<String, dynamic> json) => And(
+      arg1: json['arg1'],
+      arg2: json['arg2'],
+    )
+      ..localId = json['localId'] as String?
+      ..locator = json['locator'] as String?
+      ..resultTypeName = json['resultTypeName'] as String?
+      ..annotation = (json['annotation'] as List<dynamic>?)
+          ?.map((e) => CqlToElmBase.fromJson(e as Map<String, dynamic>))
+          .toList()
+      ..resultTypeSpecifier = json['resultTypeSpecifier'] == null
+          ? null
+          : TypeSpecifier.fromJson(
+              json['resultTypeSpecifier'] as Map<String, dynamic>)
+      ..value = json['value']
+      ..signature = (json['signature'] as List<dynamic>?)
+          ?.map((e) => TypeSpecifier.fromJson(e as Map<String, dynamic>))
+          .toList()
+      ..operand = (json['operand'] as List<dynamic>)
+          .map((e) => Expression.fromJson(e as Map<String, dynamic>))
+          .toList();
+
+Map<String, dynamic> _$AndToJson(And instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('localId', instance.localId);
+  writeNotNull('locator', instance.locator);
+  writeNotNull('resultTypeName', instance.resultTypeName);
+  writeNotNull(
+      'annotation', instance.annotation?.map((e) => e.toJson()).toList());
+  writeNotNull('resultTypeSpecifier', instance.resultTypeSpecifier?.toJson());
+  writeNotNull('value', instance.value);
+  writeNotNull(
+      'signature', instance.signature?.map((e) => e.toJson()).toList());
+  val['operand'] = instance.operand.map((e) => e.toJson()).toList();
+  writeNotNull('arg1', instance.arg1);
+  writeNotNull('arg2', instance.arg2);
+  return val;
+}
+
+Or _$OrFromJson(Map<String, dynamic> json) => Or(
+      arg1: json['arg1'],
+      arg2: json['arg2'],
+    )
+      ..localId = json['localId'] as String?
+      ..locator = json['locator'] as String?
+      ..resultTypeName = json['resultTypeName'] as String?
+      ..annotation = (json['annotation'] as List<dynamic>?)
+          ?.map((e) => CqlToElmBase.fromJson(e as Map<String, dynamic>))
+          .toList()
+      ..resultTypeSpecifier = json['resultTypeSpecifier'] == null
+          ? null
+          : TypeSpecifier.fromJson(
+              json['resultTypeSpecifier'] as Map<String, dynamic>)
+      ..value = json['value']
+      ..signature = (json['signature'] as List<dynamic>?)
+          ?.map((e) => TypeSpecifier.fromJson(e as Map<String, dynamic>))
+          .toList()
+      ..operand = (json['operand'] as List<dynamic>)
+          .map((e) => Expression.fromJson(e as Map<String, dynamic>))
+          .toList();
+
+Map<String, dynamic> _$OrToJson(Or instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('localId', instance.localId);
+  writeNotNull('locator', instance.locator);
+  writeNotNull('resultTypeName', instance.resultTypeName);
+  writeNotNull(
+      'annotation', instance.annotation?.map((e) => e.toJson()).toList());
+  writeNotNull('resultTypeSpecifier', instance.resultTypeSpecifier?.toJson());
+  writeNotNull('value', instance.value);
+  writeNotNull(
+      'signature', instance.signature?.map((e) => e.toJson()).toList());
+  val['operand'] = instance.operand.map((e) => e.toJson()).toList();
+  writeNotNull('arg1', instance.arg1);
+  writeNotNull('arg2', instance.arg2);
+  return val;
+}
+
+Xor _$XorFromJson(Map<String, dynamic> json) => Xor(
+      arg1: json['arg1'],
+      arg2: json['arg2'],
+    )
+      ..localId = json['localId'] as String?
+      ..locator = json['locator'] as String?
+      ..resultTypeName = json['resultTypeName'] as String?
+      ..annotation = (json['annotation'] as List<dynamic>?)
+          ?.map((e) => CqlToElmBase.fromJson(e as Map<String, dynamic>))
+          .toList()
+      ..resultTypeSpecifier = json['resultTypeSpecifier'] == null
+          ? null
+          : TypeSpecifier.fromJson(
+              json['resultTypeSpecifier'] as Map<String, dynamic>)
+      ..value = json['value']
+      ..signature = (json['signature'] as List<dynamic>?)
+          ?.map((e) => TypeSpecifier.fromJson(e as Map<String, dynamic>))
+          .toList()
+      ..operand = (json['operand'] as List<dynamic>)
+          .map((e) => Expression.fromJson(e as Map<String, dynamic>))
+          .toList();
+
+Map<String, dynamic> _$XorToJson(Xor instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('localId', instance.localId);
+  writeNotNull('locator', instance.locator);
+  writeNotNull('resultTypeName', instance.resultTypeName);
+  writeNotNull(
+      'annotation', instance.annotation?.map((e) => e.toJson()).toList());
+  writeNotNull('resultTypeSpecifier', instance.resultTypeSpecifier?.toJson());
+  writeNotNull('value', instance.value);
+  writeNotNull(
+      'signature', instance.signature?.map((e) => e.toJson()).toList());
+  val['operand'] = instance.operand.map((e) => e.toJson()).toList();
+  writeNotNull('arg1', instance.arg1);
+  writeNotNull('arg2', instance.arg2);
+  return val;
+}
+
+Implies _$ImpliesFromJson(Map<String, dynamic> json) => Implies(
+      arg1: json['arg1'],
+      arg2: json['arg2'],
+    )
+      ..localId = json['localId'] as String?
+      ..locator = json['locator'] as String?
+      ..resultTypeName = json['resultTypeName'] as String?
+      ..annotation = (json['annotation'] as List<dynamic>?)
+          ?.map((e) => CqlToElmBase.fromJson(e as Map<String, dynamic>))
+          .toList()
+      ..resultTypeSpecifier = json['resultTypeSpecifier'] == null
+          ? null
+          : TypeSpecifier.fromJson(
+              json['resultTypeSpecifier'] as Map<String, dynamic>)
+      ..value = json['value']
+      ..signature = (json['signature'] as List<dynamic>?)
+          ?.map((e) => TypeSpecifier.fromJson(e as Map<String, dynamic>))
+          .toList()
+      ..operand = (json['operand'] as List<dynamic>)
+          .map((e) => Expression.fromJson(e as Map<String, dynamic>))
+          .toList();
+
+Map<String, dynamic> _$ImpliesToJson(Implies instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('localId', instance.localId);
+  writeNotNull('locator', instance.locator);
+  writeNotNull('resultTypeName', instance.resultTypeName);
+  writeNotNull(
+      'annotation', instance.annotation?.map((e) => e.toJson()).toList());
+  writeNotNull('resultTypeSpecifier', instance.resultTypeSpecifier?.toJson());
+  writeNotNull('value', instance.value);
+  writeNotNull(
+      'signature', instance.signature?.map((e) => e.toJson()).toList());
+  val['operand'] = instance.operand.map((e) => e.toJson()).toList();
+  writeNotNull('arg1', instance.arg1);
+  writeNotNull('arg2', instance.arg2);
+  return val;
+}
+
+Not _$NotFromJson(Map<String, dynamic> json) => Not(
+      operand: json['operand'] == null
+          ? null
+          : Expression.fromJson(json['operand'] as Map<String, dynamic>),
+    )
+      ..localId = json['localId'] as String?
+      ..locator = json['locator'] as String?
+      ..resultTypeName = json['resultTypeName'] as String?
+      ..annotation = (json['annotation'] as List<dynamic>?)
+          ?.map((e) => CqlToElmBase.fromJson(e as Map<String, dynamic>))
+          .toList()
+      ..resultTypeSpecifier = json['resultTypeSpecifier'] == null
+          ? null
+          : TypeSpecifier.fromJson(
+              json['resultTypeSpecifier'] as Map<String, dynamic>)
+      ..value = json['value']
+      ..signature = (json['signature'] as List<dynamic>?)
+          ?.map((e) => TypeSpecifier.fromJson(e as Map<String, dynamic>))
+          .toList();
+
+Map<String, dynamic> _$NotToJson(Not instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('localId', instance.localId);
+  writeNotNull('locator', instance.locator);
+  writeNotNull('resultTypeName', instance.resultTypeName);
+  writeNotNull(
+      'annotation', instance.annotation?.map((e) => e.toJson()).toList());
+  writeNotNull('resultTypeSpecifier', instance.resultTypeSpecifier?.toJson());
+  writeNotNull('value', instance.value);
+  writeNotNull(
+      'signature', instance.signature?.map((e) => e.toJson()).toList());
+  writeNotNull('operand', instance.operand?.toJson());
+  return val;
+}
+
+If _$IfFromJson(Map<String, dynamic> json) => If(
+      Expression.fromJson(json['condition'] as Map<String, dynamic>),
+      Expression.fromJson(json['then'] as Map<String, dynamic>),
+      Expression.fromJson(json['elseClause'] as Map<String, dynamic>),
+    )
+      ..localId = json['localId'] as String?
+      ..locator = json['locator'] as String?
+      ..resultTypeName = json['resultTypeName'] as String?
+      ..annotation = (json['annotation'] as List<dynamic>?)
+          ?.map((e) => CqlToElmBase.fromJson(e as Map<String, dynamic>))
+          .toList()
+      ..resultTypeSpecifier = json['resultTypeSpecifier'] == null
+          ? null
+          : TypeSpecifier.fromJson(
+              json['resultTypeSpecifier'] as Map<String, dynamic>)
+      ..value = json['value'];
+
+Map<String, dynamic> _$IfToJson(If instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('localId', instance.localId);
+  writeNotNull('locator', instance.locator);
+  writeNotNull('resultTypeName', instance.resultTypeName);
+  writeNotNull(
+      'annotation', instance.annotation?.map((e) => e.toJson()).toList());
+  writeNotNull('resultTypeSpecifier', instance.resultTypeSpecifier?.toJson());
+  writeNotNull('value', instance.value);
+  val['condition'] = instance.condition.toJson();
+  val['then'] = instance.then.toJson();
+  val['elseClause'] = instance.elseClause.toJson();
+  return val;
+}
+
+CaseItem _$CaseItemFromJson(Map<String, dynamic> json) => CaseItem(
+      when: Expression.fromJson(json['when'] as Map<String, dynamic>),
+      then: Expression.fromJson(json['then'] as Map<String, dynamic>),
+    );
+
+Map<String, dynamic> _$CaseItemToJson(CaseItem instance) => <String, dynamic>{
+      'when': instance.when.toJson(),
+      'then': instance.then.toJson(),
+    };
+
+Case _$CaseFromJson(Map<String, dynamic> json) => Case(
+      (json['caseItems'] as List<dynamic>)
+          .map((e) => CaseItem.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      Expression.fromJson(json['elseClause'] as Map<String, dynamic>),
+      comparand: json['comparand'] == null
+          ? null
+          : Expression.fromJson(json['comparand'] as Map<String, dynamic>),
+    )
+      ..localId = json['localId'] as String?
+      ..locator = json['locator'] as String?
+      ..resultTypeName = json['resultTypeName'] as String?
+      ..annotation = (json['annotation'] as List<dynamic>?)
+          ?.map((e) => CqlToElmBase.fromJson(e as Map<String, dynamic>))
+          .toList()
+      ..resultTypeSpecifier = json['resultTypeSpecifier'] == null
+          ? null
+          : TypeSpecifier.fromJson(
+              json['resultTypeSpecifier'] as Map<String, dynamic>)
+      ..value = json['value'];
+
+Map<String, dynamic> _$CaseToJson(Case instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('localId', instance.localId);
+  writeNotNull('locator', instance.locator);
+  writeNotNull('resultTypeName', instance.resultTypeName);
+  writeNotNull(
+      'annotation', instance.annotation?.map((e) => e.toJson()).toList());
+  writeNotNull('resultTypeSpecifier', instance.resultTypeSpecifier?.toJson());
+  writeNotNull('value', instance.value);
+  writeNotNull('comparand', instance.comparand?.toJson());
+  val['caseItems'] = instance.caseItems.map((e) => e.toJson()).toList();
+  val['elseClause'] = instance.elseClause.toJson();
+  return val;
+}
+
+NullOperator _$NullOperatorFromJson(Map<String, dynamic> json) => NullOperator(
+      valueType: json['valueType'] as String?,
+    )
+      ..localId = json['localId'] as String?
+      ..locator = json['locator'] as String?
+      ..resultTypeName = json['resultTypeName'] as String?
+      ..annotation = (json['annotation'] as List<dynamic>?)
+          ?.map((e) => CqlToElmBase.fromJson(e as Map<String, dynamic>))
+          .toList()
+      ..resultTypeSpecifier = json['resultTypeSpecifier'] == null
+          ? null
+          : TypeSpecifier.fromJson(
+              json['resultTypeSpecifier'] as Map<String, dynamic>)
+      ..value = json['value'];
+
+Map<String, dynamic> _$NullOperatorToJson(NullOperator instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('localId', instance.localId);
+  writeNotNull('locator', instance.locator);
+  writeNotNull('resultTypeName', instance.resultTypeName);
+  writeNotNull(
+      'annotation', instance.annotation?.map((e) => e.toJson()).toList());
+  writeNotNull('resultTypeSpecifier', instance.resultTypeSpecifier?.toJson());
+  writeNotNull('value', instance.value);
+  writeNotNull('valueType', instance.valueType);
+  return val;
+}
+
+IsNull _$IsNullFromJson(Map<String, dynamic> json) => IsNull()
+  ..localId = json['localId'] as String?
+  ..locator = json['locator'] as String?
+  ..resultTypeName = json['resultTypeName'] as String?
+  ..annotation = (json['annotation'] as List<dynamic>?)
+      ?.map((e) => CqlToElmBase.fromJson(e as Map<String, dynamic>))
+      .toList()
+  ..resultTypeSpecifier = json['resultTypeSpecifier'] == null
+      ? null
+      : TypeSpecifier.fromJson(
+          json['resultTypeSpecifier'] as Map<String, dynamic>)
+  ..value = json['value']
+  ..signature = (json['signature'] as List<dynamic>?)
+      ?.map((e) => TypeSpecifier.fromJson(e as Map<String, dynamic>))
+      .toList()
+  ..operand = json['operand'] == null
+      ? null
+      : Expression.fromJson(json['operand'] as Map<String, dynamic>);
+
+Map<String, dynamic> _$IsNullToJson(IsNull instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('localId', instance.localId);
+  writeNotNull('locator', instance.locator);
+  writeNotNull('resultTypeName', instance.resultTypeName);
+  writeNotNull(
+      'annotation', instance.annotation?.map((e) => e.toJson()).toList());
+  writeNotNull('resultTypeSpecifier', instance.resultTypeSpecifier?.toJson());
+  writeNotNull('value', instance.value);
+  writeNotNull(
+      'signature', instance.signature?.map((e) => e.toJson()).toList());
+  writeNotNull('operand', instance.operand?.toJson());
+  return val;
+}
+
 ToBoolean _$ToBooleanFromJson(Map<String, dynamic> json) => ToBoolean(
       operand: json['operand'] == null
           ? null

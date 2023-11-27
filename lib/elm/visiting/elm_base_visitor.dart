@@ -1,5 +1,4 @@
 import '../../cql_lm/cql_lm.dart';
-import '../../model/model.dart';
 import 'visiting.dart';
 
 class ElmBaseVisitor<T, C> implements ElmVisitor<T, C> {
@@ -139,8 +138,6 @@ class ElmBaseVisitor<T, C> implements ElmVisitor<T, C> {
       return visitMaxValue(elm, context);
     else if (elm is MinValue)
       return visitMinValue(elm, context);
-    else if (elm == null)
-      return visitNull(elm, context);
     else if (elm is OperandRef)
       return visitOperandRef(elm, context);
     else if (elm is ParameterRef)

@@ -114,18 +114,12 @@ class ElmBaseClinicalVisitor<T, C> extends ElmBaseVisitor<T, C>
 
   T visitRetrieve(Retrieve elm, C context) {
     T result = defaultResult(elm, context);
-    if (elm.codes != null) {
-      T childResult = visitElement(elm.codes, context);
-      result = aggregateResult(result, childResult);
-    }
-    if (elm.dateRange != null) {
-      T childResult = visitElement(elm.dateRange, context);
-      result = aggregateResult(result, childResult);
-    }
-    if (elm.context != null) {
-      T childResult = visitElement(elm.context, context);
-      result = aggregateResult(result, childResult);
-    }
+    T childResult = visitElement(elm.codes, context);
+    result = aggregateResult(result, childResult);
+    childResult = visitElement(elm.dateRange, context);
+    result = aggregateResult(result, childResult);
+    childResult = visitElement(elm.context, context);
+    result = aggregateResult(result, childResult);
     for (var ie in elm.include) {
       T childResult = visitElement(ie, context);
       result = aggregateResult(result, childResult);
@@ -167,7 +161,7 @@ class ElmBaseClinicalVisitor<T, C> extends ElmBaseVisitor<T, C>
     T result = defaultResult(elm, context);
     T childResult = visitAccessModifier(elm.accessLevel, context);
     result = aggregateResult(result, childResult);
-    for (CodeSystemRef codeSystemRef in elm.codeSystem) {
+    for (CodeSystemRef codeSystemRef in elm.codeSystem ?? []) {
       T childResult = visitElement(codeSystemRef, context);
       result = aggregateResult(result, childResult);
     }
@@ -212,7 +206,7 @@ class ElmBaseClinicalVisitor<T, C> extends ElmBaseVisitor<T, C>
     return defaultResult(elm, context);
   }
 
-  T visitCode(Code elm, C context) {
+  T visitCode(ElmCode elm, C context) {
     T result = defaultResult(elm, context);
     if (elm.system != null) {
       T childResult = visitElement(elm.system!, context);
@@ -223,7 +217,7 @@ class ElmBaseClinicalVisitor<T, C> extends ElmBaseVisitor<T, C>
 
   T visitConcept(Concept elm, C context) {
     T result = defaultResult(elm, context);
-    for (Code c in elm.code) {
+    for (ElmCode c in elm.code) {
       T childResult = visitElement(c, context);
       result = aggregateResult(result, childResult);
     }
@@ -234,8 +228,10 @@ class ElmBaseClinicalVisitor<T, C> extends ElmBaseVisitor<T, C>
     T result = defaultResult(elm, context);
     T childResult = visitElement(elm.code, context);
     result = aggregateResult(result, childResult);
-    T childResult = visitElement(elm.codesystem, context);
-    result = aggregateResult(result, childResult);
+    if (elm.codesystem != null) {
+      childResult = visitElement(elm.codesystem!, context);
+      result = aggregateResult(result, childResult);
+    }
     if (elm.codesystemExpression != null) {
       T childResult = visitElement(elm.codesystemExpression!, context);
       result = aggregateResult(result, childResult);
@@ -247,8 +243,10 @@ class ElmBaseClinicalVisitor<T, C> extends ElmBaseVisitor<T, C>
     T result = defaultResult(elm, context);
     T childResult = visitElement(elm.codes, context);
     result = aggregateResult(result, childResult);
-    T childResult = visitElement(elm.codesystem, context);
-    result = aggregateResult(result, childResult);
+    if (elm.codesystem != null) {
+      childResult = visitElement(elm.codesystem!, context);
+      result = aggregateResult(result, childResult);
+    }
     if (elm.codesystemExpression != null) {
       T childResult = visitElement(elm.codesystemExpression!, context);
       result = aggregateResult(result, childResult);

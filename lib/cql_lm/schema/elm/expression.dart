@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:fhir/r4.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -390,6 +392,154 @@ class ElmList extends Expression {
       _$ElmListFromJson(json);
 
   Map<String, dynamic> toJson() => _$ElmListToJson(this);
+}
+
+// Class representing the And operator
+@JsonSerializable()
+class And extends BinaryExpression {
+  // Add properties if needed
+  And({required this.arg1, required this.arg2})
+      : super(operand: [Expression(arg1), Expression(arg2)]);
+
+  final dynamic arg1;
+  final dynamic arg2;
+
+  factory And.fromJson(Map<String, dynamic> json) => _$AndFromJson(json);
+
+  Map<String, dynamic> toJson() => _$AndToJson(this);
+}
+
+// Class representing the Or operator
+@JsonSerializable()
+class Or extends BinaryExpression {
+  // Add properties if needed
+  Or({required this.arg1, required this.arg2})
+      : super(operand: [Expression(arg1), Expression(arg2)]);
+
+  final dynamic arg1;
+  final dynamic arg2;
+
+  factory Or.fromJson(Map<String, dynamic> json) => _$OrFromJson(json);
+
+  Map<String, dynamic> toJson() => _$OrToJson(this);
+}
+
+// Class representing the Xor operator
+@JsonSerializable()
+class Xor extends BinaryExpression {
+  // Add properties if needed
+  Xor({required this.arg1, required this.arg2})
+      : super(operand: [Expression(arg1), Expression(arg2)]);
+
+  final dynamic arg1;
+  final dynamic arg2;
+
+  factory Xor.fromJson(Map<String, dynamic> json) => _$XorFromJson(json);
+
+  Map<String, dynamic> toJson() => _$XorToJson(this);
+}
+
+// Class representing the Implies operator
+@JsonSerializable()
+class Implies extends BinaryExpression {
+  // Add properties if needed
+  Implies({required this.arg1, required this.arg2})
+      : super(operand: [Expression(arg1), Expression(arg2)]);
+
+  final dynamic arg1;
+  final dynamic arg2;
+
+  factory Implies.fromJson(Map<String, dynamic> json) =>
+      _$ImpliesFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ImpliesToJson(this);
+}
+
+// Class representing the Not operator
+@JsonSerializable()
+class Not extends UnaryExpression {
+  // Add properties if needed
+  Not({required super.operand});
+
+  factory Not.fromJson(Map<String, dynamic> json) => _$NotFromJson(json);
+
+  Map<String, dynamic> toJson() => _$NotToJson(this);
+}
+
+// Class representing the If operator
+@JsonSerializable()
+class If extends Expression {
+  Expression condition;
+  Expression then;
+  Expression elseClause;
+
+  If(this.condition, this.then, this.elseClause);
+
+  factory If.fromJson(Map<String, dynamic> json) => _$IfFromJson(json);
+
+  Map<String, dynamic> toJson() => _$IfToJson(this);
+}
+
+// Class representing a single case item within a Case operator
+@JsonSerializable()
+class CaseItem implements Element {
+  late Expression when;
+  late Expression then;
+
+  CaseItem({required this.when, required this.then});
+
+  factory CaseItem.fromJson(Map<String, dynamic> json) =>
+      _$CaseItemFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CaseItemToJson(this);
+
+  @override
+  $ElementCopyWith<Element> get copyWith => throw UnimplementedError();
+
+  @override
+  List<FhirExtension>? get extension_ => toJson()['extension'];
+
+  @override
+  String? get fhirId => toJson()['id'];
+
+  @override
+  String toJsonString() => jsonEncode(toJson());
+
+  @override
+  String toYaml() => json2yaml(toJson());
+}
+
+// Class representing the Case operator
+@JsonSerializable()
+class Case extends Expression {
+  Expression? comparand;
+  List<CaseItem> caseItems;
+  Expression elseClause;
+
+  Case(this.caseItems, this.elseClause, {this.comparand});
+
+  factory Case.fromJson(Map<String, dynamic> json) => _$CaseFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CaseToJson(this);
+}
+
+// Class representing the Null operator
+@JsonSerializable()
+class NullOperator extends Expression {
+  String? valueType;
+
+  NullOperator({this.valueType});
+
+  factory NullOperator.fromJson(Map<String, dynamic> json) =>
+      _$NullOperatorFromJson(json);
+
+  Map<String, dynamic> toJson() => _$NullOperatorToJson(this);
+}
+
+// Class representing the IsNull operator
+@JsonSerializable()
+class IsNull extends UnaryExpression {
+  // Add properties if needed
 }
 
 @JsonSerializable()

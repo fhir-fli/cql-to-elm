@@ -92,30 +92,54 @@ class IncludeElement extends ElmElement {
 
 @JsonSerializable()
 class Retrieve extends Expression {
+  Expression id;
+  Expression codes;
+  Expression dateRange;
+  Expression context;
+  List<IncludeElement> include;
+  List<CodeFilterElement> codeFilter;
+  List<DateFilterElement> dateFilter;
+  List<OtherFilterElement> otherFilter;
   String dataType;
-  String? tempId;
+  String? templateId;
   String? idProperty;
+  String? idSearch;
+  String? contextProperty;
+  String? contextSearch;
   String? codeProperty;
+  String? codeSearch;
+  String? codeComparator;
   String? valueSetProperty;
   String? dateProperty;
   String? dateLowProperty;
   String? dateHighProperty;
-  Expression? codes;
-  Expression? dateRange;
-  Expression? context;
+  String? dateSearch;
+  String? includedIn;
 
   Retrieve({
+    required this.id,
+    required this.codes,
+    required this.dateRange,
+    required this.context,
+    required this.include,
+    required this.codeFilter,
+    required this.dateFilter,
+    required this.otherFilter,
     required this.dataType,
-    this.tempId,
+    this.templateId,
     this.idProperty,
+    this.idSearch,
+    this.contextProperty,
+    this.contextSearch,
     this.codeProperty,
+    this.codeSearch,
+    this.codeComparator,
     this.valueSetProperty,
     this.dateProperty,
     this.dateLowProperty,
     this.dateHighProperty,
-    this.codes,
-    this.dateRange,
-    this.context,
+    this.dateSearch,
+    this.includedIn,
   });
 
   factory Retrieve.fromJson(Map<String, dynamic> json) =>
@@ -155,14 +179,14 @@ class ValueSetDef extends ElmElement {
   String? name;
   String id;
   String? version;
-  String accessLevel;
+  AccessModifier accessLevel;
 
   ValueSetDef({
     this.codeSystem,
     this.name,
     required this.id,
     this.version,
-    this.accessLevel = 'Public',
+    this.accessLevel = AccessModifier.Public,
   });
 
   factory ValueSetDef.fromJson(Map<String, dynamic> json) =>
@@ -177,14 +201,14 @@ class CodeDef extends ElmElement {
   String name;
   String id;
   String? display;
-  String accessLevel;
+  AccessModifier accessLevel;
 
   CodeDef({
     this.codeSystem,
     required this.name,
     required this.id,
     this.display,
-    this.accessLevel = 'Public',
+    this.accessLevel = AccessModifier.Public,
   });
 
   factory CodeDef.fromJson(Map<String, dynamic> json) =>
@@ -337,12 +361,12 @@ class InCodeSystem extends OperatorExpression {
 
 @JsonSerializable()
 class AnyInCodeSystem extends OperatorExpression {
-  Expression code;
+  Expression codes;
   CodeSystemRef? codesystem;
   Expression? codesystemExpression;
 
   AnyInCodeSystem({
-    required this.code,
+    required this.codes,
     this.codesystem,
     this.codesystemExpression,
   });
