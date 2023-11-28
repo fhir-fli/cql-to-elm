@@ -272,7 +272,7 @@ class ElmBaseVisitor<T, C> implements ElmVisitor<T, C> {
     } else if (elm is IsFalse) {
       return visitIsFalse(elm as IsFalse, context);
     } else if (elm is IsNull) {
-      return visitIsNull(elm as IsNull, context);
+      return visitIsNull(elm, context);
     } else if (elm is IsTrue) {
       return visitIsTrue(elm as IsTrue, context);
     } else if (elm is Length) {
@@ -284,7 +284,7 @@ class ElmBaseVisitor<T, C> implements ElmVisitor<T, C> {
     } else if (elm is Negate) {
       return visitNegate(elm, context);
     } else if (elm is Not) {
-      return visitNot(elm as Not, context);
+      return visitNot(elm, context);
     } else if (elm is PointFrom) {
       return visitPointFrom(elm, context);
     } else if (elm is Precision) {
@@ -356,7 +356,7 @@ class ElmBaseVisitor<T, C> implements ElmVisitor<T, C> {
     } else if (elm is After) {
       return visitAfter(elm as After, context);
     } else if (elm is And) {
-      return visitAnd(elm as And, context);
+      return visitAnd(elm, context);
     } else if (elm is Before) {
       return visitBefore(elm as Before, context);
     } else if (elm is CanConvertQuantity) {
@@ -390,7 +390,7 @@ class ElmBaseVisitor<T, C> implements ElmVisitor<T, C> {
     } else if (elm is HighBoundary) {
       return visitHighBoundary(elm, context);
     } else if (elm is Implies) {
-      return visitImplies(elm as Implies, context);
+      return visitImplies(elm, context);
     } else if (elm is In) {
       return visitIn(elm as In, context);
     } else if (elm is IncludedIn) {
@@ -422,7 +422,7 @@ class ElmBaseVisitor<T, C> implements ElmVisitor<T, C> {
     } else if (elm is NotEqual) {
       return visitNotEqual(elm, context);
     } else if (elm is Or) {
-      return visitOr(elm as Or, context);
+      return visitOr(elm, context);
     } else if (elm is Overlaps) {
       return visitOverlaps(elm as Overlaps, context);
     } else if (elm is OverlapsAfter) {
@@ -456,7 +456,7 @@ class ElmBaseVisitor<T, C> implements ElmVisitor<T, C> {
     } else if (elm is TruncatedDivide) {
       return visitTruncatedDivide(elm, context);
     } else if (elm is Xor) {
-      return visitXor(elm as Xor, context);
+      return visitXor(elm, context);
     }
     return visitChildren(elm, context);
   }
@@ -684,14 +684,10 @@ class ElmBaseVisitor<T, C> implements ElmVisitor<T, C> {
 
   T visitIf(If elm, C context) {
     T result = defaultResult(elm, context);
-    if (elm.condition != null) {
-      T childResult = visitElement(elm.condition, context);
-      result = aggregateResult(result, childResult);
-    }
-    if (elm.then != null) {
-      T childResult = visitElement(elm.then, context);
-      result = aggregateResult(result, childResult);
-    }
+    T childResult = visitElement(elm.condition, context);
+    result = aggregateResult(result, childResult);
+    T childResult = visitElement(elm.then, context);
+    result = aggregateResult(result, childResult);
     if (elm.elze != null) {
       T childResult = visitElement(elm.elze, context);
       result = aggregateResult(result, childResult);
@@ -701,14 +697,10 @@ class ElmBaseVisitor<T, C> implements ElmVisitor<T, C> {
 
   T visitCaseItem(CaseItem elm, C context) {
     T result = defaultResult(elm, context);
-    if (elm.when != null) {
-      T childResult = visitElement(elm.when, context);
-      result = aggregateResult(result, childResult);
-    }
-    if (elm.then != null) {
-      T childResult = visitElement(elm.then, context);
-      result = aggregateResult(result, childResult);
-    }
+    T childResult = visitElement(elm.when, context);
+    result = aggregateResult(result, childResult);
+    T childResult = visitElement(elm.then, context);
+    result = aggregateResult(result, childResult);
     return result;
   }
 
@@ -1825,6 +1817,11 @@ class ElmBaseVisitor<T, C> implements ElmVisitor<T, C> {
   }
 
   T visitQueryLetRef(QueryLetRef elm, C context) {
+    return defaultResult(elm, context);
+  }
+
+  @override
+  T visitToDate(ToDate elm, C context) {
     return defaultResult(elm, context);
   }
 }

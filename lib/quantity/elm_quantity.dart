@@ -2,15 +2,47 @@
 
 // Package imports:
 import 'package:fhir/r4.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:units_converter/units_converter.dart';
 
 // Project imports:
+import '../cql_lm/cql_lm.dart';
 import 'duration_code.dart';
 import 'ratios.dart' as unitRatios;
 import 'string_unit_to_property.dart';
+import 'unit_code.dart';
 
-extension ElmQuantity on Quantity {
-  Quantity fromString(String quantityString) {
+part 'elm_quantity.freezed.dart';
+part 'elm_quantity.g.dart';
+
+@freezed
+class ElmQuantity extends ElmElement with _$ElmQuantity implements Quantity {
+  ElmQuantity._();
+
+  factory ElmQuantity({
+    FhirDecimal? value,
+    String? unit,
+    FhirUri? system,
+    FhirCode? code,
+  }) = _ElmQuantity;
+
+  ElmQuantity copyWith({
+    FhirDecimal? value,
+    String? unit,
+    FhirUri? system,
+    FhirCode? code,
+  }) =>
+      ElmQuantity(
+        value: value,
+        unit: unit,
+        system: system,
+        code: code,
+      );
+
+  factory ElmQuantity.fromJson(Map<String, dynamic> json) =>
+      _$ElmQuantityFromJson(json);
+
+  factory ElmQuantity.fromString(String quantityString) {
     if (ElmQuantity.ElmQuantityRegex.hasMatch(
         quantityString.replaceAll(r"\'", "'"))) {
       final match = ElmQuantity.ElmQuantityRegex.firstMatch(
@@ -43,7 +75,7 @@ extension ElmQuantity on Quantity {
       // Try to normalize time-valued units
       unitString = timeValuedQuantitiesUnits[unitString] ?? unitString;
 
-      return Quantity(
+      return ElmQuantity(
           value: FhirDecimal(double.parse(value)), unit: unitString);
     } else {
       throw Exception('Malformed quantity: $quantityString');
@@ -58,7 +90,7 @@ extension ElmQuantity on Quantity {
   bool get isTimeValued => timeValuedQuantitiesUnits.containsValue(unit);
   bool get isDefiniteDuration =>
       definiteQuantityDurationUnits.containsKey(unit);
-  double? getValue() => amount?.toDouble();
+  double? getValue() => value?.value?.toDouble();
   String? getUnit() => unit;
 
   Quantity abs() => this.copyWith(
@@ -155,9 +187,16 @@ extension ElmQuantity on Quantity {
               }
             }
           }
-          return thisAmount?.toString().convertFromTo(from, to).convertFromTo(
-                  fromUnit as NUMERAL_SYSTEMS, toUnit as NUMERAL_SYSTEMS) ==
-              thatAmount;
+          // TODO(Dokotela): Fix this
+          return false;
+          // thisAmount
+          //         ?.toString()
+          //         .unitRatios
+          //         .convertFromTo(from, to)
+          //         .convertFromTo(from, to)
+          //         .convertFromTo(
+          //             fromUnit as NUMERAL_SYSTEMS, toUnit as NUMERAL_SYSTEMS) ==
+          // thatAmount;
         }
       }
     }
@@ -182,39 +221,42 @@ extension ElmQuantity on Quantity {
         if (toUnit is! Ratio) {
           return false;
         } else {
-          final convertedAmount = thisAmount?.convertRatioFromTo(
+          final convertedAmount = value?.value?.convertRatioFromTo(
               fromUnit as unitRatios.Ratio, toUnit as unitRatios.Ratio);
 
           if (convertedAmount != null) {
-            if (o.amount == null) {
+            if (o.value == null || o.value!.value == null) {
               return false;
             }
             switch (comparator) {
               case _Comparator.gt:
-                return convertedAmount > o.amount!;
+                return convertedAmount > o.value!.value!;
               case _Comparator.gte:
-                return convertedAmount >= o.amount!;
+                return convertedAmount >= o.value!.value!;
               case _Comparator.lt:
-                return convertedAmount < o.amount!;
+                return convertedAmount < o.value!.value!;
               case _Comparator.lte:
-                return convertedAmount <= o.amount!;
+                return convertedAmount <= o.value!.value!;
             }
           } else {
             return false;
           }
         }
       } else {
-        final convertedAmount = amount.convertFromTo(fromUnit, toUnit);
+        final convertedAmount = value?.value?.convertFromTo(fromUnit, toUnit);
         if (convertedAmount != null) {
+          if (o.value == null || o.value!.value == null) {
+            return false;
+          }
           switch (comparator) {
             case _Comparator.gt:
-              return convertedAmount > o.amount;
+              return convertedAmount > o.value!.value!;
             case _Comparator.gte:
-              return convertedAmount >= o.amount;
+              return convertedAmount >= o.value!.value!;
             case _Comparator.lt:
-              return convertedAmount < o.amount;
+              return convertedAmount < o.value!.value!;
             case _Comparator.lte:
-              return convertedAmount <= o.amount;
+              return convertedAmount <= o.value!.value!;
           }
         } else {
           return false;
@@ -228,106 +270,123 @@ extension ElmQuantity on Quantity {
   bool operator <(Object o) => compare(_Comparator.lt, o);
   bool operator <=(Object o) => compare(_Comparator.lte, o);
 
-  ElmQuantity operator +(Object o) {
-    if (o is! ElmQuantity) {
-      throw primitives.InvalidTypes<ElmQuantity>(
-          'A + operator was attemped with an object that was not a ElmQuantity: '
+  Quantity operator +(Object o) {
+    if (o is! Quantity) {
+      throw InvalidTypes<Quantity>(
+          'A + operator was attemped with an object that was not a Quantity: '
           'instead this was passed $o which is a type ${o.runtimeType}');
     } else if (unit == o.unit) {
-      final value = amount + o.amount;
-      return ElmQuantity(value, unit);
+      final amount = (value?.value ?? 0) + (o.value?.value ?? 0);
+      return Quantity(value: FhirDecimal(amount.toDouble()), unit: unit);
     } else {
       final fromUnit = stringUnitToProperty[o.unit];
       final toUnit = stringUnitToProperty[unit];
-      final convertedAmount = o.amount.convertFromTo(fromUnit, toUnit);
+      final convertedAmount = o.value?.value?.convertFromTo(fromUnit, toUnit);
       if (convertedAmount == null) {
-        throw primitives.InvalidTypes<ElmQuantity>(
+        throw InvalidTypes<Quantity>(
             'A + operator was attemped with two units types that are not '
             'comparable: $this and $o');
       } else {
-        amount = amount + convertedAmount;
-        return this;
+        final newAmount = (amount ?? 0) + convertedAmount;
+        final index = stringUnitToProperty.values
+            .toList()
+            .indexWhere((element) => element == toUnit);
+        if (index == -1) {
+          throw InvalidTypes<Quantity>(
+              'A + operator was attemped with an object that did not have a '
+              'recognized unit. The given unit was $toUnit');
+        } else {
+          return this.copyWith(
+              value: FhirDecimal(newAmount.toDouble()),
+              unit: stringUnitToProperty.keys.toList()[index]);
+        }
       }
     }
   }
 
-  ElmQuantity operator -(Object o) {
-    if (o is! ElmQuantity) {
-      throw primitives.InvalidTypes<ElmQuantity>(
-          'A + operator was attemped with an object that was not a ElmQuantity: '
+  Quantity operator -(Object o) {
+    if (o is! Quantity) {
+      throw InvalidTypes<Quantity>(
+          'A + operator was attemped with an object that was not a Quantity: '
           'instead this was passed $o which is a type ${o.runtimeType}');
     } else if (unit == o.unit) {
-      final value = amount - o.amount;
-      return ElmQuantity(value, unit);
+      final value = (amount ?? 0) - (o.value?.value ?? 0);
+      return Quantity(value: FhirDecimal(value), unit: unit);
     } else {
       final fromUnit = stringUnitToProperty[o.unit];
       final toUnit = stringUnitToProperty[unit];
-      final convertedAmount = o.amount.convertFromTo(fromUnit, toUnit);
+      final convertedAmount = o.value?.value?.convertFromTo(fromUnit, toUnit);
       if (convertedAmount == null) {
-        throw primitives.InvalidTypes<ElmQuantity>(
+        throw InvalidTypes<Quantity>(
             'A + operator was attemped with two units types that are not '
             'comparable: $this and $o');
       } else {
-        amount = amount - convertedAmount;
-        return this;
+        final newAmount = (amount ?? 0) + convertedAmount;
+        final index = stringUnitToProperty.values
+            .toList()
+            .indexWhere((element) => element == toUnit);
+        if (index == -1) {
+          throw InvalidTypes<Quantity>(
+              'A + operator was attemped with an object that did not have a '
+              'recognized unit. The given unit was $toUnit');
+        } else {
+          return this.copyWith(
+              value: FhirDecimal(newAmount.toDouble()),
+              unit: stringUnitToProperty.keys.toList()[index]);
+        }
       }
     }
   }
 
-  ElmQuantity operator *(Object o) {
-    if (o is! ElmQuantity) {
-      throw primitives.InvalidTypes<ElmQuantity>(
-          'A * operator was attemped with an object that was not a ElmQuantity: '
+  Quantity operator *(Object o) {
+    if (o is! Quantity) {
+      throw InvalidTypes<Quantity>(
+          'A * operator was attemped with an object that was not a Quantity: '
           'instead this was passed $o which is a type ${o.runtimeType}');
     } else if (unit == o.unit) {
-      final value = amount * o.amount;
-      return ElmQuantity(value, unit);
+      final value = (amount ?? 1) * (o.value?.value ?? 1);
+      return Quantity(value: FhirDecimal(value), unit: unit);
     } else {
       // TODO(Dokotela): Should work on being able to multiply these values
-      throw primitives.InvalidTypes<ElmQuantity>(
-          'A * operator was attemped with an object that was not a ElmQuantity: '
+      throw InvalidTypes<Quantity>(
+          'A * operator was attemped with an object that was not a Quantity: '
           'instead this was passed $o which is a type ${o.runtimeType}');
     }
   }
 
-  ElmQuantity operator /(Object o) {
-    if (o is! ElmQuantity) {
-      throw primitives.InvalidTypes<ElmQuantity>(
-          'A / operator was attemped with an object that was not a ElmQuantity: '
+  Quantity operator /(Object o) {
+    if (o is! Quantity) {
+      throw InvalidTypes<Quantity>(
+          'A / operator was attemped with an object that was not a Quantity: '
           'instead this was passed $o which is a type ${o.runtimeType}');
     } else if (unit == o.unit) {
-      final value = amount / o.amount;
-      return ElmQuantity(value, unit);
+      final value = (amount ?? 1) / (o.value?.value ?? 1);
+      return Quantity(value: FhirDecimal(value), unit: unit);
     } else {
       // TODO(Dokotela): Should work on being able to divide these values
-      throw primitives.InvalidTypes<ElmQuantity>(
-          'A / operator was attemped with an object that was not a ElmQuantity: '
+      throw InvalidTypes<Quantity>(
+          'A / operator was attemped with an object that was not a Quantity: '
           'instead this was passed $o which is a type ${o.runtimeType}');
     }
   }
 
-  ElmQuantity operator %(Object o) {
-    if (o is! ElmQuantity) {
-      throw primitives.InvalidTypes<ElmQuantity>(
-          'A / operator was attemped with an object that was not a ElmQuantity: '
+  Quantity operator %(Object o) {
+    if (o is! Quantity) {
+      throw InvalidTypes<Quantity>(
+          'A / operator was attemped with an object that was not a Quantity: '
           'instead this was passed $o which is a type ${o.runtimeType}');
     } else if (unit == o.unit) {
-      final value = amount % o.amount;
-      return ElmQuantity(value, unit);
+      final value = (amount ?? 0) % (o.value?.value ?? 0);
+      return Quantity(value: FhirDecimal(value), unit: unit);
     } else {
       // TODO(Dokotela): Should work on being able to % these values
-      throw primitives.InvalidTypes<ElmQuantity>(
-          'A / operator was attemped with an object that was not a ElmQuantity: '
+      throw InvalidTypes<Quantity>(
+          'A / operator was attemped with an object that was not a Quantity: '
           'instead this was passed $o which is a type ${o.runtimeType}');
     }
   }
 
-  dynamic subtract(dynamic lhs) {
-    amount = amount * -1;
-    final returnValue = add(lhs);
-    amount = amount * -1;
-    return returnValue;
-  }
+  dynamic subtract(dynamic lhs) => add((amount ?? 0) * -1);
 
   dynamic add(dynamic lhs) {
     if (!(unit == 'year' ||
@@ -346,43 +405,44 @@ extension ElmQuantity on Quantity {
     final yearAmount = (unit == 'year'
             ? amount
             : unit == 'month'
-                ? (amount / 12).truncate()
-                : 0)
+                ? ((amount ?? 0) / 12).truncate()
+                : 0)!
         .toInt();
-    final monthAmount = (unit == 'month' ? amount.remainder(12) : 0).toInt();
+    final monthAmount =
+        (unit == 'month' ? (amount ?? 0).remainder(12) : 0).toInt();
     final dayAmount = (unit == 'week'
-            ? amount * 7
+            ? (amount ?? 0) * 7
             : unit == 'day'
                 ? amount
-                : 0)
+                : 0)!
         .toInt();
-    final hourAmount = (unit == 'hour' ? amount : 0).toInt();
-    final minuteAmount = (unit == 'minute' ? amount : 0).toInt();
-    final secondAmount = (unit == 'second' ? amount : 0).toInt();
-    final millisecondAmount = (unit == 'millisecond' ? amount : 0).toInt();
-    if ((lhs is primitives.FhirDate &&
+    final hourAmount = (unit == 'hour' ? amount : 0)!.toInt();
+    final minuteAmount = (unit == 'minute' ? amount : 0)!.toInt();
+    final secondAmount = (unit == 'second' ? amount : 0)!.toInt();
+    final millisecondAmount = (unit == 'millisecond' ? amount : 0)!.toInt();
+    if ((lhs is FhirDate &&
             (hourAmount != 0 ||
                 minuteAmount != 0 ||
                 secondAmount != 0 ||
                 millisecondAmount != 0)) ||
-        (lhs is primitives.FhirTime &&
+        (lhs is FhirTime &&
             (yearAmount != 0 || monthAmount != 0 || dayAmount != 0))) {
       throw Exception(
         'Date & Time additions must be done with the proper units.\n'
         '$lhs + $amount $unit was attempted, this is invalid',
       );
     }
-    if (lhs is primitives.FhirDate && lhs.isValid && lhs.value != null) {
+    if (lhs is FhirDate && lhs.isValid && lhs.value != null) {
       final newDate = DateTime.utc(lhs.value!.year + yearAmount,
           lhs.value!.month + monthAmount, lhs.value!.day + dayAmount);
-      if (lhs.precision == primitives.DatePrecision.YYYY) {
-        return primitives.FhirDate(newDate.toString().substring(0, 4));
-      } else if (lhs.precision == primitives.DatePrecision.YYYYMM) {
-        return primitives.FhirDate(newDate.toString().substring(0, 7));
+      if (lhs.precision == DatePrecision.YYYY) {
+        return FhirDate(newDate.toString().substring(0, 4));
+      } else if (lhs.precision == DatePrecision.YYYYMM) {
+        return FhirDate(newDate.toString().substring(0, 7));
       } else {
-        return primitives.FhirDate(newDate.toString().substring(0, 10));
+        return FhirDate(newDate.toString().substring(0, 10));
       }
-    } else if (lhs is primitives.FhirTime && lhs.isValid && lhs.value != null) {
+    } else if (lhs is FhirTime && lhs.isValid && lhs.value != null) {
       final timeList = lhs.value!.split(':');
       final duration = Duration(
         hours: int.tryParse(timeList.first) ?? 0 + hourAmount,
@@ -400,10 +460,8 @@ extension ElmQuantity on Quantity {
       final durationList = duration.toString().split(':');
       durationList.first =
           int.parse(durationList.first).remainder(24).toString();
-      return primitives.FhirTime(durationList.join(':'));
-    } else if (lhs is primitives.FhirDateTime &&
-        lhs.isValid &&
-        lhs.value != null) {
+      return FhirTime(durationList.join(':'));
+    } else if (lhs is FhirDateTime && lhs.isValid && lhs.value != null) {
       final oldDateTime = lhs.value!;
       final newDateTime = DateTime.utc(
         oldDateTime.year + yearAmount,
@@ -414,25 +472,55 @@ extension ElmQuantity on Quantity {
         oldDateTime.second + secondAmount,
         oldDateTime.millisecond + millisecondAmount,
       );
-      if (lhs.precision == primitives.DateTimePrecision.YYYY) {
-        return primitives.FhirDateTime(
-            newDateTime.toIso8601String().substring(0, 4));
-      } else if (lhs.precision == primitives.DateTimePrecision.YYYYMM) {
-        return primitives.FhirDateTime(
-            newDateTime.toIso8601String().substring(0, 7));
-      } else if (lhs.precision == primitives.DateTimePrecision.YYYYMMDD) {
-        return primitives.FhirDateTime(
-            newDateTime.toIso8601String().substring(0, 10));
+      if (lhs.precision == DateTimePrecision.YYYY) {
+        return FhirDateTime(newDateTime.toIso8601String().substring(0, 4));
+      } else if (lhs.precision == DateTimePrecision.YYYYMM) {
+        return FhirDateTime(newDateTime.toIso8601String().substring(0, 7));
+      } else if (lhs.precision == DateTimePrecision.YYYYMMDD) {
+        return FhirDateTime(newDateTime.toIso8601String().substring(0, 10));
       } else {
-        return primitives.FhirDateTime(newDateTime);
+        return FhirDateTime(newDateTime);
       }
     }
   }
+
+  @override
+  Element? get codeElement => codeElement;
+
+  @override
+  QuantityComparator? get comparator => comparator;
+
+  @override
+  Element? get comparatorElement => comparatorElement;
+
+  @override
+  List<FhirExtension>? get extension_ => extension_;
+
+  @override
+  String? get fhirId => fhirId;
+
+  @override
+  Element? get systemElement => systemElement;
+
+  @override
+  Map<String, dynamic> toJson() => toJson();
+
+  @override
+  String toJsonString() => toJsonString();
+
+  @override
+  String toYaml() => toYaml();
+
+  @override
+  Element? get unitElement => unitElement;
+
+  @override
+  Element? get valueElement => valueElement;
 }
 
 enum _Comparator { gt, gte, lt, lte }
 
-/// Validating function. First checks if passed value is a ElmQuantity or a
+/// Validating function. First checks if passed value is a Quantity or a
 /// Quantity from any type of FHIR version. If not, it  checks if it is a Map
 /// that contains both a numerical value, as well as a unit as defined by the [UCUM]
 /// specification (https://hl7.org/fhirpath/#UCUM), as long as it meets these requirements

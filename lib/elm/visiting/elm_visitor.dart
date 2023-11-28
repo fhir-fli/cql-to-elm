@@ -1,3 +1,5 @@
+import 'package:fhir/primitive_types/primitive_types.dart';
+
 import '../../cql_lm/cql_lm.dart';
 
 ///
@@ -1296,7 +1298,7 @@ abstract class ElmVisitor<T, C> {
   ///  @param context the context passed to the visitor
   ///  @return the visitor result
   ///
-  T visitDate(Date elm, C context);
+  T visitDate(FhirDate elm, C context);
 
   ///
   ///  Visit a Time. This method will be called for
@@ -1306,7 +1308,7 @@ abstract class ElmVisitor<T, C> {
   ///  @param context the context passed to the visitor
   ///  @return the visitor result
   ///
-  T visitTime(Time elm, C context);
+  T visitTime(FhirTime elm, C context);
 
   ///
   ///  Visit a SameAs. This method will be called for

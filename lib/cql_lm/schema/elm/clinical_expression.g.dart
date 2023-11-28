@@ -1034,7 +1034,7 @@ Map<String, dynamic> _$SubsumedByToJson(SubsumedBy instance) {
 }
 
 CalculateAge _$CalculateAgeFromJson(Map<String, dynamic> json) => CalculateAge(
-      precision: $enumDecode(_$DateTimePrecisionEnumMap, json['precision']),
+      precision: $enumDecode(_$ElmDateTimePrecisionEnumMap, json['precision']),
       operand: json['operand'] == null
           ? null
           : Expression.fromJson(json['operand'] as Map<String, dynamic>),
@@ -1073,24 +1073,24 @@ Map<String, dynamic> _$CalculateAgeToJson(CalculateAge instance) {
   writeNotNull(
       'signature', instance.signature?.map((e) => e.toJson()).toList());
   writeNotNull('operand', instance.operand?.toJson());
-  val['precision'] = _$DateTimePrecisionEnumMap[instance.precision]!;
+  val['precision'] = _$ElmDateTimePrecisionEnumMap[instance.precision]!;
   return val;
 }
 
-const _$DateTimePrecisionEnumMap = {
-  DateTimePrecision.Year: 'Year',
-  DateTimePrecision.Month: 'Month',
-  DateTimePrecision.Week: 'Week',
-  DateTimePrecision.Day: 'Day',
-  DateTimePrecision.Hour: 'Hour',
-  DateTimePrecision.Minute: 'Minute',
-  DateTimePrecision.Second: 'Second',
-  DateTimePrecision.Millisecond: 'Millisecond',
+const _$ElmDateTimePrecisionEnumMap = {
+  ElmDateTimePrecision.Year: 'Year',
+  ElmDateTimePrecision.Month: 'Month',
+  ElmDateTimePrecision.Week: 'Week',
+  ElmDateTimePrecision.Day: 'Day',
+  ElmDateTimePrecision.Hour: 'Hour',
+  ElmDateTimePrecision.Minute: 'Minute',
+  ElmDateTimePrecision.Second: 'Second',
+  ElmDateTimePrecision.Millisecond: 'Millisecond',
 };
 
 CalculateAgeAt _$CalculateAgeAtFromJson(Map<String, dynamic> json) =>
     CalculateAgeAt(
-      precision: $enumDecode(_$DateTimePrecisionEnumMap, json['precision']),
+      precision: $enumDecode(_$ElmDateTimePrecisionEnumMap, json['precision']),
       operand: (json['operand'] as List<dynamic>)
           .map((e) => Expression.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -1129,6 +1129,6 @@ Map<String, dynamic> _$CalculateAgeAtToJson(CalculateAgeAt instance) {
   writeNotNull(
       'signature', instance.signature?.map((e) => e.toJson()).toList());
   val['operand'] = instance.operand.map((e) => e.toJson()).toList();
-  val['precision'] = _$DateTimePrecisionEnumMap[instance.precision]!;
+  val['precision'] = _$ElmDateTimePrecisionEnumMap[instance.precision]!;
   return val;
 }

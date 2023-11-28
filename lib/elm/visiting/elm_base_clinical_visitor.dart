@@ -46,7 +46,7 @@ class ElmBaseClinicalVisitor<T, C> extends ElmBaseVisitor<T, C>
       return visitCode(elm, context);
     else if (elm is Concept)
       return visitConcept(elm, context);
-    else if (elm is ElmQuantity)
+    else if (elm is Quantity)
       return visitQuantity(elm as Quantity, context);
     else if (elm is Ratio)
       return visitRatio(elm as Ratio, context);
@@ -293,7 +293,7 @@ class ElmBaseClinicalVisitor<T, C> extends ElmBaseVisitor<T, C>
     return visitChildren(elm, context);
   }
 
-  T visitQuantity(ElmQuantity elm, C context) {
+  T visitQuantity(Quantity elm, C context) {
     return defaultResult(elm, context);
   }
 
@@ -304,7 +304,8 @@ class ElmBaseClinicalVisitor<T, C> extends ElmBaseVisitor<T, C>
       if ((elm.denominator!.value?.isValid ?? false) &&
           elm.denominator!.unit != null) {
         childResult = visitElement(
-          ElmQuantity(elm.denominator!.value!.value!, elm.denominator!.unit!),
+          ElmQuantity(
+              value: elm.denominator!.value!, unit: elm.denominator!.unit!),
           context,
         );
         result = aggregateResult(result, childResult!);
@@ -314,7 +315,7 @@ class ElmBaseClinicalVisitor<T, C> extends ElmBaseVisitor<T, C>
       if ((elm.numerator!.value?.isValid ?? false) &&
           elm.numerator!.unit != null) {
         childResult = visitElement(
-          ElmQuantity(elm.numerator!.value!.value!, elm.numerator!.unit!),
+          ElmQuantity(value: elm.numerator!.value, unit: elm.numerator!.unit!),
           context,
         );
         result = aggregateResult(result, childResult!);
@@ -332,7 +333,7 @@ class ElmBaseClinicalVisitor<T, C> extends ElmBaseVisitor<T, C>
   }
 
   @override
-  T visitToDate(VisitToDate elm, C context) {
+  T visitToDate(ToDate elm, C context) {
     return visitChildren(elm, context);
   }
 }

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:fhir/r4.dart';
 import 'package:json_annotation/json_annotation.dart';
 
+import '../../../quantity/quantity.dart';
 import '../schema.dart';
 
 part 'expression.g.dart';
@@ -539,7 +540,135 @@ class NullOperator extends Expression {
 // Class representing the IsNull operator
 @JsonSerializable()
 class IsNull extends UnaryExpression {
-  // Add properties if needed
+  IsNull({required super.operand});
+
+  factory IsNull.fromJson(Map<String, dynamic> json) => _$IsNullFromJson(json);
+
+  Map<String, dynamic> toJson() => _$IsNullToJson(this);
+}
+
+/// Class representing the IsTrue operator.
+/// The IsTrue operator determines whether or not its argument evaluates to true.
+/// If the argument evaluates to true, the result is true;
+/// if the argument evaluates to false or null, the result is false.
+@JsonSerializable()
+class IsTrue extends UnaryExpression {
+  IsTrue({required super.operand});
+
+  factory IsTrue.fromJson(Map<String, dynamic> json) => _$IsTrueFromJson(json);
+
+  Map<String, dynamic> toJson() => _$IsTrueToJson(this);
+}
+
+/// Class representing the IsFalse operator.
+/// The IsFalse operator determines whether or not its argument evaluates to false.
+/// If the argument evaluates to false, the result is true;
+/// if the argument evaluates to true or null, the result is false.
+@JsonSerializable()
+class IsFalse extends UnaryExpression {
+  IsFalse({required super.operand});
+
+  factory IsFalse.fromJson(Map<String, dynamic> json) =>
+      _$IsFalseFromJson(json);
+
+  Map<String, dynamic> toJson() => _$IsFalseToJson(this);
+}
+
+/// Class representing the Coalesce operator.
+/// The Coalesce operator returns the first non-null result in a list of arguments.
+/// If all arguments evaluate to null, the result is null.
+/// The static type of the first argument determines the type of the result,
+/// and all subsequent arguments must be of that same type.
+@JsonSerializable()
+class Coalesce extends NaryExpression {
+  Coalesce({required super.operand});
+
+  factory Coalesce.fromJson(Map<String, dynamic> json) =>
+      _$CoalesceFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CoalesceToJson(this);
+}
+
+/// Class representing the Is operator.
+/// The Is operator allows the type of a result to be tested.
+/// If the run-time type of the argument is of the type being tested, the result of the operator is true;
+/// otherwise, the result is false.
+@JsonSerializable()
+class Is extends UnaryExpression {
+  TypeSpecifier? isTypeSpecifier;
+  String? isType;
+
+  Is({
+    Expression? operand,
+    this.isTypeSpecifier,
+    this.isType,
+  }) : super(operand: operand);
+
+  factory Is.fromJson(Map<String, dynamic> json) => _$IsFromJson(json);
+
+  Map<String, dynamic> toJson() => _$IsToJson(this);
+}
+
+/// Class representing the As operator.
+/// The As operator allows the result of an expression to be cast as a given target type.
+/// This allows expressions to be written that are statically typed against the expected run-time type of the argument.
+/// If the argument is not of the specified type, and the strict attribute is false (the default), the result is null.
+/// If the argument is not of the specified type and the strict attribute is true, an exception is thrown.
+@JsonSerializable()
+class As extends UnaryExpression {
+  TypeSpecifier? asTypeSpecifier;
+  String? asType;
+  bool? strict;
+
+  As({
+    Expression? operand,
+    this.asTypeSpecifier,
+    this.asType,
+    this.strict,
+  }) : super(operand: operand);
+
+  factory As.fromJson(Map<String, dynamic> json) => _$AsFromJson(json);
+
+  Map<String, dynamic> toJson() => _$AsToJson(this);
+}
+
+/// Class representing the Convert operator.
+/// The Convert operator converts a value to a specific type.
+/// If no valid conversion exists from the actual value to the target type, the result is null.
+@JsonSerializable()
+class Convert extends UnaryExpression {
+  TypeSpecifier? toTypeSpecifier;
+  String? toType;
+
+  Convert({
+    Expression? operand,
+    this.toTypeSpecifier,
+    this.toType,
+  }) : super(operand: operand);
+
+  factory Convert.fromJson(Map<String, dynamic> json) =>
+      _$ConvertFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ConvertToJson(this);
+}
+
+/// Class representing the CanConvert operator.
+/// The CanConvert operator returns true if the given value can be converted to a specific type, and false otherwise.
+@JsonSerializable()
+class CanConvert extends UnaryExpression {
+  TypeSpecifier? toTypeSpecifier;
+  String? toType;
+
+  CanConvert({
+    Expression? operand,
+    this.toTypeSpecifier,
+    this.toType,
+  }) : super(operand: operand);
+
+  factory CanConvert.fromJson(Map<String, dynamic> json) =>
+      _$CanConvertFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CanConvertToJson(this);
 }
 
 @JsonSerializable()
@@ -998,7 +1127,7 @@ class ConvertsToQuantity extends UnaryExpression {
 
       try {
         // Check if the parsed value is a valid decimal
-        double parsedValue = double.parse(ElmQuantityValue);
+        double parsedValue = double.parse(quantityValue);
         if (parsedValue.isNaN || parsedValue.isInfinite) {
           return false; // NaN or Infinite value is not valid
         }
@@ -1031,13 +1160,13 @@ class ToQuantity extends UnaryExpression {
 
   ElmQuantity? toThisQuantity() => toQuantity(value);
 
-  staticElmQuantity? toQuantity(dynamic value) {
+  static ElmQuantity? toQuantity(dynamic value) {
     if (value == null) {
       return null;
     }
 
     if (value is int || value is double || value is num) {
-      returnElmQuantity(value: FhirDecimal(value.toDouble()));
+      return ElmQuantity(value: FhirDecimal(value.toDouble()));
     }
 
     if (value is String) {
@@ -1062,7 +1191,7 @@ class ToQuantity extends UnaryExpression {
           unit = parts.sublist(1).join(' ').trim();
         }
 
-        returnElmQuantity(value: FhirDecimal(parsedValue), unit: unit);
+        return ElmQuantity(value: FhirDecimal(parsedValue), unit: unit);
       } catch (e) {
         return null; // Parsing error
       }
@@ -1074,7 +1203,7 @@ class ToQuantity extends UnaryExpression {
       if (denominator == 0) {
         return null; // Division by zero
       }
-      returnElmQuantity(value: FhirDecimal(numerator / denominator));
+      return ElmQuantity(value: FhirDecimal(numerator / denominator));
     }
 
     return null; // Other types are not supported
@@ -1112,7 +1241,7 @@ class ConvertsToRatio extends UnaryExpression {
       }
 
       List<String> parts = formattedvalue.split(':');
-      ElmQuantityity? firstQuantity = ToQuantity.toQuantity(parts[0].trim());
+      ElmQuantity? firstQuantity = ToQuantity.toQuantity(parts[0].trim());
       ElmQuantity? secondQuantity = ToQuantity.toQuantity(parts[1].trim());
 
       return secondQuantity != null;
@@ -1228,7 +1357,7 @@ class ConvertsToString extends UnaryExpression {
           argument is double ||
           argument is DateTime ||
           argument is String ||
-          argument isElmQuantity ||
+          argument is ElmQuantity ||
           argument is Ratio;
     }
   }
@@ -1256,7 +1385,7 @@ class ToString extends UnaryExpression {
       return value.toIso8601String();
     } else if (value is String) {
       return value;
-    } else if (value isElmQuantity) {
+    } else if (value is ElmQuantity) {
       return '${value.value}${value.unit != null ? ' ${value.unit}' : ''}';
     } else if (value is Ratio) {
       return '${ToString.toElmString(value.numerator)}:${ToString.toElmString(value.denominator)}';
@@ -1374,7 +1503,7 @@ class CanConvertQuantity extends BinaryExpression {
     // Add your conversion logic here or integrate any external libraries for unit conversion
 
     // Placeholder logic assuming simple quantity conversion
-    if (ElmQuantity.unit == targetUnit) {
+    if (quantity.unit == targetUnit) {
       return true; // Quantity can be converted to the target unit
     } else {
       return false; // Quantity cannot be converted to the target unit
@@ -1396,9 +1525,9 @@ class ConvertQuantity extends BinaryExpression {
   final dynamic arg2;
   final String? targetUnit;
 
- ElmQuantity? convertThisQuantity() => convertQuantity(value, targetUnit);
+  ElmQuantity? convertThisQuantity() => convertQuantity(value, targetUnit);
 
-  staticElmQuantity? convertQuantity(dynamic valueQuantity,
+  static ElmQuantity? convertQuantity(dynamic valueQuantity,
       [String? targetUnit]) {
     if (targetUnit == null) {
       return null;
@@ -1618,7 +1747,7 @@ class Greater extends BinaryExpression {
       // Comparison for DateTime values
       // This is a placeholder; actual comparison involves comparing each precision
       return arg1.isAfter(arg2);
-    } else if (arg1 is ElmQuantity && arg2 is ElmQuantityity) {
+    } else if (arg1 is ElmQuantity && arg2 is ElmQuantity) {
       // Comparison for quantities
       // This is a placeholder; actual comparison might involve unit conversion and value comparison
       return false; // Implement logic for quantity comparison here
@@ -2297,7 +2426,7 @@ class ReplaceMatches extends TernaryExpression {
   Map<String, dynamic> toJson() => _$ReplaceMatchesToJson(this);
 }
 
-enum DateTimePrecision {
+enum ElmDateTimePrecision {
   Year,
   Month,
   Week,
@@ -2315,7 +2444,7 @@ class DurationBetween extends BinaryExpression {
 
   final dynamic arg1;
   final dynamic arg2;
-  final DateTimePrecision? precision;
+  final ElmDateTimePrecision? precision;
 
   factory DurationBetween.fromJson(Map<String, dynamic> json) =>
       _$DurationBetweenFromJson(json);
@@ -2330,7 +2459,7 @@ class DifferenceBetween extends BinaryExpression {
 
   final dynamic arg1;
   final dynamic arg2;
-  final DateTimePrecision? precision;
+  final ElmDateTimePrecision? precision;
 
   factory DifferenceBetween.fromJson(Map<String, dynamic> json) =>
       _$DifferenceBetweenFromJson(json);
@@ -2383,7 +2512,7 @@ class TimezoneOffsetFrom extends UnaryExpression {
 class DateTimeComponentFrom extends UnaryExpression {
   DateTimeComponentFrom({required super.operand, this.precision});
 
-  final DateTimePrecision? precision;
+  final ElmDateTimePrecision? precision;
 
   factory DateTimeComponentFrom.fromJson(Map<String, dynamic> json) =>
       _$DateTimeComponentFromFromJson(json);
@@ -2430,37 +2559,38 @@ class DateTimeOperator extends OperatorExpression {
 
 @JsonSerializable()
 class SameAs extends BinaryExpression {
-  SameAs({required this.arg1, required this.arg2, DateTimePrecision? precision})
+  SameAs(
+      {required this.arg1, required this.arg2, ElmDateTimePrecision? precision})
       : super(operand: [Expression(arg1), Expression(arg2)]) {
     this.precision = precision;
   }
   final dynamic arg1;
   final dynamic arg2;
-  DateTimePrecision? precision;
+  ElmDateTimePrecision? precision;
 }
 
 @JsonSerializable()
 class SameOrBefore extends BinaryExpression {
   SameOrBefore(
-      {required this.arg1, required this.arg2, DateTimePrecision? precision})
+      {required this.arg1, required this.arg2, ElmDateTimePrecision? precision})
       : super(operand: [Expression(arg1), Expression(arg2)]) {
     this.precision = precision;
   }
   final dynamic arg1;
   final dynamic arg2;
-  DateTimePrecision? precision;
+  ElmDateTimePrecision? precision;
 }
 
 @JsonSerializable()
 class SameOrAfter extends BinaryExpression {
   SameOrAfter(
-      {required this.arg1, required this.arg2, DateTimePrecision? precision})
+      {required this.arg1, required this.arg2, ElmDateTimePrecision? precision})
       : super(operand: [Expression(arg1), Expression(arg2)]) {
     this.precision = precision;
   }
   final dynamic arg1;
   final dynamic arg2;
-  DateTimePrecision? precision;
+  ElmDateTimePrecision? precision;
 }
 
 @JsonSerializable()
@@ -2490,164 +2620,164 @@ class End extends UnaryExpression {
 
 // @JsonSerializable()
 // class Contains extends BinaryExpression {
-//   Contains(Expression left, Expression right, {DateTimePrecision? precision})
+//   Contains(Expression left, Expression right, {ElmDateTimePrecision? precision})
 //       : super([left, right]) {
 //     this.precision = precision;
 //   }
-//   DateTimePrecision? precision;
+//   ElmDateTimePrecision? precision;
 // }
 
 // @JsonSerializable()
 // class ProperContains extends BinaryExpression {
-//   ProperContains(Expression left, Expression right, {DateTimePrecision? precision})
+//   ProperContains(Expression left, Expression right, {ElmDateTimePrecision? precision})
 //       : super([left, right]) {
 //     this.precision = precision;
 //   }
-//   DateTimePrecision? precision;
+//   ElmDateTimePrecision? precision;
 // }
 
 // @JsonSerializable()
 // class In extends BinaryExpression {
-//   In(Expression left, Expression right, {DateTimePrecision? precision})
+//   In(Expression left, Expression right, {ElmDateTimePrecision? precision})
 //       : super([left, right]) {
 //     this.precision = precision;
 //   }
-//   DateTimePrecision? precision;
+//   ElmDateTimePrecision? precision;
 // }
 
 // @JsonSerializable()
 // class ProperIn extends BinaryExpression {
-//   ProperIn(Expression left, Expression right, {DateTimePrecision? precision})
+//   ProperIn(Expression left, Expression right, {ElmDateTimePrecision? precision})
 //       : super([left, right]) {
 //     this.precision = precision;
 //   }
-//   DateTimePrecision? precision;
+//   ElmDateTimePrecision? precision;
 // }
 
 // @JsonSerializable()
 // class Includes extends BinaryExpression {
-//   Includes(Expression left, Expression right, {DateTimePrecision? precision})
+//   Includes(Expression left, Expression right, {ElmDateTimePrecision? precision})
 //       : super([left, right]) {
 //     this.precision = precision;
 //   }
-//   DateTimePrecision? precision;
+//   ElmDateTimePrecision? precision;
 // }
 
 // @JsonSerializable()
 // class IncludedIn extends BinaryExpression {
-//   IncludedIn(Expression left, Expression right, {DateTimePrecision? precision})
+//   IncludedIn(Expression left, Expression right, {ElmDateTimePrecision? precision})
 //       : super([left, right]) {
 //     this.precision = precision;
 //   }
-//   DateTimePrecision? precision;
+//   ElmDateTimePrecision? precision;
 // }
 
 // @JsonSerializable()
 // class ProperIncludes extends BinaryExpression {
-//   ProperIncludes(Expression left, Expression right, {DateTimePrecision? precision})
+//   ProperIncludes(Expression left, Expression right, {ElmDateTimePrecision? precision})
 //       : super([left, right]) {
 //     this.precision = precision;
 //   }
-//   DateTimePrecision? precision;
+//   ElmDateTimePrecision? precision;
 // }
 
 // @JsonSerializable()
 // class ProperIncludedIn extends BinaryExpression {
-//   ProperIncludedIn(Expression left, Expression right, {DateTimePrecision? precision})
+//   ProperIncludedIn(Expression left, Expression right, {ElmDateTimePrecision? precision})
 //       : super([left, right]) {
 //     this.precision = precision;
 //   }
-//   DateTimePrecision? precision;
+//   ElmDateTimePrecision? precision;
 // }
 
 // @JsonSerializable()
 // class Before extends BinaryExpression {
-//   Before(Expression left, Expression right, {DateTimePrecision? precision})
+//   Before(Expression left, Expression right, {ElmDateTimePrecision? precision})
 //       : super([left, right]) {
 //     this.precision = precision;
 //   }
-//   DateTimePrecision? precision;
+//   ElmDateTimePrecision? precision;
 // }
 
 // @JsonSerializable()
 // class After extends BinaryExpression {
-//   After(Expression left, Expression right, {DateTimePrecision? precision})
+//   After(Expression left, Expression right, {ElmDateTimePrecision? precision})
 //       : super([left, right]) {
 //     this.precision = precision;
 //   }
-//   DateTimePrecision? precision;
+//   ElmDateTimePrecision? precision;
 // }
 
 // @JsonSerializable()
 // class Meets extends BinaryExpression {
-//   Meets(Expression left, Expression right, {DateTimePrecision? precision})
+//   Meets(Expression left, Expression right, {ElmDateTimePrecision? precision})
 //       : super([left, right]) {
 //     this.precision = precision;
 //   }
-//   DateTimePrecision? precision;
+//   ElmDateTimePrecision? precision;
 // }
 
 // @JsonSerializable()
 // class MeetsBefore extends BinaryExpression {
-//   MeetsBefore(Expression left, Expression right, {DateTimePrecision? precision})
+//   MeetsBefore(Expression left, Expression right, {ElmDateTimePrecision? precision})
 //       : super([left, right]) {
 //     this.precision = precision;
 //   }
-//   DateTimePrecision? precision;
+//   ElmDateTimePrecision? precision;
 // }
 
 // @JsonSerializable()
 // class MeetsAfter extends BinaryExpression {
-//   MeetsAfter(Expression left, Expression right, {DateTimePrecision? precision})
+//   MeetsAfter(Expression left, Expression right, {ElmDateTimePrecision? precision})
 //       : super([left, right]) {
 //     this.precision = precision;
 //   }
-//   DateTimePrecision? precision;
+//   ElmDateTimePrecision? precision;
 // }
 
 // @JsonSerializable()
 // class Overlaps extends BinaryExpression {
-//   Overlaps(Expression left, Expression right, {DateTimePrecision? precision})
+//   Overlaps(Expression left, Expression right, {ElmDateTimePrecision? precision})
 //       : super([left, right]) {
 //     this.precision = precision;
 //   }
-//   DateTimePrecision? precision;
+//   ElmDateTimePrecision? precision;
 // }
 
 // @JsonSerializable()
 // class OverlapsBefore extends BinaryExpression {
-//   OverlapsBefore(Expression left, Expression right, {DateTimePrecision? precision})
+//   OverlapsBefore(Expression left, Expression right, {ElmDateTimePrecision? precision})
 //       : super([left, right]) {
 //     this.precision = precision;
 //   }
-//   DateTimePrecision? precision;
+//   ElmDateTimePrecision? precision;
 // }
 
 // @JsonSerializable()
 // class OverlapsAfter extends BinaryExpression {
-//   OverlapsAfter(Expression left, Expression right, {DateTimePrecision? precision})
+//   OverlapsAfter(Expression left, Expression right, {ElmDateTimePrecision? precision})
 //       : super([left, right]) {
 //     this.precision = precision;
 //   }
-//   DateTimePrecision? precision;
+//   ElmDateTimePrecision? precision;
 // }
 
 // @JsonSerializable()
 // class Starts extends BinaryExpression {
-//   Starts(Expression left, Expression right, {DateTimePrecision? precision})
+//   Starts(Expression left, Expression right, {ElmDateTimePrecision? precision})
 //       : super([left, right]) {
 //     this.precision = precision;
 //   }
-//   DateTimePrecision? precision;
+//   ElmDateTimePrecision? precision;
 // }
 
 // @JsonSerializable()
 // class Ends extends BinaryExpression {
-//   Ends(Expression left, Expression right, {DateTimePrecision? precision})
+//   Ends(Expression left, Expression right, {ElmDateTimePrecision? precision})
 //       : super([left, right]) {
 //     this.precision = precision;
 //   }
-//   DateTimePrecision? precision;
+//   ElmDateTimePrecision? precision;
 // }
 
 // @JsonSerializable()

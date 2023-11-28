@@ -2,6 +2,7 @@
 import 'package:fhir/r4.dart';
 import 'package:json_annotation/json_annotation.dart';
 
+import '../../../quantity/quantity.dart';
 import '../schema.dart';
 
 part 'types.g.dart';

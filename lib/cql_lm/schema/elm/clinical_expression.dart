@@ -445,7 +445,7 @@ class SubsumedBy extends BinaryExpression {
 
 @JsonSerializable()
 class CalculateAge extends UnaryExpression {
-  DateTimePrecision precision;
+  ElmDateTimePrecision precision;
 
   CalculateAge({required this.precision, required super.operand});
 
@@ -457,7 +457,7 @@ class CalculateAge extends UnaryExpression {
 
 @JsonSerializable()
 class CalculateAgeAt extends BinaryExpression {
-  DateTimePrecision precision;
+  ElmDateTimePrecision precision;
 
   CalculateAgeAt({required this.precision, required super.operand});
 
