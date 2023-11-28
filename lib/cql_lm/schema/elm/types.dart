@@ -75,15 +75,15 @@ class DecimalInterval extends Interval {
 }
 
 class QuantityInterval extends Interval {
-  final Quantity? low;
-  final Quantity? high;
+  final ElmQuantity? low;
+  final ElmQuantity? high;
 
   QuantityInterval({this.low, this.high});
 
   factory QuantityInterval.fromJson(Map<String, dynamic> json) =>
       QuantityInterval(
-          low: Quantity.fromJson(json['low']),
-          high: Quantity.fromJson(json['low']));
+          low: ElmQuantity.fromJson(json['low']),
+          high: ElmQuantity.fromJson(json['low']));
 
   Map<String, dynamic> toJson() {
     {

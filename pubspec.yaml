@@ -14,6 +14,7 @@ dependencies:
     path: ../fhir/fhir
   intl: ^0.18.0
   json_annotation: ^4.8.1
+  units_converter: ^2.1.1
   xml: ^6.4.2
   xml_annotation: ^2.3.0
 

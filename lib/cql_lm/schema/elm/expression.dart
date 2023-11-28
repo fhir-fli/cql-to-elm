@@ -998,7 +998,7 @@ class ConvertsToQuantity extends UnaryExpression {
 
       try {
         // Check if the parsed value is a valid decimal
-        double parsedValue = double.parse(quantityValue);
+        double parsedValue = double.parse(ElmQuantityValue);
         if (parsedValue.isNaN || parsedValue.isInfinite) {
           return false; // NaN or Infinite value is not valid
         }
@@ -1029,15 +1029,15 @@ class ConvertsToQuantity extends UnaryExpression {
 class ToQuantity extends UnaryExpression {
   ToQuantity({required super.operand});
 
-  Quantity? toThisQuantity() => toQuantity(value);
+  ElmQuantity? toThisQuantity() => toQuantity(value);
 
-  static Quantity? toQuantity(dynamic value) {
+  staticElmQuantity? toQuantity(dynamic value) {
     if (value == null) {
       return null;
     }
 
     if (value is int || value is double || value is num) {
-      return Quantity(value: FhirDecimal(value.toDouble()));
+      returnElmQuantity(value: FhirDecimal(value.toDouble()));
     }
 
     if (value is String) {
@@ -1062,7 +1062,7 @@ class ToQuantity extends UnaryExpression {
           unit = parts.sublist(1).join(' ').trim();
         }
 
-        return Quantity(value: FhirDecimal(parsedValue), unit: unit);
+        returnElmQuantity(value: FhirDecimal(parsedValue), unit: unit);
       } catch (e) {
         return null; // Parsing error
       }
@@ -1074,7 +1074,7 @@ class ToQuantity extends UnaryExpression {
       if (denominator == 0) {
         return null; // Division by zero
       }
-      return Quantity(value: FhirDecimal(numerator / denominator));
+      returnElmQuantity(value: FhirDecimal(numerator / denominator));
     }
 
     return null; // Other types are not supported
@@ -1112,8 +1112,8 @@ class ConvertsToRatio extends UnaryExpression {
       }
 
       List<String> parts = formattedvalue.split(':');
-      Quantity? firstQuantity = ToQuantity.toQuantity(parts[0].trim());
-      Quantity? secondQuantity = ToQuantity.toQuantity(parts[1].trim());
+      ElmQuantityity? firstQuantity = ToQuantity.toQuantity(parts[0].trim());
+      ElmQuantity? secondQuantity = ToQuantity.toQuantity(parts[1].trim());
 
       return secondQuantity != null;
     }
@@ -1153,8 +1153,8 @@ class ToRatio extends UnaryExpression {
       }
 
       List<String> parts = formattedvalue.split(':');
-      Quantity? firstQuantity = ToQuantity.toQuantity(parts[0].trim());
-      Quantity? secondQuantity = ToQuantity.toQuantity(parts[1].trim());
+      ElmQuantity? firstQuantity = ToQuantity.toQuantity(parts[0].trim());
+      ElmQuantity? secondQuantity = ToQuantity.toQuantity(parts[1].trim());
 
       return firstQuantity == null
           ? secondQuantity == null
@@ -1228,7 +1228,7 @@ class ConvertsToString extends UnaryExpression {
           argument is double ||
           argument is DateTime ||
           argument is String ||
-          argument is Quantity ||
+          argument isElmQuantity ||
           argument is Ratio;
     }
   }
@@ -1256,7 +1256,7 @@ class ToString extends UnaryExpression {
       return value.toIso8601String();
     } else if (value is String) {
       return value;
-    } else if (value is Quantity) {
+    } else if (value isElmQuantity) {
       return '${value.value}${value.unit != null ? ' ${value.unit}' : ''}';
     } else if (value is Ratio) {
       return '${ToString.toElmString(value.numerator)}:${ToString.toElmString(value.denominator)}';
@@ -1366,7 +1366,7 @@ class CanConvertQuantity extends BinaryExpression {
 
   bool canThisConvertQuantity() => canConvertQuantity(value, targetUnit);
 
-  static bool canConvertQuantity(Quantity quantity, [String? targetUnit]) {
+  static bool canConvertQuantity(ElmQuantity quantity, [String? targetUnit]) {
     if (targetUnit == null) {
       return false;
     }
@@ -1374,7 +1374,7 @@ class CanConvertQuantity extends BinaryExpression {
     // Add your conversion logic here or integrate any external libraries for unit conversion
 
     // Placeholder logic assuming simple quantity conversion
-    if (quantity.unit == targetUnit) {
+    if (ElmQuantity.unit == targetUnit) {
       return true; // Quantity can be converted to the target unit
     } else {
       return false; // Quantity cannot be converted to the target unit
@@ -1396,9 +1396,9 @@ class ConvertQuantity extends BinaryExpression {
   final dynamic arg2;
   final String? targetUnit;
 
-  Quantity? convertThisQuantity() => convertQuantity(value, targetUnit);
+ ElmQuantity? convertThisQuantity() => convertQuantity(value, targetUnit);
 
-  static Quantity? convertQuantity(dynamic valueQuantity,
+  staticElmQuantity? convertQuantity(dynamic valueQuantity,
       [String? targetUnit]) {
     if (targetUnit == null) {
       return null;
@@ -1406,8 +1406,8 @@ class ConvertQuantity extends BinaryExpression {
 
     // Placeholder logic assuming simple quantity conversion
     // Replace this with proper UCUM-compliant unit conversion logic
-    if (valueQuantity is Quantity && valueQuantity.unit == targetUnit) {
-      return Quantity(
+    if (valueQuantity is ElmQuantity && valueQuantity.unit == targetUnit) {
+      return ElmQuantity(
           value: valueQuantity.value,
           unit: targetUnit); // Quantity with the same unit
     } else {
@@ -1446,7 +1446,7 @@ class Equal extends BinaryExpression {
         arg1 is String ||
         arg1 is bool) {
       return arg1 == arg2;
-    } else if (arg1 is Quantity && arg2 is Quantity) {
+    } else if (arg1 is ElmQuantity && arg2 is ElmQuantity) {
       // Check if dimensions are the same
       // Note: This is a placeholder; actual quantity comparison might involve more complex logic
       return arg1.value == arg2.value;
@@ -1508,7 +1508,7 @@ class Equivalent extends BinaryExpression {
     } else if (arg1 is String && arg2 is String) {
       // Compare strings while ignoring case and normalizing whitespace
       return arg1.trim().toLowerCase() == arg2.trim().toLowerCase();
-    } else if (arg1 is Quantity && arg2 is Quantity) {
+    } else if (arg1 is ElmQuantity && arg2 is ElmQuantity) {
       // Check if quantities are equivalent
       // This is a placeholder; actual quantity comparison might involve unit conversion and value comparison
       return false; // Implement logic for quantity equivalence here
@@ -1586,7 +1586,7 @@ class Less extends BinaryExpression {
       // Comparison for DateTime values
       // This is a placeholder; actual comparison involves comparing each precision
       return arg1.isBefore(arg2);
-    } else if (arg1 is Quantity && arg2 is Quantity) {
+    } else if (arg1 is ElmQuantity && arg2 is ElmQuantity) {
       // Comparison for quantities
       // This is a placeholder; actual comparison might involve unit conversion and value comparison
       return false; // Implement logic for quantity comparison here
@@ -1618,7 +1618,7 @@ class Greater extends BinaryExpression {
       // Comparison for DateTime values
       // This is a placeholder; actual comparison involves comparing each precision
       return arg1.isAfter(arg2);
-    } else if (arg1 is Quantity && arg2 is Quantity) {
+    } else if (arg1 is ElmQuantity && arg2 is ElmQuantityity) {
       // Comparison for quantities
       // This is a placeholder; actual comparison might involve unit conversion and value comparison
       return false; // Implement logic for quantity comparison here
@@ -1651,7 +1651,7 @@ class LessOrEqual extends BinaryExpression {
       // Comparison for DateTime values
       // This is a placeholder; actual comparison involves comparing each precision
       return FhirDateTime(arg1) == FhirDateTime(arg2);
-    } else if (arg1 is Quantity && arg2 is Quantity) {
+    } else if (arg1 is ElmQuantity && arg2 is ElmQuantity) {
       // Comparison for quantities
       // This is a placeholder; actual comparison might involve unit conversion and value comparison
       return false; // Implement logic for quantity comparison here

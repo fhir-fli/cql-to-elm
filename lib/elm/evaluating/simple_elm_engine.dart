@@ -1,11 +1,5 @@
 import 'package:fhir/r4.dart';
 
-mixin QuantityMixin on Quantity {
-  double? getValue() => this.value?.value;
-
-  String? getUnit() => this.unit;
-}
-
 class SimpleElmEngine {
   SimpleElmEngine();
 
@@ -41,7 +35,7 @@ class SimpleElmEngine {
     return left == right;
   }
 
-  bool quantitiesEqual(Quantity? left, Quantity? right) {
+  bool quantitiesEqual(ElmQuantity? left, Quantity? right) {
     if (left == null && right == null) {
       return true;
     }

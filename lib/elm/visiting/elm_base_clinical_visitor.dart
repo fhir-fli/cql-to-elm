@@ -1,6 +1,7 @@
 import 'package:cql_to_elm/cql_lm/cql_lm.dart';
 import 'package:fhir/r4.dart';
 
+import '../../quantity/quantity.dart';
 import 'visiting.dart';
 
 class ElmBaseClinicalVisitor<T, C> extends ElmBaseVisitor<T, C>
@@ -45,7 +46,7 @@ class ElmBaseClinicalVisitor<T, C> extends ElmBaseVisitor<T, C>
       return visitCode(elm, context);
     else if (elm is Concept)
       return visitConcept(elm, context);
-    else if (elm is Quantity)
+    else if (elm is ElmQuantity)
       return visitQuantity(elm as Quantity, context);
     else if (elm is Ratio)
       return visitRatio(elm as Ratio, context);
@@ -258,8 +259,10 @@ class ElmBaseClinicalVisitor<T, C> extends ElmBaseVisitor<T, C>
     T result = defaultResult(elm, context);
     T childResult = visitElement(elm.code, context);
     result = aggregateResult(result, childResult);
-    T childResult = visitElement(elm.valueset, context);
-    result = aggregateResult(result, childResult);
+    if (elm.valueset != null) {
+      childResult = visitElement(elm.valueset!, context);
+      result = aggregateResult(result, childResult);
+    }
     if (elm.valuesetExpression != null) {
       T childResult = visitElement(elm.valuesetExpression!, context);
       result = aggregateResult(result, childResult);
@@ -271,8 +274,10 @@ class ElmBaseClinicalVisitor<T, C> extends ElmBaseVisitor<T, C>
     T result = defaultResult(elm, context);
     T childResult = visitElement(elm.codes, context);
     result = aggregateResult(result, childResult);
-    T childResult = visitElement(elm.valueset, context);
-    result = aggregateResult(result, childResult);
+    if (elm.valueset != null) {
+      childResult = visitElement(elm.valueset!, context);
+      result = aggregateResult(result, childResult);
+    }
     if (elm.valuesetExpression != null) {
       T childResult = visitElement(elm.valuesetExpression!, context);
       result = aggregateResult(result, childResult);
@@ -288,16 +293,33 @@ class ElmBaseClinicalVisitor<T, C> extends ElmBaseVisitor<T, C>
     return visitChildren(elm, context);
   }
 
-  T visitQuantity(Quantity elm, C context) {
+  T visitQuantity(ElmQuantity elm, C context) {
     return defaultResult(elm, context);
   }
 
   T visitRatio(Ratio elm, C context) {
     T result = defaultResult(elm, context);
-    T childResult = visitElement(elm.denominator, context);
-    result = aggregateResult(result, childResult);
-    T childResult = visitElement(elm.numerator, context);
-    result = aggregateResult(result, childResult);
+    T? childResult;
+    if (elm.denominator != null) {
+      if ((elm.denominator!.value?.isValid ?? false) &&
+          elm.denominator!.unit != null) {
+        childResult = visitElement(
+          ElmQuantity(elm.denominator!.value!.value!, elm.denominator!.unit!),
+          context,
+        );
+        result = aggregateResult(result, childResult!);
+      }
+    }
+    if (elm.numerator != null) {
+      if ((elm.numerator!.value?.isValid ?? false) &&
+          elm.numerator!.unit != null) {
+        childResult = visitElement(
+          ElmQuantity(elm.numerator!.value!.value!, elm.numerator!.unit!),
+          context,
+        );
+        result = aggregateResult(result, childResult!);
+      }
+    }
     return result;
   }
 

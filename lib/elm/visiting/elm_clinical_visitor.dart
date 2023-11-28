@@ -1,6 +1,7 @@
 import 'package:fhir/r4.dart';
 
 import '../../cql_lm/cql_lm.dart';
+import '../../quantity/quantity.dart';
 import 'visiting.dart';
 
 abstract class ElmClinicalVisitor<T, C> implements ElmVisitor<T, C> {
@@ -18,15 +19,15 @@ abstract class ElmClinicalVisitor<T, C> implements ElmVisitor<T, C> {
   T visitValueSetRef(ValueSetRef elm, C context);
   T visitCodeRef(CodeRef elm, C context);
   T visitConceptRef(ConceptRef elm, C context);
-  T visitCode(Coding elm, C context);
-  T visitConcept(CodeableConcept elm, C context);
+  T visitCode(ElmCode elm, C context);
+  T visitConcept(Concept elm, C context);
   T visitInCodeSystem(InCodeSystem elm, C context);
   T visitAnyInCodeSystem(AnyInCodeSystem elm, C context);
   T visitInValueSet(InValueSet elm, C context);
   T visitAnyInValueSet(AnyInValueSet elm, C context);
   T visitSubsumes(Subsumes elm, C context);
   T visitSubsumedBy(SubsumedBy elm, C context);
-  T visitQuantity(Quantity elm, C context);
+  T visitQuantity(ElmQuantity elm, C context);
   T visitRatio(Ratio elm, C context);
   T visitCalculateAge(CalculateAge elm, C context);
   T visitCalculateAgeAt(CalculateAgeAt elm, C context);
